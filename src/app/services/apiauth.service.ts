@@ -1,12 +1,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { Response } from '../models/response';
 import { Usuario } from '../models/usuario';
-import { map } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Login } from '../models/login';
 import { connection } from '../security/production';
 import Swal from 'sweetalert2';
+import { jwtDecode } from 'jwt-decode';
+import { environment } from '../shared/environment';
 
 const httpOption = {
   headers: new HttpHeaders({
@@ -18,7 +20,9 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiAuthService {
-  url: string = connection + 'User/login';
+  VITE_BASE_URL = 'https://optisteel.ingaria.com'
+
+  url: string = "https://xfzt4cg93k.execute-api.us-east-2.amazonaws.com/dev/auth"; //connection + 'User/login';
   isLogin = false;
 
   //BehaviorSubject: recibe elementos desde la creacion
@@ -38,23 +42,22 @@ export class ApiAuthService {
     this.usuario = this.usuarioSubject.asObservable();
   }
 
-  login(login: Login): Observable<Response> {
-    return this._http.post<Response>(this.url, login, httpOption).pipe(
-      map((res) => {
-        if (res.exito == 1) {
-          
-          const usuario: Usuario = res.data;
-          localStorage.setItem('usuario', JSON.stringify(usuario));
+  login(login: Login) {
+  return this._http.post<{ token: string }>('/api/login', login).pipe(
+    switchMap((res) => {
+      const decoded: any = jwtDecode(res.token);
+      return this._http.get<Usuario>(`${environment.apiUrl}/users/${decoded.email}`).pipe(
+        tap((user) => {
+          this.usuarioSubject.next({ ...user, token: res.token });
+        })
+      );
+    }),
+    catchError(err => throwError(() => err))
+  );
+}
 
-          // usuarioSubject es un observable, cuando aplicas next todos los inscritos ejecutan algo,
-          // ej: cuando exista un usuario mostramos su nombre
-          this.usuarioSubject.next(usuario);
-          this.isLogin = true;
-        } 
-        return res;
-      })
-    );
-  }
+
+
   logout() {
     this.isLogin = false;
     localStorage.removeItem('usuario');

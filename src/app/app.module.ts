@@ -1,32 +1,41 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Routes } from '@angular/router';
-import { HomeRoutingModule } from './home/home-routing.module';
-import { AuthGuard } from './security/auth.guard';
-import { NotFoundComponent } from './not-found/not-found.component';
+import { AppRoutingModule } from './app-routing.module';
+//import { MaterialModule } from './shared/material.module';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { JwtInterceptor } from './security/jwt.interceptor';
+import { HomeModule } from './home/home.module';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { RouterModule } from '@angular/router';
+import { QuicklinkStrategy } from 'ngx-quicklink';
+import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
-
-const routes: Routes = [
-  {   path: '', redirectTo: '/login', pathMatch:'full'},
-
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: 'home',
-    loadChildren: () => HomeRoutingModule,
-    canActivate: [AuthGuard],
-    data: { acceso: [] },
-  },
-  { path: '**', component: NotFoundComponent },
-];
-
+import { NotFoundComponent } from './not-found/not-found.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { MaterialModule } from './shared/material.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    NotFoundComponent
+  ],
   imports: [
-    CommonModule
-  ]
+    ReactiveFormsModule,
+    RouterModule,
+    BrowserModule,
+    MaterialModule,
+    AppRoutingModule,
+    HttpClientModule
+    //HomeModule,
+  ],
+
+  exports: [MaterialModule],
+  providers: [
+    QuicklinkStrategy,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    provideAnimationsAsync(),
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

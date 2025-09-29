@@ -1,0 +1,18 @@
+{
+  
+  "/api": {
+    "target": "https://xfzt4cg93k.execute-api.us-east-2.amazonaws.com/dev/auth",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/api": "" }
+  },
+
+  "/api/data": {
+    "target": "https://backend.tuservidor.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/api/data": "/data" }
+  }
+}

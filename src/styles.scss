@@ -1,1 +1,36 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$my-primary: mat.$azure-palette;
+$my-tertiary: mat.$blue-palette;
+
+$my-theme: mat.define-theme((
+  color: (
+    primary: $my-primary,
+    tertiary: $my-tertiary,
+  ),
+  //typography: mat.define-typography-config(),
+ // density: 0,
+));
+
+// Define CSS variables
+html {
+  @include mat.theme($my-theme);
+}
+
+// Aplica estilos a los componentes
+@include mat.all-component-themes($my-theme);
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

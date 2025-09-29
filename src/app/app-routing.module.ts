@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { AuthGuard } from './security/auth.guard';
-import { HomeRoutingModule } from './home/home-routing.module';
+import { QuicklinkStrategy } from 'ngx-quicklink';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -14,21 +14,18 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: () => HomeRoutingModule,
-    canActivate: [AuthGuard],
+    loadChildren: () => import('./home/home.module').then(m => m.HomeModule),
+   // canActivate: [AuthGuard],
     data: { acceso: [] },
   },
   { path: '**', component: NotFoundComponent },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, {
-      useHash: true,
-      //preloadingStrategy: QuicklinkStrategy,
-    }),
-  ],
+  imports: [RouterModule.forRoot(routes, {
+   preloadingStrategy: QuicklinkStrategy
+  })],
   exports: [RouterModule],
-  providers: [AuthGuard],
+ // providers: [AuthGuard],
 })
 export class AppRoutingModule {}
