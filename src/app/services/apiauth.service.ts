@@ -9,6 +9,8 @@ import { connection } from '../security/production';
 import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../shared/environment';
+import { Auth } from '../models/auth';
+import { LoginComponent } from '../login/login.component';
 
 const httpOption = {
   headers: new HttpHeaders({
@@ -20,22 +22,20 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiAuthService {
-  VITE_BASE_URL = 'https://optisteel.ingaria.com'
-
-  url: string = "https://xfzt4cg93k.execute-api.us-east-2.amazonaws.com/dev/auth"; //connection + 'User/login';
+  VITE_BASE_URL = 'https://optisteel.ingaria.com';
   isLogin = false;
 
   //BehaviorSubject: recibe elementos desde la creacion
-  private usuarioSubject: BehaviorSubject<Usuario>;
-  public usuario: Observable<Usuario>;
+  private usuarioSubject: BehaviorSubject<Auth>;
+  public usuario: Observable<Auth>;
 
-  public get usuarioData(): Usuario {
+  public get usuarioData(): Auth {
     return this.usuarioSubject.value;
   }
 
   constructor(private _http: HttpClient) {
     const item = localStorage.getItem('usuario');
-    this.usuarioSubject = new BehaviorSubject<Usuario>(
+    this.usuarioSubject = new BehaviorSubject<Auth>(
       item ? JSON.parse(item) : null
     );
 
@@ -43,20 +43,40 @@ export class ApiAuthService {
   }
 
   login(login: Login) {
-  return this._http.post<{ token: string }>('/api/login', login).pipe(
-    switchMap((res) => {
-      const decoded: any = jwtDecode(res.token);
-      return this._http.get<Usuario>(`${environment.apiUrl}/users/${decoded.email}`).pipe(
-        tap((user) => {
-          this.usuarioSubject.next({ ...user, token: res.token });
-        })
+    return this._http
+      .post<{ token: string }>('/api/login', login, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+        }),
+      })
+      .pipe(
+        map((res) => {
+          console.log(res);
+
+          const decoded: any = jwtDecode(res.token);
+          console.log(decoded);
+          const usuario: Auth = {
+            ...decoded,
+            token: res.token,
+          };
+
+          this.usuarioSubject.next(usuario);
+          return usuario;
+          /*return this._http
+            .get<Usuario>(`${this.VITE_BASE_URL}/users/${decoded.email}`)
+            .pipe(
+              tap((user: any) => {
+                this.usuarioSubject.next({ ...user, token: res.token });
+              })
+            );*/
+        }),
+        catchError((err) =>
+          throwError(() => {
+            err;
+          })
+        )
       );
-    }),
-    catchError(err => throwError(() => err))
-  );
-}
-
-
+  }
 
   logout() {
     this.isLogin = false;

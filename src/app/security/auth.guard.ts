@@ -10,7 +10,7 @@ import {
 } from '@angular/router';
 import { ApiAuthService } from '../services/apiauth.service';
 import { Observable, map, tap } from 'rxjs';
-import { Usuario } from '../models/usuario';
+import { Auth } from '../models/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -26,10 +26,9 @@ export class AuthGuard {
 
     // usamos el user del AuthService y los roles extraídos de data para
     // implementar nuevamente la lógica de la guarda   
-
     if (usuario) {
       return this.apiAuthService.usuario.pipe(
-        map((user : Usuario) => Boolean(user && allowedRoles.includes(user.tipoUsuario))),
+        map((user : Auth) => Boolean(user)),//&& allowedRoles.includes(user.tipoUsuario ))),
         tap((hasRole) => hasRole === false && alert('Acceso Denegado'))
       );
       //return true;
@@ -45,7 +44,7 @@ export class AuthGuard {
     if (usuario) {
       let estado =  this.apiAuthService.usuario.pipe(
         
-        map((user : Usuario) => Boolean(user && allowedRoles.includes(user.tipoUsuario))),
+        map((user : Auth) => Boolean(user)),// && allowedRoles.includes(user.tipoUsuario))),
         tap((hasRole) => hasRole === false && alert('Acceso Denegado'))
       ); //this.router.navigate(['/login'] )      
       return estado;

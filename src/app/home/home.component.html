@@ -1,6 +1,25 @@
-<mat-toolbar color="accent">
-  Bienvenido
+<mat-toolbar color="primary" class="toolbar-custom">
+  <button matIconButton>
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="spacer"></span>
+  <label class="custom-label">Proyecto:</label>
+
+  <div class="select-horizontal">
+    <mat-form-field appearance="outline" class="compact-select">
+      <mat-select [(ngModel)]="selectedValue" name="food">
+        <mat-option *ngFor="let proyecto of proyectos" [value]="proyecto">
+          {{ proyecto }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <span class="spacer"></span>
+
+  <button matIconButton>
+    <mat-icon>account_circle</mat-icon>
+  </button>
 </mat-toolbar>
-<button matButton="filled" color="accent">Botón de prueba</button>
 
 <router-outlet></router-outlet>

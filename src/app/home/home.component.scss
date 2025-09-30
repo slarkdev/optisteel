@@ -1,0 +1,55 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.toolbar-custom {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.compact-select .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
+.compact-select .mat-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+.compact-select .mat-form-field-flex {
+  min-height:  15px !important; /* ajusta según tu diseño */
+  align-items: center;
+}
+
+.compact-select .mat-select-trigger {
+  padding: 0 12px !important;
+  height: 15px !important;
+  line-height: 36px !important;
+}
+
+.compact-select .mat-form-field-outline {
+  border-radius: 8px;
+}
+
+.select-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.custom-label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+

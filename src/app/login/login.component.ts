@@ -4,6 +4,7 @@ import { ApiAuthService } from '../services/apiauth.service';
 import { Router } from '@angular/router';
 import { Login } from '../models/login';
 import { Error } from '../shared/error';
+import { Auth } from '../models/auth';
 
 @Component({
   selector: 'app-login',
@@ -35,19 +36,16 @@ export class LoginComponent {
           : '',
       };
       // llamar al servicio
-      console.log(user);
       this.apiAuthService.login(user).subscribe({
-        next: (response: any) => {
-          if (response.exito == 1) {
+        next: (response: Auth) => {      
+          if (response) {
             this.router.navigate(['home']);
           } else {
-            this.router.navigate(['home']); // comentar
-            Error.showError(response.data);
+            Error.showError(response);
           }
           //this.loading = false;
         },
         error: (response: any) => {
-          this.router.navigate(['home']); // comentar
           //this.loading = false;
           Error.showError(response);
         },

@@ -10,7 +10,6 @@ export class JwtInterceptor implements HttpInterceptor{
     constructor(
         private apiAuthService: ApiAuthService
     ){
-
     }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>{

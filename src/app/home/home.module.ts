@@ -17,6 +17,8 @@ import { ConfiguracionComponent } from './configuracion/configuracion.component'
 import { LotesComponent } from './lotes/lotes.component';
 import { ProyectosComponent } from './proyectos/proyectos.component';
 import { ReportesComponent } from './reportes/reportes.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -30,9 +32,11 @@ import { ReportesComponent } from './reportes/reportes.component';
     ProyectosComponent,
     ReportesComponent
   ],
-  exports: [MaterialModule],
-  imports: [CommonModule, 
-    RouterModule, 
+  exports: [],
+  imports: [
+    CommonModule, 
+    RouterModule,
+    FormsModule, 
     HomeRoutingModule, 
     MaterialModule],
   providers: [provideHttpClient(withInterceptorsFromDi())],
