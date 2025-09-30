@@ -26,7 +26,8 @@ export class ApiAuthService {
   isLogin = false;
 
   //BehaviorSubject: recibe elementos desde la creacion
-  private usuarioSubject: BehaviorSubject<Auth>;
+  private usuarioSubject: BehaviorSubject<any> =
+    new BehaviorSubject<Auth | null>(null);
   public usuario: Observable<Auth>;
 
   public get usuarioData(): Auth {
@@ -35,7 +36,7 @@ export class ApiAuthService {
 
   constructor(private _http: HttpClient) {
     const item = localStorage.getItem('usuario');
-    this.usuarioSubject = new BehaviorSubject<Auth>(
+    this.usuarioSubject = new BehaviorSubject<any>(
       item ? JSON.parse(item) : null
     );
 
@@ -50,45 +51,71 @@ export class ApiAuthService {
         }),
       })
       .pipe(
-        map((res) => {
-          console.log(res);
-
+        switchMap((res) => {
           const decoded: any = jwtDecode(res.token);
-          console.log(decoded);
-          const usuario: Auth = {
-            ...decoded,
-            token: res.token,
-          };
-
-          this.usuarioSubject.next(usuario);
-          return usuario;
-          /*return this._http
+          return this._http
             .get<Usuario>(`${this.VITE_BASE_URL}/users/${decoded.email}`)
             .pipe(
               tap((user: any) => {
+                sessionStorage.setItem('access_token', res.token);
                 this.usuarioSubject.next({ ...user, token: res.token });
               })
-            );*/
+            );
         }),
         catchError((err) =>
           throwError(() => {
-            err;
+            return err;
           })
         )
       );
   }
 
-  logout() {
+  logout(): void {
+    // Eliminar tokens del almacenamiento
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('refresh_token'); // si lo estás usando
+
+    // notificar al sistema que ya no hay usuario
     this.isLogin = false;
-    localStorage.removeItem('usuario');
-    // le decimos a todos los inscritos que ya no hay un usuario
-    this.usuarioSubject.next(null!);
+    this.usuarioSubject.next(null);
+
+    //Llamar al backend para invalidar el refresh token
+    /*this.revokeToken().subscribe({
+      next: () => {
+        console.log('Refresh token revocado');
+      },
+      error: (err) => {
+        console.error('Error al revocar token', err);
+      },
+      complete: () => {
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('refresh_token');
+        this.usuarioSubject.next(null);
+        this.router.navigate(['/login']);
+      },
+    });*/
   }
 
-  isLoggedIn() {
-    const loggedIn = localStorage.getItem('usuario');
-    if (loggedIn) this.isLogin = true;
-    else this.isLogin = false;
+  isAuthenticated(): boolean {
+    this.isLogin = !!sessionStorage.getItem('access_token');
     return this.isLogin;
+  }
+
+  usuario$(): Observable<any | null> {
+    return this.usuarioSubject.asObservable();
+  }
+
+  revokeToken(): Observable<any> {
+    const refreshToken = sessionStorage.getItem('refresh_token'); // o donde lo tengas guardado
+
+    return this._http.post(
+      '/api/revoke-token',
+      { token: refreshToken },
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+        }),
+      }
+    );
   }
 }

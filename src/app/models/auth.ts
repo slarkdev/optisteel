@@ -5,7 +5,7 @@ export interface Auth {
   token: string | null;
   isLoading: boolean;
   error: string | null;
-  tipoUsuario: string | null;
+  //tipoUsuario: string | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
 }

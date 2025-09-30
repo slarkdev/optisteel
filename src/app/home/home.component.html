@@ -1,25 +1,46 @@
-<mat-toolbar color="primary" class="toolbar-custom">
-  <button matIconButton>
-    <mat-icon>menu</mat-icon>
-  </button>
+<div class="container">
+  <mat-toolbar color="primary" class="toolbar-custom">
+    <button matIconButton (click)="drawer.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
 
-  <span class="spacer"></span>
-  <label class="custom-label">Proyecto:</label>
+    <span class="spacer"></span>
+    <label class="custom-label">Proyecto:</label>
 
-  <div class="select-horizontal">
-    <mat-form-field appearance="outline" class="compact-select">
-      <mat-select [(ngModel)]="selectedValue" name="food">
-        <mat-option *ngFor="let proyecto of proyectos" [value]="proyecto">
-          {{ proyecto }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-  <span class="spacer"></span>
+    <div class="select-horizontal">
+      <mat-form-field appearance="outline" class="compact-select">
+        <mat-select [(ngModel)]="selectedValue" name="food">
+          <mat-option *ngFor="let proyecto of proyectos" [value]="proyecto">
+            {{ proyecto }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <span class="spacer"></span>
 
-  <button matIconButton>
-    <mat-icon>account_circle</mat-icon>
-  </button>
-</mat-toolbar>
+    <button matIconButton [matMenuTriggerFor]="menuUser">
+      <mat-icon>account_circle</mat-icon>
+    </button>
 
-<router-outlet></router-outlet>
+    <mat-menu #menuUser="matMenu">
+      <button mat-menu-item>
+        <mat-icon>person_book</mat-icon>
+        <span>Perfil</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Cerrar Sesión</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <mat-drawer-container class="example-container" autosize [hasBackdrop]="true">
+    <mat-drawer #drawer class="ancho-sidenav" mode="side">
+      <p>OPTISTEEL</p>      
+    </mat-drawer>
+
+    <div class="example-sidenav-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-drawer-container>
+</div>

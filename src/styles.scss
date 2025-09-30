@@ -1,36 +1,272 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 @include mat.core();
 
 $my-primary: mat.$azure-palette;
 $my-tertiary: mat.$blue-palette;
 
-$my-theme: mat.define-theme((
-  color: (
-    primary: $my-primary,
-    tertiary: $my-tertiary,
-  ),
-  //typography: mat.define-typography-config(),
- // density: 0,
-));
+$my-theme: mat.define-theme(
+  (
+    color: (
+      primary: $my-primary,
+      tertiary: $my-tertiary,
+    ),
+    //typography: mat.define-typography-config(),
+    // density: 0,,,,,
+  )
+);
 
 // Define CSS variables
-html {
-  @include mat.theme($my-theme);
-}
+//html {
+ // @include mat.theme($my-theme);
+//}
 
 // Aplica estilos a los componentes
-@include mat.all-component-themes($my-theme);
+//@include mat.all-component-themes($my-theme);
 
-body {
+/* ===== THEME TOKENS ===== */
+:root {
+  --bg-1: #eeebea; /* soft warm base */
+  --bg-2: #eeebea; /* subtle gradient stop */
+  --card-bg: #ffffff; /* white card */
+  --text-strong: #1f2937; /* near-black for titles */
+  --text: #032838; /* body text */
+  --muted: #6b7280; /* captions/links */
+  --field-bg: #f8fafc; /* very light field */
+  --field-border: #e5e7eb; /* field border */
+  --field-border-focus: #f59e0b; /* focus accent (amber) */
+  --primary: #f8a166; /* orange button */
+  --primary-hover: #ee6622; /* darker on hover */
+  --ring: rgba(245, 158, 11, 0.25); /* focus ring */
+  --radius-xl: 22px; /* card roundness */
+  --radius-md: 12px; /* field roundness */
+  --shadow-card: 0 10px 35px rgba(15, 23, 42, 0.08),
+    0 2px 10px rgba(15, 23, 42, 0.05);
+  --shadow-focus: 0 0 0 6px var(--ring);
+}
+
+/*body {
   color-scheme: light;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
   margin: 0;
+}*/
+
+/* ===== RESET (minimal) ===== */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text);
+  background: radial-gradient(
+      1200px 600px at 50% 10%,
+      var(--bg-1),
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
 }
 
-html, body {
+/* ===== LAYOUT ===== */
+.wrap {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 4rem 1rem;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  align-items: center;
+}
+
+/* Logo pill */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: #eeebea;
+  color: #032838;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-family: "Gotham", "Arial";
+  font-size: 2rem; /* 👈 controla el tamaño del texto */
+}
+.brand-icon {
+  width: 36px; /* ancho deseado */
+  height: 36px; /* alto deseado */
+  object-fit: contain; /* mantiene proporciones del SVG */
+  vertical-align: middle; /* opcional, alinea con el texto */
+  /* Quitar estilos que eran para el círculo de fondo */
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* Card */
+.card {
+  width: min(860px, 92vw);
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 2.25rem 2.25rem 1.75rem;
+}
+@media (min-width: 860px) {
+  .card {
+    padding: 2.75rem 3rem;
+  }
+}
+
+.title {
+  margin: 0 0 0.35rem 0;
+  color: var(--text-strong);
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.15;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+.subtitle {
+  margin: 0 0 2rem 0;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ===== FORM ===== */
+.form {
+  display: grid;
+  gap: 1rem;
+}
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+.label {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+.control {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-md);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+.control:focus-within {
+  border-color: var(--field-border-focus);
+  box-shadow: var(--shadow-focus);
+  background: #fff;
+}
+.control svg {
+  flex: 0 0 20px;
+  opacity: 0.9;
+}
+.control input {
+  border: 0;
+  outline: 0;
+  width: 100%;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+}
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* espacio entre fila de links y botón */
+}
+
+.links-row {
+  display: flex;
+  justify-content: space-between; /* un link a la izquierda, otro a la derecha */
+}
+
+.btn {
+  align-self: center; /* centra el botón horizontalmente debajo de los links */
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 1rem 1.25rem;
+  width: 100%;
+  border-radius: 999px;
+  font-weight: 700;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: transform 0.05s ease, background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 6px 18px rgba(242, 122, 22, 0.35);
+}
+.btn:hover {
+  background: var(--primary-hover);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+
+
+@media (min-width: 600px) {
+  .btn {
+    width: unset;
+    min-width: 260px;
+  }
+}
+
+.link {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+}
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+.footer {
+  color: #9aa3af;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/***************** PANEL EXPANSION ****************/
+
+.mat-drawer-container {
   height: 100%;
-  font-family:'Gotham',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  min-height: 500px;
+}
+
+/***************** ICONOS  ****************/
+.mat-mdc-icon-button{
+  width: 20px !important;
+  height: 20px !important;
+  padding: 0 20px !important;
+}
+
+.mat-icon{
+  height: 20px !important;
+  width: 20px !important;
 }

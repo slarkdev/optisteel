@@ -18,49 +18,58 @@ import { Auth } from '../models/auth';
 export class AuthGuard {
   constructor(private router: Router, private apiAuthService: ApiAuthService) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    // extraemos la información de la propiedad data de la ruta.
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean> | boolean {
     const allowedRoles = route.data?.['acceso'];
-
     const usuario = this.apiAuthService.usuarioData;
 
-    // usamos el user del AuthService y los roles extraídos de data para
-    // implementar nuevamente la lógica de la guarda   
-    if (usuario) {
-      return this.apiAuthService.usuario.pipe(
-        map((user : Auth) => Boolean(user)),//&& allowedRoles.includes(user.tipoUsuario ))),
-        tap((hasRole) => hasRole === false && alert('Acceso Denegado'))
-      );
-      //return true;
+    if (!usuario) {
+      this.router.navigate(['/login']);
+      return false;
     }
-    this.router.navigate(['/login']);
-    return false;
+
+    return this.apiAuthService.usuario.pipe(
+      map((user: Auth) => {
+        const hasAccess = !!user; // && (!allowedRoles || allowedRoles.includes(user.tipoUsuario));
+        return hasAccess;
+      }),
+      tap((hasAccess) => {
+        if (!hasAccess) {
+          alert('Acceso Denegado');
+          this.router.navigate(['/login']);
+        }
+      })
+    );
   }
 
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const usuario = this.apiAuthService.usuarioData;
+  canActivateChild(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean> | boolean {
     const allowedRoles = route.data?.['acceso'];
+    const usuario = this.apiAuthService.usuarioData;
 
-    if (usuario) {
-      let estado =  this.apiAuthService.usuario.pipe(
-        
-        map((user : Auth) => Boolean(user)),// && allowedRoles.includes(user.tipoUsuario))),
-        tap((hasRole) => hasRole === false && alert('Acceso Denegado'))
-      ); //this.router.navigate(['/login'] )      
-      return estado;
-      //return true;
+    if (!usuario) {
+      this.router.navigate(['/login']);
+      return false;
     }
-    this.router.navigate(['/login']);
-    return false;
 
-
-    // if (usuario) {
-    //   return true;
-    // }
-    // this.router.navigate(['/login']);
-    // return false;
+    return this.apiAuthService.usuario.pipe(
+      map((user: Auth) => {
+        const hasAccess =
+          !!user; //&& (!allowedRoles || allowedRoles.includes(user.tipoUsuario));
+        return hasAccess;
+      }),
+      tap((hasAccess) => {
+        if (!hasAccess) {
+          alert('Acceso Denegado');
+          this.router.navigate(['/login']);
+        }
+      })
+    );
   }
-
   canDeactivate(
     component: unknown,
     currentRoute: ActivatedRouteSnapshot,
@@ -81,7 +90,7 @@ export class AuthGuard {
   }
 
   checkUserLogin(route: ActivatedRouteSnapshot, url: any): boolean {
-    if (this.apiAuthService.isLoggedIn()) {
+    if (this.apiAuthService.isAuthenticated()) {
       return true;
     }
 

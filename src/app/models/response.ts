@@ -1,5 +1,5 @@
 export interface Response {
-    exito: number;
-    mensaje: string;
+    status: number;
+    message: string;
     data: any;
 }

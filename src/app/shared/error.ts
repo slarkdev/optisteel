@@ -8,23 +8,23 @@ export class Error {
   constructor() {}
 
   public static showError(response: any) {
+    console.log(response);
+
     let titulo = 'Ups!';
     let msj = '';
-    
-    if(response.exito === 0){
-      titulo = 'Ups!';
-      msj = response.mensaje; 
-    } else if (response.error){
-      titulo = response.error.title ? response.error.title : 'Ups!';
-      msj = response.error.mensaje;
+
+    if (response.status !== 200) {
+      titulo = response.statusText ? response.statusText : 'Ups!';
+      msj = response.error.message;
     }
 
     Swal.fire({
       icon: 'error',
-      title: titulo ,
+      title: titulo,
       text: msj,
-      showConfirmButton: false,
-      timer: 1500,
+      showConfirmButton: true,
+      confirmButtonColor: '#f8a166',
+      timer: 3000,
     });
   }
 }
