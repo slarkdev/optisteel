@@ -9,10 +9,10 @@
   },
 
   "/api/data": {
-    "target": "https://backend.tuservidor.com",
+    "target": "https://optisteel.ingaria.com/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
-    "pathRewrite": { "^/api/data": "/data" }
+    "pathRewrite": { "^/api/data": "" }
   }
 }

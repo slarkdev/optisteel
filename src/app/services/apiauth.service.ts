@@ -22,7 +22,7 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiAuthService {
-  VITE_BASE_URL = 'https://optisteel.ingaria.com';
+  url: string = connection + 'users/';
   isLogin = false;
 
   //BehaviorSubject: recibe elementos desde la creacion
@@ -46,27 +46,18 @@ export class ApiAuthService {
 
   login(login: Login) {
     return this._http
-      .post<{ token: string }>('/api/login', login, {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-        }),
-      })
+      .post<{ token: string }>('/api/login', login, httpOption)
       .pipe(
         switchMap((res) => {
           const decoded: any = jwtDecode(res.token);
-          return this._http
-            .get<Usuario>(`${this.VITE_BASE_URL}/users/${decoded.email}`)
-            .pipe(
-              tap((user: Usuario) => {
-                sessionStorage.setItem('access_token_optisteel', res.token);
-                sessionStorage.setItem(
-                  'usuario_optisteel',
-                  JSON.stringify(user)
-                );
+          return this._http.get<Usuario>(`${this.url}${decoded.email}`).pipe(
+            tap((user: Usuario) => {
+              sessionStorage.setItem('access_token_optisteel', res.token);
+              sessionStorage.setItem('usuario_optisteel', JSON.stringify(user));
 
-                this.usuarioSubject.next({ ...user, token: res.token });
-              })
-            );
+              this.usuarioSubject.next({ ...user, token: res.token });
+            })
+          );
         }),
         catchError((err) =>
           throwError(() => {
@@ -104,7 +95,7 @@ export class ApiAuthService {
     const token = sessionStorage.getItem('access_token_optisteel');
     const userData = sessionStorage.getItem('usuario_optisteel');
 
-    if(!token){
+    if (!token) {
       this.logout();
     }
 
@@ -115,16 +106,14 @@ export class ApiAuthService {
 
     if (token && !userData) {
       const decoded: any = jwtDecode(token);
-      this._http
-        .get<Usuario>(`${this.VITE_BASE_URL}/users/${decoded.email}`)
-        .subscribe({
-          next: (user) => {
-            this.usuarioSubject.next({ ...user, token });
-          },
-          error: () => {
-            this.logout(); // por si el token ya no es válido
-          },
-        });
+      this._http.get<Usuario>(`${this.url}${decoded.email}`).subscribe({
+        next: (user) => {
+          this.usuarioSubject.next({ ...user, token });
+        },
+        error: () => {
+          this.logout(); // por si el token ya no es válido
+        },
+      });
     }
   }
 
@@ -132,22 +121,10 @@ export class ApiAuthService {
     this.isLogin = !!sessionStorage.getItem('access_token_optisteel');
     return this.isLogin;
   }
-
-  //   usuario$(): Observable<any | null> {
-  //     return this.usuarioSubject.asObservable();
-  //   }
-  //
+  
   revokeToken(): Observable<any> {
-    const refreshToken = sessionStorage.getItem('access_token_optisteel'); // o donde lo tengas guardado
+    const refreshToken = sessionStorage.getItem('access_token_optisteel'); 
 
-    return this._http.post(
-      '/api/revoke-token',
-      { token: refreshToken },
-      {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-        }),
-      }
-    );
+    return this._http.post('/api/revoke-token', { token: refreshToken }, httpOption);
   }
 }

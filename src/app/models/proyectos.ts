@@ -7,4 +7,6 @@ export interface Proyectos {
   updatedAt: string;
   userId: string;
   _id: string;
+  seleccionado?: boolean;
+
 }
