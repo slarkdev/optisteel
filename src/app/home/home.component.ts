@@ -19,10 +19,11 @@ export class HomeComponent {
   ];
 
   constructor(private apiAuthService: ApiAuthService,
-    private router: Router
+    private router: Router,
   ){
-
+    this.apiAuthService.initializeSession();    
   }
+
   logout(){
     this.apiAuthService.logout();
     this.router.navigate(['login']);

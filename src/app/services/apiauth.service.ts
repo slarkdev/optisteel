@@ -26,11 +26,12 @@ export class ApiAuthService {
   isLogin = false;
 
   //BehaviorSubject: recibe elementos desde la creacion
-  private usuarioSubject: BehaviorSubject<any> =
-    new BehaviorSubject<Auth | null>(null);
-  public usuario: Observable<Auth>;
+  private usuarioSubject: BehaviorSubject<any> = new BehaviorSubject<
+    any | null
+  >(null);
+  public usuario: Observable<any>;
 
-  public get usuarioData(): Auth {
+  public get usuarioData(): any {
     return this.usuarioSubject.value;
   }
 
@@ -56,8 +57,13 @@ export class ApiAuthService {
           return this._http
             .get<Usuario>(`${this.VITE_BASE_URL}/users/${decoded.email}`)
             .pipe(
-              tap((user: any) => {
-                sessionStorage.setItem('access_token', res.token);
+              tap((user: Usuario) => {
+                sessionStorage.setItem('access_token_optisteel', res.token);
+                sessionStorage.setItem(
+                  'usuario_optisteel',
+                  JSON.stringify(user)
+                );
+
                 this.usuarioSubject.next({ ...user, token: res.token });
               })
             );
@@ -72,8 +78,7 @@ export class ApiAuthService {
 
   logout(): void {
     // Eliminar tokens del almacenamiento
-    sessionStorage.removeItem('access_token');
-    sessionStorage.removeItem('refresh_token'); // si lo estás usando
+    sessionStorage.removeItem('access_token_optisteel');
 
     // notificar al sistema que ya no hay usuario
     this.isLogin = false;
@@ -95,18 +100,45 @@ export class ApiAuthService {
       },
     });*/
   }
+  initializeSession(): void {
+    const token = sessionStorage.getItem('access_token_optisteel');
+    const userData = sessionStorage.getItem('usuario_optisteel');
+
+    if(!token){
+      this.logout();
+    }
+
+    if (token && userData) {
+      const user = JSON.parse(userData);
+      this.usuarioSubject.next({ ...user, token });
+    }
+
+    if (token && !userData) {
+      const decoded: any = jwtDecode(token);
+      this._http
+        .get<Usuario>(`${this.VITE_BASE_URL}/users/${decoded.email}`)
+        .subscribe({
+          next: (user) => {
+            this.usuarioSubject.next({ ...user, token });
+          },
+          error: () => {
+            this.logout(); // por si el token ya no es válido
+          },
+        });
+    }
+  }
 
   isAuthenticated(): boolean {
-    this.isLogin = !!sessionStorage.getItem('access_token');
+    this.isLogin = !!sessionStorage.getItem('access_token_optisteel');
     return this.isLogin;
   }
 
-  usuario$(): Observable<any | null> {
-    return this.usuarioSubject.asObservable();
-  }
-
+  //   usuario$(): Observable<any | null> {
+  //     return this.usuarioSubject.asObservable();
+  //   }
+  //
   revokeToken(): Observable<any> {
-    const refreshToken = sessionStorage.getItem('refresh_token'); // o donde lo tengas guardado
+    const refreshToken = sessionStorage.getItem('access_token_optisteel'); // o donde lo tengas guardado
 
     return this._http.post(
       '/api/revoke-token',

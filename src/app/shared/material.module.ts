@@ -8,7 +8,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import {MatSelectModule} from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
+
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
+
+import { SpanishPaginatorIntl } from '../shared/tabla'; // ajusta la ruta
 @NgModule({
   exports: [
     MatInputModule,
@@ -19,7 +25,11 @@ import {MatSelectModule} from '@angular/material/select';
     MatMenuModule,
     MatSidenavModule,
     MatToolbarModule,
-    MatSelectModule
-  ]
+    MatSelectModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatPaginatorModule,
+  ],
+  providers: [{ provide: MatPaginatorIntl, useClass: SpanishPaginatorIntl }],
 })
 export class MaterialModule {}

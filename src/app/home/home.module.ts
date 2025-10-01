@@ -20,6 +20,14 @@ import { ReportesComponent } from './reportes/reportes.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { SpanishPaginatorIntl } from '../shared/tabla'; // ajusta la ruta
+
+import { MAT_PAGINATOR_INTL_PROVIDER } from '@angular/material/paginator';
+import { LOCALE_ID } from '@angular/core';
+import localeEs from '@angular/common/locales/es';
+import { registerLocaleData } from '@angular/common';
+
 @NgModule({
   declarations: [
     // aqui declaras los componentes que vas a utilizar
@@ -30,15 +38,21 @@ import { FormsModule } from '@angular/forms';
     InventarioComponent,
     LotesComponent,
     ProyectosComponent,
-    ReportesComponent
+    ReportesComponent,
   ],
   exports: [],
   imports: [
-    CommonModule, 
+    CommonModule,
     RouterModule,
-    FormsModule, 
-    HomeRoutingModule, 
-    MaterialModule],
-  providers: [provideHttpClient(withInterceptorsFromDi())],
+    FormsModule,
+    HomeRoutingModule,
+    MaterialModule,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: new SpanishPaginatorIntl() },
+    { provide: LOCALE_ID, useValue: 'es' },
+    MAT_PAGINATOR_INTL_PROVIDER,
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
 })
 export class HomeModule {}

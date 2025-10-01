@@ -15,16 +15,16 @@ const routes: Routes = [
   {
     path: '',
     component: HomeComponent,
-    canActivate: [AuthGuard],
+    //canActivate: [AuthGuard],
     data: {
       acceso: [],
     },
-    canActivateChild: [AuthGuard],
+    //canActivateChild: [AuthGuard],
     children: [
       {
         path: '',
-        pathMatch: 'full',
-        redirectTo: 'home',
+        component: ProyectosComponent,
+        //redirectTo: 'home',
       },
       {
         path: 'lotes',

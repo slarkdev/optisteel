@@ -14,24 +14,23 @@ import { BrowserModule } from '@angular/platform-browser';
 import { MaterialModule } from './shared/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
+
+
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    NotFoundComponent
-  ],
+  declarations: [AppComponent, LoginComponent, NotFoundComponent],
   imports: [
     ReactiveFormsModule,
     RouterModule,
     BrowserModule,
     MaterialModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
     //HomeModule,
   ],
 
   exports: [MaterialModule],
   providers: [
+    
     QuicklinkStrategy,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     provideAnimationsAsync(),

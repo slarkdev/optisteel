@@ -1,0 +1,8 @@
+::ng-deep .mat-mdc-checkbox .mdc-checkbox__checkmark,
+::ng-deep .mat-mdc-checkbox .mdc-checkbox__mixedmark {
+  color: white !important;
+}
+
+::ng-deep .mat-mdc-checkbox .mdc-checkbox__mixedmark svg path {
+  fill: white;
+}

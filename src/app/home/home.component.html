@@ -1,42 +1,63 @@
 <div class="container">
-  <mat-toolbar color="primary" class="toolbar-custom">
-    <button matIconButton (click)="drawer.toggle()">
-      <mat-icon>menu</mat-icon>
-    </button>
+  <!-- <span class="spacer"></span>
+    <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <button matIconButton (click)="drawer.toggle()">
+        <!-- <div class="dot" title="OPTISTEEL">A</div> -->
+        <mat-icon>menu</mat-icon>
+      </button>
 
-    <span class="spacer"></span>
-    <label class="custom-label">Proyecto:</label>
+      <span class="spacer"></span>
 
-    <div class="select-horizontal">
-      <mat-form-field appearance="outline" class="compact-select">
-        <mat-select [(ngModel)]="selectedValue" name="food">
-          <mat-option *ngFor="let proyecto of proyectos" [value]="proyecto">
-            {{ proyecto }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="ctx">
+        <div class="pill">
+          <span class="k">Proyecto</span>
+          <select aria-label="Cambiar proyecto">
+            <option>OPTISTEEL — Producción 2025</option>
+            <option>Cliente A — Planta Norte</option>
+            <option>Cliente B — Ampliación</option>
+          </select>
+        </div>
+        <div class="pill">
+          <span class="k">Lote</span>
+          <select aria-label="Cambiar lote" disabled>
+            <option>—</option>
+          </select>
+        </div>
+      </div>
+
+      <span class="spacer"></span>
+      <span class="hint">Gestiona proyectos del proyecto seleccionado.</span>
+
+      <button matIconButton [matMenuTriggerFor]="menuUser">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <mat-menu #menuUser="matMenu">
+        <button mat-menu-item>
+          <mat-icon>person_book</mat-icon>
+          <span>Perfil</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
     </div>
-    <span class="spacer"></span>
-
-    <button matIconButton [matMenuTriggerFor]="menuUser">
-      <mat-icon>account_circle</mat-icon>
-    </button>
-
-    <mat-menu #menuUser="matMenu">
-      <button mat-menu-item>
-        <mat-icon>person_book</mat-icon>
-        <span>Perfil</span>
-      </button>
-      <button mat-menu-item (click)="logout()">
-        <mat-icon>exit_to_app</mat-icon>
-        <span>Cerrar Sesión</span>
-      </button>
-    </mat-menu>
-  </mat-toolbar>
+  </div>
 
   <mat-drawer-container class="example-container" autosize [hasBackdrop]="true">
     <mat-drawer #drawer class="ancho-sidenav" mode="side">
-      <p>OPTISTEEL</p>      
+      <aside class="sidebar" aria-label="Navegación">
+        <div class="dot" title="OPTISTEEL">A</div>
+        <button class="navbtn" title="Proyectos">📁</button>
+        <button class="navbtn" title="Datos">📄</button>
+        <button class="navbtn" title="Inventario">📦</button>
+        <button class="navbtn" title="Configuración">⚙️</button>
+        <div class="spacer"></div>
+        <button class="navbtn" title="Ayuda">❔</button>
+      </aside>
     </mat-drawer>
 
     <div class="example-sidenav-content">
