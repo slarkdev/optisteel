@@ -14,5 +14,14 @@
     "changeOrigin": true,
     "logLevel": "debug",
     "pathRewrite": { "^/api/data": "/data" }
+  },
+
+  "/api": {
+    "target": "https://optisteel.ingaria.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/api": "" }
   }
+
 }

@@ -1,1 +1,113 @@
-<p>inventario works!</p>
+<div class="inv">
+  <!-- Título -->
+  <h1 class="page-title">Inventario</h1>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <label class="search" role="search">
+      <span class="icon">🔎</span>
+      <input
+        type="search"
+        placeholder="Buscar por perfil, material, calidad…"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange($event)"
+        aria-label="Buscar en inventario"
+      />
+    </label>
+
+    <label class="select">
+      <span class="txt">20 por página</span>
+      <select [(ngModel)]="pageSize" (ngModelChange)="goToPage(1)" aria-label="Filas por página">
+        <option [ngValue]="20">20 por página</option>
+        <option [ngValue]="50">50 por página</option>
+        <option [ngValue]="100">100 por página</option>
+      </select>
+      <span class="caret">▾</span>
+    </label>
+
+    <div class="filter" [attr.aria-expanded]="filtersOpen">
+      <button class="btn btn-filter" type="button" (click)="toggleFilters()">
+        <svg class="i"><use href="#i-filter" /></svg> Filtros
+      </button>
+      <div class="panel" *ngIf="filtersOpen" role="menu" aria-label="Filtros">
+        <h4>Filtrar por</h4>
+        <label class="frow">
+          <input class="cb" type="checkbox" [(ngModel)]="onlyAvailable" (ngModelChange)="applyFilters()" />
+          Sólo stock disponible
+        </label>
+        <label class="frow">
+          <input class="cb" type="checkbox" [(ngModel)]="hideZeroQty" (ngModelChange)="applyFilters()" />
+          Ocultar cantidad = 0
+        </label>
+        <label class="frow">
+          <input class="cb" type="checkbox" [(ngModel)]="materials.S275JR" (ngModelChange)="applyFilters()" />
+          Material S275JR
+        </label>
+        <label class="frow">
+          <input class="cb" type="checkbox" [(ngModel)]="materials.S235JR" (ngModelChange)="applyFilters()" />
+          Calidad S235JR
+        </label>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="button">+ Agregar desde archivo</button>
+    <button class="btn btn-muted" type="button" [disabled]="!anySelected()" (click)="deleteSelected()">Borrar selección</button>
+  </div>
+
+  <!-- Nota -->
+  <div class="note">(*) Los campos marcados con asterisco son obligatorios.</div>
+
+  <!-- Tabla -->
+  <section class="card" aria-label="Inventario">
+    <table class="table" role="grid">
+      <thead>
+        <tr>
+          <th>
+            <input
+              type="checkbox"
+              class="cb"
+              [checked]="masterChecked"
+              [indeterminate]="masterIndeterminate"
+              (change)="toggleAll($event)"
+              aria-label="Seleccionar todos"
+            />
+          </th>
+          <th>Perfil (*)</th>
+          <th>Calidad (*)</th>
+          <th>Longitud (*)</th>
+          <th>Cantidad (*)</th>
+          <th>Consumido</th>
+          <th>Longitud de pieza más larga</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row" *ngFor="let it of pagedItems; trackBy: trackById">
+          <td><input class="cb" type="checkbox" [checked]="selected.has(it.id)" (change)="toggleOne(it.id, $event)" /></td>
+          <td data-label="Perfil">{{ it.perfil }}</td>
+          <td data-label="Calidad">{{ it.calidad }}</td>
+          <td data-label="Longitud">{{ it.longitud | number:'1.0-0' }}</td>
+          <td data-label="Cantidad">{{ it.cantidad }}</td>
+          <td data-label="Consumido">{{ it.consumido }}</td>
+          <td data-label="Pieza más larga">{{ it.piezaMasLarga | number:'1.0-0' }}</td>
+        </tr>
+        <tr *ngIf="pagedItems.length === 0">
+          <td colspan="7" style="color:var(--muted);padding:20px">Sin resultados para tu búsqueda/filtros.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Footer / pager -->
+  <div class="tfoot" role="navigation" aria-label="Paginación">
+    <span class="range">{{ rangeStart }}–{{ rangeEnd }} de {{ filtered.length }}</span>
+    <div class="pager">
+      <button class="iconbtn" title="Anterior" (click)="prevPage()" [disabled]="page===1">◀</button>
+      <button class="iconbtn" title="Siguiente" (click)="nextPage()" [disabled]="page===totalPages">▶</button>
+    </div>
+  </div>
+
+  <!-- Sprite local para el ícono de filtros -->
+  <svg width="0" height="0" style="position:absolute">
+    <symbol id="i-filter" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h18v2H3zm4 6h10v2H7zm3 6h4v2h-4z"/></symbol>
+  </svg>
+</div>
