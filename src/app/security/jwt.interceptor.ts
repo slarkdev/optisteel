@@ -12,25 +12,6 @@ import { Observable } from 'rxjs';
 export class JwtInterceptor implements HttpInterceptor {
   constructor(private apiAuthService: ApiAuthService) {}
 
-  //   intercept(
-  //     request: HttpRequest<any>,
-  //     next: HttpHandler
-  //   ): Observable<HttpEvent<any>> {
-  //     // const usuario = this.apiAuthService.usuarioData;
-  //     const token = sessionStorage.getItem('access_token_optisteel');
-
-  //     if (token) {
-  //       // hay sesión: clonamos y agregamos el atributo authorization con nuestro token
-  //       request = request.clone({
-  //         setHeaders: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //     }
-
-  //     return next.handle(request);
-  //   }
-
   intercept(
     request: HttpRequest<any>,
     next: HttpHandler
@@ -52,3 +33,22 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(request);
   }
 }
+
+//   intercept(
+//     request: HttpRequest<any>,
+//     next: HttpHandler
+//   ): Observable<HttpEvent<any>> {
+//     // const usuario = this.apiAuthService.usuarioData;
+//     const token = sessionStorage.getItem('access_token_optisteel');
+
+//     if (token) {
+//       // hay sesión: clonamos y agregamos el atributo authorization con nuestro token
+//       request = request.clone({
+//         setHeaders: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+//     }
+
+//     return next.handle(request);
+//   }
