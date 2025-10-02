@@ -228,6 +228,6 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
 
   clickRow(element: any): void {
     console.log(element);
-    this.router.navigate(['home/lotes']);
+    this.router.navigate(['home/lotes'], { state: { data: element } });
   }
 }

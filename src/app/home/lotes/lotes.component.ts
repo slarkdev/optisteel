@@ -23,9 +23,9 @@ import { TablaComponent } from '../../shared/tabla/tabla.component';
   selector: 'app-lotes',
   templateUrl: './lotes.component.html',
   styleUrl: './lotes.component.scss',
-  standalone: false
+  standalone: false,
 })
-export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
+export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
   subscription = new Subject();
   usuarioLogeado: Usuario = this.apiAuthService.usuarioData;
 
@@ -38,7 +38,7 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
     'piezas_count',
     'cubiertos_count',
     'no_cubiertos_count',
-    'actions'
+    'actions',
   ];
   dataSource = new MatTableDataSource<Lotes>();
   selection = new SelectionModel<Lotes>(true, []);
@@ -81,7 +81,7 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
       key: 'no_cubiertos_count',
       tipo: 'numero',
       spanClase: 'chip orange text-align-right',
-    },    
+    },
     {
       header: 'Acciones',
       key: '',
@@ -89,6 +89,8 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
       spanClase: '',
     },
   ];
+
+  folder: any;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('tablaRef') tabla!: TablaComponent;
@@ -108,6 +110,10 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
   }
 
   ngOnInit(): void {
+    const element = history.state.data;
+    console.log('Elemento recibido:', element);
+    this.folder = element;
+    console.log(element);
     this.iniciar();
   }
 
@@ -124,26 +130,24 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
   }
 
   iniciar() {
-    console.log("_ID")
-    console.log(this.apiAuthService.usuarioData._id);
     const _idUser = this.apiAuthService.usuarioData._id;
-    console.log(_idUser);
-    const folderID = '68d4038efdb5289a63177008'; // Hardcode temporal
+    const folderID = this.folder._id;//'68d4038efdb5289a63177008'; // Hardcode temporal
 
     this.apiLotesService
       .getLotes(_idUser)
       .pipe(takeUntil(this.subscription))
       .subscribe((response) => {
         if (response !== null) {
-          console.log("RESPONSE:")
-          console.log(response);
-          
           // Filtrar por folderID
-          const lotesFiltrados = response.filter((lote: any) => lote.FolderID === folderID);
-          console.log("lotesFiltrados");
-          console.log(lotesFiltrados);
+          const lotesFiltrados = response.filter(
+            (lote: any) => lote.FolderID === folderID
+          );
           lotesFiltrados.forEach((lote: any) => {
-            const cubiertos = lote.unique_perfiles?.reduce((acc: number, perfil: any) => acc + perfil.nUsados, 0) || 0;
+            const cubiertos =
+              lote.unique_perfiles?.reduce(
+                (acc: number, perfil: any) => acc + perfil.nUsados,
+                0
+              ) || 0;
             lote.cubiertos_count = cubiertos;
             lote.no_cubiertos_count = lote.piezas_count - cubiertos;
           });
@@ -158,7 +162,7 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
     const datePart = today.toISOString().slice(0, 10);
     return `${datePart}`;
   };
-  
+
   getFormattedDateTime = (): string => {
     const today = new Date();
     const datePart = today.toISOString().slice(0, 10);
@@ -188,12 +192,12 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
           CreadoPor: this.usuarioLogeado.UserName,
           FechaCreacion: this.getFormattedDate(),
           UltimaEdicion: this.getFormattedDateTime(),
-          Organizacion: "Organizacion Ejemplo",
-          OrganizacionID: "67538203842272d6e79123db",
+          Organizacion: 'Organizacion Ejemplo',
+          OrganizacionID: '67538203842272d6e79123db',
           FolderID: '68d4038efdb5289a63177008', // Hardcode temporal
           cubiertos_count: 0,
-          id: "DASDASS",
-          no_cubiertos_count: 0, 
+          id: 'DASDASS',
+          no_cubiertos_count: 0,
           piezas_count: 0,
         };
 
@@ -236,7 +240,7 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
       },
     });
   }
-  
+
   borrarLote(): void {
     if (this.seleccionados.length === 0) {
       Swal.fire({
@@ -293,7 +297,6 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit{
       }
     });
   }
-  
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;
