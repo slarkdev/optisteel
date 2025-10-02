@@ -19,7 +19,7 @@ const httpOption = {
 })
 export class ApiAuthService {
   url: string = connection;
-  private readonly base = '/api';
+  // private readonly base = '/api';
   private readonly baseUrl = environment.apiUrl;
 
   // url: string = connection + 'users/';
@@ -94,7 +94,7 @@ export class ApiAuthService {
 
     if (token && !userData) {
       const decoded: any = jwtDecode(token);
-      this._http.get<Usuario>(`${this.base}/users/${decoded.email}`).subscribe({
+      this._http.get<Usuario>(`${this.url}/users/${decoded.email}`).subscribe({
         next: (user) => {
           this.usuarioSubject.next({ ...user, token });
         },

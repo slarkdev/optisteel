@@ -17,9 +17,9 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiProyectosService {
-   url: string = connection;
-  private readonly base = '/api'; // proxy a optisteel.ingaria.com
-   private readonly baseUrl = environment.apiUrl;
+  url: string = connection;
+  // private readonly base = '/api'; // proxy a optisteel.ingaria.com
+  private readonly baseUrl = environment.apiUrl;
 
   constructor(private _http: HttpClient) {}
 
@@ -28,17 +28,17 @@ export class ApiProyectosService {
   }
 
   addProyecto(proyecto: {}): Observable<Proyectos> {
-    return this._http.post<Proyectos>(`${this.url}/folders`, proyecto, httpOption);
+    return this._http.post<Proyectos>(
+      `${this.url}/folders`,
+      proyecto,
+      httpOption
+    );
   }
 
   deleteProyectos(ids: { FolderIDs: string[] }): Observable<any> {
-    return this._http.request<any>(
-      'delete',
-      'api/folders/delete-multiple',
-      {
-        body: ids,
-        ...httpOption,
-      }
-    );
+    return this._http.request<any>('delete', 'api/folders/delete-multiple', {
+      body: ids,
+      ...httpOption,
+    });
   }
 }
