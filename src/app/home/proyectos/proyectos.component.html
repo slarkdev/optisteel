@@ -2,96 +2,6 @@
   <h1 class="page-title">Proyectos</h1>
   <p class="subtitle">Proyecto seleccionado: <strong>Ninguno</strong></p>
 
-  <!-- Toolbar -->
-  <!-- <div class="toolbar">
-    <div class="search">
-      🔎
-      <input
-        type="search"
-        placeholder="Buscar proyectos o creadores…"
-        aria-label="Buscar"
-      />
-    </div>
-    <select
-      class="select"
-      aria-label="Filas por página"
-      (change)="onPageSizeChange($event)"
-    >
-      <option value="5">5 por página</option>
-      <option value="10">10 por página</option>
-      <option value="25">25 por página</option>
-      <option value="50">50 por página</option>
-    </select>
-    <div class="toolbar-actions">
-      <button class="btn btn-primary">+ Crear proyecto</button>
-      <button class="btn btn-muted">🗑️ Borrar proyecto</button>
-    </div>
-  </div> -->
-
-  <!-- <section class="card-table">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>
-            <input
-              type="checkbox"
-              class="cb"
-              [checked]="isAllSelected()"
-              (change)="toggleAll($event)"
-            />
-          </th>
-          <th>Nombre del proyecto</th>
-          <th>Fecha de creación</th>
-          <th>Última edición</th>
-          <th>Creador</th>
-          <th>#Trabajos</th>
-          <th>#Piezas</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let element of dataSource.filteredData" class="row">
-          <td>
-            <input
-              class="cb"
-              type="checkbox"
-              [(ngModel)]="element.seleccionado"
-            />
-          </td>
-          <td>
-            <strong>{{ element.name }}</strong>
-          </td>
-          <td>{{ element.createdAt }}</td>
-          <td>{{ element.updatedAt }}</td>
-          <td>{{ element.createdBy }}</td>
-          <td>
-            <span class="chip">{{ element.trabajos_count }}</span>
-          </td>
-          <td>
-            <span class="chip orange"> {{ element.piezas_count }}</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <div class="tfoot">
-    <span style="color: var(--muted); font-weight: 600">
-      {{ rangoTexto }}
-    </span>
-    <div class="pager">
-      <button class="iconbtn" (click)="prevPage()" [disabled]="pageIndex === 0">
-        ◀
-      </button>
-      <button
-        class="iconbtn"
-        (click)="nextPage()"
-        [disabled]="isNextDisabled()"
-      >
-        ▶
-      </button>
-    </div>
-  </div> -->
-
   <app-tabla
     #tablaRef
     [data]="dataSource.data"
@@ -102,7 +12,7 @@
   >
     <div tabla-acciones class="toolbar-actions">
       <button (click)="crearProyecto()" class="btn btn-primary">
-        + ADicionar proyecto
+        + Crear proyecto
       </button>
       <button (click)="borrarProyecto()" class="btn btn-muted">
         🗑️ Borrar proyecto

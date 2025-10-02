@@ -1,4 +1,6 @@
 <div style="display: grid; gap: 12px">
+
+  <!-- toolbar tabla -->
   <div class="toolbar">
     <div class="search">
       🔎
@@ -10,6 +12,7 @@
         (ngModelChange)="filtrarTabla()"
       />
     </div>
+
     <select
       class="select"
       aria-label="Filas por página"
@@ -19,63 +22,71 @@
       <option value="25">25 por página</option>
       <option value="50">50 por página</option>
     </select>
-    <div class="toolbar-actions">
+
+    <div >
       <ng-content select="[tabla-acciones]"></ng-content>
     </div>
   </div>
 
+  <!-- tabla -->
   <section class="card-table">
-    <table class="table">
-      <thead>
-        <tr>
-          <!-- Checkbox para seleccionar todos -->
-          <th>
-            <input
-              type="checkbox"
-              class="cb"
-              [checked]="isAllSelected()"
-              (change)="toggleAll($event)"
-            />
-          </th>
-          <th
-            *ngFor="let col of columnas"
-            (click)="ordenarPor(col.key)"
-            class="ordenable"
-          >
-            {{ col.header }}
-            <span *ngIf="columnaOrden === col.key">
-              {{ ordenAscendente ? "▲" : "▼" }}
-            </span>
-          </th>
-        </tr>
-      </thead>
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <!-- Checkbox para seleccionar todos -->
+            <th>
+              <input
+                type="checkbox"
+                class="cb"
+                [checked]="isAllSelected()"
+                (change)="toggleAll($event)"
+              />
+            </th>
+            <th
+              *ngFor="let col of columnas"
+              (click)="ordenarPor(col.key)"
+              class="ordenable"
+            >
+              {{ col.header }}
+              <span *ngIf="columnaOrden === col.key">
+                {{ ordenAscendente ? "▲" : "▼" }}
+              </span>
+            </th>
+          </tr>
+        </thead>
 
-      <tbody>
-        <tr *ngFor="let element of pagedData" class="row" (click)="filaClick.emit(element)"
->
-          <!-- Checkbox por fila -->
-          <td>
-            <input
-              class="cb"
-              type="checkbox"
-              [(ngModel)]="element.seleccionado"
-              (change)="emitSeleccionados()"
-              (click)="$event.stopPropagation()"
-            />
-          </td>
-          <td
-            *ngFor="let col of columnas"
-            [style.text-align]="col.tipo === 'numero' ? 'right' : 'left'"
+        <tbody>
+          <tr
+            *ngFor="let element of pagedData"
+            class="row"
+            (click)="filaClick.emit(element)"
           >
-            <span [ngClass]="col.spanClase">
-              {{ formatearDato(col, element[col.key]) }}
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <!-- Checkbox por fila -->
+            <td>
+              <input
+                class="cb"
+                type="checkbox"
+                [(ngModel)]="element.seleccionado"
+                (change)="emitSeleccionados()"
+                (click)="$event.stopPropagation()"
+              />
+            </td>
+            <td
+              *ngFor="let col of columnas"
+              [style.text-align]="col.tipo === 'numero' ? 'right' : 'left'"
+            >
+              <span [ngClass]="col.spanClase">
+                {{ formatearDato(col, element[col.key]) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
+  <!-- paginacion -->
   <div class="tfoot">
     <span style="color: var(--muted); font-weight: 600">
       {{ rangoTexto }}

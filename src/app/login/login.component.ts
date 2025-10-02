@@ -17,7 +17,8 @@ export class LoginComponent {
   enabledLogin: boolean = true;
   loginForm: FormGroup;
   hide = true;
-  
+
+  loginErrorMessage: string | null = null;
 
   constructor(
     private form: FormBuilder,
@@ -25,7 +26,7 @@ export class LoginComponent {
     private router: Router
   ) {
     this.loginForm = this.form.group({
-      username: ['', Validators.required],
+      username: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
   }
@@ -35,8 +36,10 @@ export class LoginComponent {
     event.stopPropagation();
   }
 
-
   login(): void {
+    this.loginForm.get('username')?.markAllAsTouched();
+    this.loginForm.get('password')?.markAllAsTouched();
+
     if (this.loginForm.valid) {
       this.enabledLogin = false;
       const user: Login = {
@@ -50,30 +53,21 @@ export class LoginComponent {
       // llamar al servicio
       this.apiAuthService.login(user).subscribe({
         next: (response: any) => {
-          if (response) {            
-           // this.enabledLogin = true;
-            this.router.navigate(['home']);
-            
-          } else {
-            Error.showError(response);
-          }                   
-          this.enabledLogin = true;
-          //this.loading = false;
+          this.router.navigate(['home']);
+          this.loginErrorMessage = null;
         },
         error: (response: any) => {
-          //this.loading = false;
-          Error.showError(response);
+          const msg = Error.getMessage(response);
+
+          // Mostrar inline si es 401 o 400
+          if ([400, 401].includes(response.status)) {
+            this.loginErrorMessage = msg;
+          } else {
+            Error.showError(response); // SweetAlert para errores graves
+          }
+
           this.enabledLogin = true;
         },
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Complete todos los datos',
-        showConfirmButton: true,
-        confirmButtonColor: '#f8a166',
-        timer: 3000,
       });
     }
   }

@@ -15,15 +15,17 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiProyectosService {
-  url: string = connection + 'folders/';
+  // url: string = connection + 'folders/';
+  private readonly base = '/api'; // proxy a optisteel.ingaria.com
+
   constructor(private _http: HttpClient) {}
 
   getProyectos(user_ID: string): Observable<any> {
-    return this._http.get<any>(this.url + user_ID);
+    return this._http.get<any>('api/folders/' + user_ID);
   }
 
   addProyecto(proyecto: {}): Observable<Proyectos> {
-    return this._http.post<Proyectos>('api/data/folders', proyecto, httpOption);
+    return this._http.post<Proyectos>(`${this.base}/folders`, proyecto, httpOption);
   }
 
   deleteProyectos(ids: { FolderIDs: string[] }): Observable<any> {

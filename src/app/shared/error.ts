@@ -7,22 +7,32 @@ import Swal from 'sweetalert2';
 export class Error {
   constructor() {}
 
-  public static showError(response: any) {
-    console.log(response);
-
-    let titulo = 'Ups!';
-    let msj = '';
-
-    if (response.status !== 200) {
-      titulo = response.statusText ? response.statusText : 'Ups!';
-      msj = response.error.message;
+  public static getMessage(response: any): string {
+    switch (response.status) {
+      case 400:
+        return 'Solicitud inválida. Verifica los campos e intenta nuevamente.';
+      case 401:
+        return 'Usuario o contraseña incorrectos.';
+      case 403:
+        return 'Acceso denegado. No tienes permisos para ingresar.';
+      case 404:
+        return 'No se pudo conectar con el servidor. Intenta más tarde.';
+      case 500:
+        return 'Error interno del servidor. Intenta nuevamente más tarde.';
+      default:
+        return (
+          response.error?.message ||
+          'Ocurrió un error inesperado. Intenta nuevamente.'
+        );
     }
+  }
 
+  public static showError(response: any) {
+    const msj = this.getMessage(response);
     Swal.fire({
       icon: 'error',
-      title: titulo,
+      title: 'Ups!',
       text: msj,
-      showConfirmButton: true,
       confirmButtonColor: '#f8a166',
       timer: 3000,
     });

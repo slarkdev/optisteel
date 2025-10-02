@@ -1,62 +1,136 @@
- <div class="wrap">
-    <div class="stack">
-      <!-- Brand -->
-      <div class="brand" aria-label="OPTISTEEL">
-        <img src="optLogo.svg" alt="OPTISTEEL Logo" class="brand-icon">
-        OPTISTEEL
-      </div>
-
-      <!-- Card -->
-      <section class="card-login" aria-labelledby="login-title">
-        <h1 class="title" id="login-title">Bienvenido</h1>
-        <p class="subtitle">Inicia sesión para continuar con tu cuenta</p>
-
-        <form [formGroup]="loginForm" (ngSubmit)="login()" class="form">
-          <!-- Usuario -->
-          <div class="field">
-            <label class="label" for="usuario">Usuario</label>
-            <div class="control">
-              <!-- envelope -->
-              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-                <path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 4-8 5L4 8V6l8 5 8-5z"/>
-              </svg>
-              <input formControlName="username" type="email" autocomplete="username" placeholder="ejemplo@correo.com" required />
-            </div>
-          </div>
-
-          <!-- Contraseña -->
-          <div class="field">
-            <label class="label" for="password">Contraseña</label>
-            <div class="control">
-              <!-- lock -->
-              <!--<span matTextPrefix> <mat-icon>lock</mat-icon> </span> -->
-              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12,17A2,2 0 0,1 10,15A2,2 0 0,1 12,13A2,2 0 0,1 14,15A2,2 0 0,1 12,17M17,8V7A5,5 0 0,0 7,7V8A2,2 0 0,0 5,10V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V10A2,2 0 0,0 17,8M9,7A3,3 0 0,1 15,7V8H9V7Z"/></svg>
-            
-              <input formControlName="password" [type]="hide ? 'password' : 'text'" autocomplete="current-password" placeholder="••••••••" required />
-              <button type="button" matIconButton matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">  <mat-icon style="font-size: 20px !important;">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-              </button>  
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div class="actions">
-            <div class="actions">
-              <div class="links-row">
-                <a class="link" href="#">¿Olvidaste tu contraseña?</a>
-              </div>
-              
-              <button class="btn" type="submit" aria-label="Iniciar sesión" [disabled]="!enabledLogin">
-                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                  <path fill="currentColor" d="M4 11h12.17l-4.59-4.59L13 5l7 7-7 7-1.41-1.41L16.17 13H4z"/>
-                </svg>
-                Iniciar sesión
-              </button>
-
-            </div>
-          </div>
-        </form>
-
-        <p class="footer">© 2025 OPTISTEEL. Todos los derechos reservados.</p>
-      </section>
+<div class="wrap">
+  <div class="stack">
+    <!-- Brand -->
+    <div class="brand" aria-label="OPTISTEEL">
+      <img src="optLogo.svg" alt="OPTISTEEL Logo" class="brand-icon" />
+      OPTISTEEL
     </div>
+
+    <!-- Card -->
+    <section class="card-login" aria-labelledby="login-title">
+      <h1 class="title" id="login-title">Bienvenido</h1>
+      <p class="subtitle">Inicia sesión para continuar con tu cuenta</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="login()" class="form">
+        <!-- Usuario -->
+        <div class="field">
+          <label class="label" for="usuario">Usuario</label>
+          <div class="control">
+            <!-- envelope -->
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 4-8 5L4 8V6l8 5 8-5z"
+              />
+            </svg>
+            <input
+              formControlName="username"
+              type="email"
+              autocomplete="username"
+              placeholder="ejemplo@correo.com"
+              required
+            />
+          </div>
+          <!-- Mensaje de validación -->
+          <div
+            class="error"
+            *ngIf="
+              loginForm.get('username')?.invalid &&
+              loginForm.get('username')?.touched
+            "
+          >
+            <span *ngIf="loginForm.get('username')?.hasError('required')">
+              Por favor, complete el usuario.
+            </span>
+            <span *ngIf="loginForm.get('username')?.hasError('email')">
+              El formato del correo no es válido.
+            </span>
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="field">
+          <label class="label" for="password">Contraseña</label>
+          <div class="control">
+            <!-- lock -->
+            <!--<span matTextPrefix> <mat-icon>lock</mat-icon> </span> -->
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12,17A2,2 0 0,1 10,15A2,2 0 0,1 12,13A2,2 0 0,1 14,15A2,2 0 0,1 12,17M17,8V7A5,5 0 0,0 7,7V8A2,2 0 0,0 5,10V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V10A2,2 0 0,0 17,8M9,7A3,3 0 0,1 15,7V8H9V7Z"
+              />
+            </svg>
+
+            <input
+              formControlName="password"
+              [type]="hide ? 'password' : 'text'"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              required
+            />
+            <button
+              type="button"
+              matIconButton
+              matSuffix
+              (click)="clickEvent($event)"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hide"
+            >
+              <mat-icon style="font-size: 20px !important">{{
+                hide ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+          </div>
+
+          <div
+            class="error"
+            *ngIf="
+              loginForm.get('password')?.invalid &&
+              loginForm.get('password')?.touched
+            "
+          >
+            <span *ngIf="loginForm.get('password')?.hasError('required')">
+              Por favor, complete el password.
+            </span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <div class="actions">
+            <div class="links-row">
+              <a class="link" href="#">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <button
+              class="btn"
+              type="submit"
+              aria-label="Iniciar sesión"
+              [disabled]="!enabledLogin"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                aria-hidden="true"
+              >
+                <path
+                  fill="currentColor"
+                  d="M4 11h12.17l-4.59-4.59L13 5l7 7-7 7-1.41-1.41L16.17 13H4z"
+                />
+              </svg>
+              Iniciar sesión
+            </button>
+
+            <div *ngIf="loginErrorMessage" class="login-error">
+              {{ loginErrorMessage }}
+            </div>
+
+          </div>
+        </div>
+      </form>
+
+      <p class="footer">© 2025 OPTISTEEL. Todos los derechos reservados.</p>
+    </section>
   </div>
+</div>

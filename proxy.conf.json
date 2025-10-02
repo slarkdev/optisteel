@@ -1,19 +1,19 @@
 {
   
-  "/api/login": {
+  "/api-login": {
     "target": "https://xfzt4cg93k.execute-api.us-east-2.amazonaws.com/dev/auth",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
-    "pathRewrite": { "^/api/login": "" }
+    "pathRewrite": { "^/api-login": "" }
   },
 
-  "/api/data": {
+  "/data": {
     "target": "https://optisteel.ingaria.com/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
-    "pathRewrite": { "^/api/data": "" }
+    "pathRewrite": { "^/data": "" }
   },
 
   "/api": {

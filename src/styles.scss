@@ -108,6 +108,12 @@ body {
     ),
     linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
 }
+/* Pantallas pequeñas (móviles) */
+@media (max-width: 600px) {
+  html {
+    font-size: 14px;
+  }
+}
 
 /* ===== LAYOUT ===== */
 .wrap {
@@ -398,6 +404,12 @@ body {
   font-weight: 600;
   font-size: 0.9rem;
 }
+@media (max-width: 950px) {
+  .hint {
+    display: none;
+  }
+}
+
 
 /* Header */
 .page-title {
@@ -415,16 +427,64 @@ body {
 }
 
 /* Toolbar */
+// .toolbar {
+//   max-width: var(--content-max);
+//   margin: 0 auto;
+//   display: flex;
+//   gap: 12px;
+//   align-items: center;
+//   flex-wrap: nowrap; /* ⬅️ no wrap */
+// }
+
 .toolbar {
   max-width: var(--content-max);
-  margin: 0 auto;
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
-  flex-wrap: nowrap; /* ⬅️ no wrap */
+  justify-content: space-between;
+}
+
+.toolbar > * {
+  flex: 1 1 auto;
+  min-width: 200px;
+}
+
+@media (max-width: 600px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tfoot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .pager {
+    justify-content: center;
+  }
+  .search {
+    flex: 1 1 auto !important;
+  }
+  .toolbar-actions {
+    justify-content: center;
+  }
+}
+@media (min-width: 600px) and (max-width: 1050px) {
+  .toolbar-actions {
+    // flex: 1 1 50% !important;
+    justify-content: center;
+  }
+  .toolbar-actions > * {
+    flex: 1 1 50% !important;
+    min-width: 240px; /* opcional para mantener legibilidad */
+  }
 }
 .search {
   flex: 1 1 240px;
+  // max-width: 400px;
   min-width: 0; /* ⬅️ puede encogerse */
   display: flex;
   align-items: center;
@@ -493,10 +553,14 @@ body {
   overflow: hidden;
   max-width: var(--content-max);
   margin: 0 auto;
+  width: 100%;
 }
 .table {
+  min-width: 600px; /* o más, según tus columnas */
+  border-collapse: collapse;
+
   width: 100%;
-  border-collapse: separate;
+  // border-collapse: separate;
   border-spacing: 0;
   font-size: 0.95rem;
 }
@@ -537,6 +601,11 @@ td:nth-child(4) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
 }
 
 th.ordenable {
@@ -644,4 +713,21 @@ th.ordenable:hover {
   border: none !important;
 }
 
-/***************** ICONOS  ****************/
+/***************** ERRORES  ****************/
+
+.error {
+  color: #e53935;
+  font-size: 0.875rem;
+  margin-left: 1.5rem;
+  margin-top: -0.5rem;
+  font-weight: 400;
+}
+
+.login-error {
+  background-color: #fdecea;
+  color: #c0392b;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+  text-align: center;
+}

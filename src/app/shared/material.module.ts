@@ -14,7 +14,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 
-import { SpanishPaginatorIntl } from '../shared/tabla'; // ajusta la ruta
 import { TablaComponent } from './tabla/tabla.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -42,6 +41,6 @@ import { FormsModule } from '@angular/forms';
     MatChipsModule,
     TablaComponent
   ],
-  providers: [{ provide: MatPaginatorIntl, useClass: SpanishPaginatorIntl }],
+  providers: [],
 })
 export class MaterialModule {}

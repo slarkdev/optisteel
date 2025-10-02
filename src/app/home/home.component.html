@@ -1,15 +1,22 @@
 <div class="container">
   <!-- Barra lateral fija -->
   <mat-drawer-container autosize>
-    <mat-drawer #drawer class="ancho-sidenav" mode="side" opened>
+    <mat-drawer
+      #drawer
+      class="ancho-sidenav"
+      [mode]="drawerMode"
+      [opened]="drawerOpened"
+      position="start"
+    >
       <aside class="sidebar" aria-label="Navegación">
         <div class="dot" title="OPTISTEEL">A</div>
-        <button class="navbtn" title="Proyectos">📁</button>
-        <button class="navbtn" title="Datos">📄</button>
-        <button class="navbtn" title="Inventario">📦</button>
-        <button class="navbtn" title="Configuración">⚙️</button>
+        <button class="navbtn" title="Proyectos" [routerLink]="['./proyectos']" >📁</button>
+        <button class="navbtn" title="Datos" [routerLink]="['./datos']">📄</button>
+        <button class="navbtn" title="Inventario" [routerLink]="['./inventario']">📦</button>
+        <button class="navbtn" title="Configuración" [routerLink]="['./configuracion']">⚙️</button>
         <div class="spacer"></div>
-        <button class="navbtn" title="Ayuda">❔</button>
+        <button class="navbtn" title="Ayuda" [routerLink]="['./ayuda']">❔</button>
+        <button class="navbtn" title="Salir" (click)="logout()">🔚</button>
       </aside>
     </mat-drawer>
 
@@ -35,9 +42,19 @@
           </div>
 
           <span class="spacer"></span>
-          <span class="hint">Gestiona proyectos del proyecto seleccionado.</span>
+          <span class="hint"
+            >Gestiona proyectos del proyecto seleccionado.</span
+          >
 
-          <button matIconButton [matMenuTriggerFor]="menuUser">
+          <button
+            *ngIf="drawerMode === 'over'"
+            mat-icon-button
+            (click)="drawer.toggle()"
+          >
+            <mat-icon>menu</mat-icon>
+          </button>
+
+          <!-- <button matIconButton [matMenuTriggerFor]="menuUser">
             <mat-icon>account_circle</mat-icon>
           </button>
 
@@ -46,13 +63,15 @@
               <mat-icon>exit_to_app</mat-icon>
               <span>Cerrar Sesión</span>
             </button>
-          </mat-menu>
+          </mat-menu> -->
         </div>
       </div>
 
       <!-- Contenido debajo del toolbar -->
       <main class="main">
-        <router-outlet></router-outlet>
+        <router-outlet
+          (activate)="drawerMode === 'over' ? drawer.close() : null"
+        ></router-outlet>
       </main>
     </div>
   </mat-drawer-container>

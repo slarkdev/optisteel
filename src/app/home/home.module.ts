@@ -21,7 +21,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { MatPaginatorIntl } from '@angular/material/paginator';
-import { SpanishPaginatorIntl } from '../shared/tabla'; // ajusta la ruta
 
 import { MAT_PAGINATOR_INTL_PROVIDER } from '@angular/material/paginator';
 import { LOCALE_ID } from '@angular/core';
@@ -49,7 +48,6 @@ import { registerLocaleData } from '@angular/common';
     MaterialModule,
   ],
   providers: [
-    { provide: MatPaginatorIntl, useValue: new SpanishPaginatorIntl() },
     { provide: LOCALE_ID, useValue: 'es' },
     MAT_PAGINATOR_INTL_PROVIDER,
     provideHttpClient(withInterceptorsFromDi()),
