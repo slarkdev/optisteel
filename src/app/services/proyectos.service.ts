@@ -14,19 +14,28 @@ const httpOption = {
 @Injectable({
   providedIn: 'root',
 })
-
 export class ApiProyectosService {
-  url: string = connection + 'folders/';
+  // url: string = connection + 'folders/';
+  private readonly base = '/api'; // proxy a optisteel.ingaria.com
+
   constructor(private _http: HttpClient) {}
 
   getProyectos(user_ID: string): Observable<any> {
-    return this._http.get<any>(this.url + user_ID);
+    return this._http.get<any>('api/folders/' + user_ID);
   }
 
-  addProyecto(user_ID: string, username: string, nombre:string): Observable<Proyectos> {
-    return this._http.post<Proyectos>(this.url, [user_ID, username, nombre], httpOption);
+  addProyecto(proyecto: {}): Observable<Proyectos> {
+    return this._http.post<Proyectos>(`${this.base}/folders`, proyecto, httpOption);
   }
 
-
-
+  deleteProyectos(ids: { FolderIDs: string[] }): Observable<any> {
+    return this._http.request<any>(
+      'delete',
+      'api/data/folders/delete-multiple',
+      {
+        body: ids,
+        ...httpOption,
+      }
+    );
+  }
 }

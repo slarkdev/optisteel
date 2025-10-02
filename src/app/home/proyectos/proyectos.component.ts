@@ -7,15 +7,18 @@ import {
 } from '@angular/core';
 import { ApiAuthService } from '../../services/apiauth.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Auth } from '../../models/auth';
 import { ApiProyectosService } from '../../services/proyectos.service';
 import { Usuario } from '../../models/usuario';
 import { Proyectos } from '../../models/proyectos';
+import Swal from 'sweetalert2';
+import { Error } from '../../shared/error';
+import { TablaComponent } from '../../shared/tabla/tabla.component';
 
 @Component({
   selector: 'app-proyectos',
@@ -38,22 +41,52 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   ];
   dataSource = new MatTableDataSource<Proyectos>();
   selection = new SelectionModel<Proyectos>(true, []);
+  seleccionados: any[] = []; // te devuelve todos los proyectos que hayan sido seleccionados usando el checkbox
 
+  columnasTabla = [
+    {
+      header: 'Nombre del proyecto',
+      key: 'name',
+      tipo: 'texto',
+      spanClase: '',
+    },
+    {
+      header: 'Fecha de creación',
+      key: 'createdAt',
+      tipo: 'fecha',
+      spanClase: '',
+    },
+    {
+      header: 'Última edición',
+      key: 'updatedAt',
+      tipo: 'fecha',
+      spanClase: '',
+    },
+    { header: 'Creador', key: 'createdBy', tipo: 'texto', spanClase: '' },
+    {
+      header: '#Trabajos',
+      key: 'trabajos_count',
+      tipo: 'numero',
+      spanClase: 'chip text-align-right',
+    },
+    {
+      header: '#Piezas',
+      key: 'piezas_count',
+      tipo: 'numero',
+      spanClase: 'chip orange text-align-right',
+    },
+  ];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('tablaRef') tabla!: TablaComponent;
 
+  pageSize = 5;
+  pageIndex = 0;
   constructor(
     private apiAuthService: ApiAuthService,
     private apiProyectoService: ApiProyectosService,
     private router: Router,
-    private route: ActivatedRoute,
-    private paginatorIntl: MatPaginatorIntl
-  ) {
-    // this.paginatorIntl.itemsPerPageLabel = 'Ítems por página';
-    // this.paginatorIntl.nextPageLabel = 'Siguiente página';
-    // this.paginatorIntl.previousPageLabel = 'Página anterior';
-    // this.paginatorIntl.firstPageLabel = 'Primera página';
-    // this.paginatorIntl.lastPageLabel = 'Última página';
-  }
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.iniciar();
@@ -68,7 +101,6 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.dataSource) {
       this.dataSource.paginator = this.paginator;
     }
-    this.paginatorIntl.changes.next(); // ✅ aquí ya está todo enlazado
   }
 
   iniciar() {
@@ -79,37 +111,136 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.subscription))
       .subscribe((response) => {
         if (response !== null) {
-          console.log(response);
-
           this.dataSource = new MatTableDataSource<Proyectos>(response);
           this.dataSource.paginator = this.paginator;
+          //this.updatePage();
         }
       });
   }
 
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
+  crearProyecto() {
+    Swal.fire({
+      title: 'Ingrese el nombre del Folder',
+      input: 'text',
+      inputAttributes: { autocapitalize: 'off' },
+      showCancelButton: true,
+      confirmButtonText: 'Crear',
+      confirmButtonColor: '#f8a166',
+      showLoaderOnConfirm: true,
+      preConfirm: (nombreProyecto) => {
+        const nombre = nombreProyecto?.trim();
+        if (!nombre) {
+          Swal.showValidationMessage('Ingrese un nombre de proyecto');
+          return;
+        }
+
+        const proyecto = {
+          name: nombre,
+          userId: this.usuarioLogeado._id,
+          userName: this.usuarioLogeado.UserName,
+        };
+
+        return this.apiProyectoService
+          .addProyecto(proyecto)
+          .pipe(take(1))
+          .toPromise()
+          .then((response: any) => {
+            if (!response) {
+              Swal.showValidationMessage(
+                'Ocurrió un error, inténtelo más tarde'
+              );
+              return;
+            }
+
+            Swal.fire({
+              position: 'top-end',
+              icon: 'success',
+              title: 'Proyecto Creado',
+              showConfirmButton: false,
+              timer: 3000,
+            });
+
+            const proyectoConCamposNumericos = {
+              ...response,
+              piezas_count: response.piezas_count ?? 0,
+              trabajos_count: response.trabajos_count ?? 0,
+            };
+
+            //this.router.navigate(['home/proyectos']);
+            this.dataSource.data = [
+              ...this.dataSource.data,
+              proyectoConCamposNumericos,
+            ];
+            this.tabla.filtro = '';
+          })
+          .catch(() => {
+            Swal.showValidationMessage('Ocurrió un error, inténtelo más tarde');
+          });
+      },
+    });
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  toggleAllRows() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
+  borrarProyecto(): void {
+    if (this.seleccionados.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin selección',
+        text: 'No se ha seleccionado ningún folder para eliminar.',
+        confirmButtonColor: '#f8a166',
+      });
       return;
     }
 
-    this.selection.select(...this.dataSource.data);
+    Swal.fire({
+      title: '¿Eliminar los folders seleccionados?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#f8a166',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const ids = {
+          FolderIDs: this.seleccionados.map((p) => p._id),
+        };
+
+        this.apiProyectoService.deleteProyectos(ids).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminado',
+              text: 'Los proyectos fueron eliminados correctamente.',
+              timer: 3000,
+              showConfirmButton: false,
+              position: 'top-end',
+            });
+
+            // Actualiza la tabla}
+            this.dataSource.data = this.dataSource.data.filter(
+              (proyecto) => !ids.FolderIDs.includes(proyecto._id)
+            );
+
+            this.seleccionados = [];
+          },
+          error: () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error al eliminar los proyectos.',
+              confirmButtonColor: '#f8a166',
+            });
+          },
+        });
+      }
+    });
   }
 
-  /** The label for the checkbox on the passed row */
-  // checkboxLabel(row?: Proyectos): string {
-  //   if (!row) {
-  //     return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-  //   }
-  //   return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${
-  //     row.position + 1
-  //   }`;
-  // }
+  actualizarSeleccionados(seleccionados: any[]): void {
+    this.seleccionados = seleccionados;
+  }
+
+  clickRow(element: any): void {
+    console.log(element);
+  }
 }
