@@ -12,12 +12,10 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { Auth } from '../../models/auth';
 import { ApiProyectosService } from '../../services/proyectos.service';
 import { Usuario } from '../../models/usuario';
 import { Proyectos } from '../../models/proyectos';
 import Swal from 'sweetalert2';
-import { Error } from '../../shared/error';
 import { TablaComponent } from '../../shared/tabla/tabla.component';
 
 @Component({

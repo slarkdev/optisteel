@@ -6,6 +6,7 @@ import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Login } from '../models/login';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../environments/environment';
+import { connection } from '../security/production';
 
 const httpOption = {
   headers: new HttpHeaders({
@@ -17,6 +18,7 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiAuthService {
+  url: string = connection;
   private readonly base = '/api';
   private readonly baseUrl = environment.apiUrl;
 
@@ -48,14 +50,19 @@ export class ApiAuthService {
       .pipe(
         switchMap((res) => {
           const decoded: any = jwtDecode(res.token);
-          return this._http.get<Usuario>(`${this.baseUrl}/users/${decoded.email}`).pipe(
-            tap((user: Usuario) => {
-              sessionStorage.setItem('access_token_optisteel', res.token);
-              sessionStorage.setItem('usuario_optisteel', JSON.stringify(user));
+          return this._http
+            .get<Usuario>(`${this.url}/users/${decoded.email}`)
+            .pipe(
+              tap((user: Usuario) => {
+                sessionStorage.setItem('access_token_optisteel', res.token);
+                sessionStorage.setItem(
+                  'usuario_optisteel',
+                  JSON.stringify(user)
+                );
 
-              this.usuarioSubject.next({ ...user, token: res.token });
-            })
-          );
+                this.usuarioSubject.next({ ...user, token: res.token });
+              })
+            );
         }),
         catchError((err) =>
           throwError(() => {
@@ -70,7 +77,6 @@ export class ApiAuthService {
     sessionStorage.removeItem('usuario_optisteel');
     this.isLogin = false;
     this.usuarioSubject.next(null);
-
   }
 
   initializeSession(): void {
@@ -105,7 +111,11 @@ export class ApiAuthService {
   }
 
   revokeToken(): Observable<any> {
-    const refreshToken = sessionStorage.getItem('access_token_optisteel'); 
-    return this._http.post('/api/revoke-token', { token: refreshToken }, httpOption);
+    const refreshToken = sessionStorage.getItem('access_token_optisteel');
+    return this._http.post(
+      '/api/revoke-token',
+      { token: refreshToken },
+      httpOption
+    );
   }
 }
