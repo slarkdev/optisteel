@@ -4,13 +4,8 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { Usuario } from '../models/usuario';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Login } from '../models/login';
-import { connection } from '../security/production';
 import { jwtDecode } from 'jwt-decode';
-import { environment } from '../shared/environment';
-import { Auth } from '../models/auth';
-import { LoginComponent } from '../login/login.component';
-
-
+import { environment } from '../../environments/environment';
 
 const httpOption = {
   headers: new HttpHeaders({
