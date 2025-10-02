@@ -45,7 +45,7 @@ export class ApiAuthService {
 
   login(login: Login) {
     return this._http
-      .post<{ token: string }>('/api-login', login, httpOption)
+      .post<{ token: string }>('/api/login', login, httpOption)
       .pipe(
         switchMap((res) => {
           const decoded: any = jwtDecode(res.token);

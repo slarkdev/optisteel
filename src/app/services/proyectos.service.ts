@@ -31,7 +31,7 @@ export class ApiProyectosService {
   deleteProyectos(ids: { FolderIDs: string[] }): Observable<any> {
     return this._http.request<any>(
       'delete',
-      'api/data/folders/delete-multiple',
+      'api/folders/delete-multiple',
       {
         body: ids,
         ...httpOption,

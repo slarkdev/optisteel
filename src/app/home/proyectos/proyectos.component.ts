@@ -222,6 +222,7 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
             );
 
             this.seleccionados = [];
+            this.tabla.filtro = '';
           },
           error: () => {
             Swal.fire({
