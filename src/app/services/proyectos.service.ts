@@ -5,6 +5,8 @@ import { Response } from '../models/response';
 import { Proyectos } from '../models/proyectos';
 import { connection } from '../security/production';
 
+import { environment } from '../../environments/environment';
+
 const httpOption = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json',
@@ -17,15 +19,16 @@ const httpOption = {
 export class ApiProyectosService {
   // url: string = connection + 'folders/';
   private readonly base = '/api'; // proxy a optisteel.ingaria.com
+   private readonly baseUrl = environment.apiUrl;
 
   constructor(private _http: HttpClient) {}
 
   getProyectos(user_ID: string): Observable<any> {
-    return this._http.get<any>('api/folders/' + user_ID);
+    return this._http.get<any>(`${this.baseUrl}/folders/` + user_ID);
   }
 
   addProyecto(proyecto: {}): Observable<Proyectos> {
-    return this._http.post<Proyectos>(`${this.base}/folders`, proyecto, httpOption);
+    return this._http.post<Proyectos>(`${this.baseUrl}/folders`, proyecto, httpOption);
   }
 
   deleteProyectos(ids: { FolderIDs: string[] }): Observable<any> {
