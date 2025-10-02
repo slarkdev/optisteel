@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'url'
+  apiUrl: 'https://angular-proxy-nu.vercel.app/api'
 };

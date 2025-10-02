@@ -10,6 +10,8 @@ import { environment } from '../shared/environment';
 import { Auth } from '../models/auth';
 import { LoginComponent } from '../login/login.component';
 
+
+
 const httpOption = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json',
@@ -21,6 +23,8 @@ const httpOption = {
 })
 export class ApiAuthService {
   private readonly base = '/api';
+  private readonly baseUrl = environment.apiUrl;
+
   // url: string = connection + 'users/';
   isLogin = false;
 
@@ -45,11 +49,11 @@ export class ApiAuthService {
 
   login(login: Login) {
     return this._http
-      .post<{ token: string }>('/api/login', login, httpOption)
+      .post<{ token: string }>(`${this.baseUrl}/login`, login, httpOption)
       .pipe(
         switchMap((res) => {
           const decoded: any = jwtDecode(res.token);
-          return this._http.get<Usuario>(`${this.base}/users/${decoded.email}`).pipe(
+          return this._http.get<Usuario>(`${this.baseUrl}/users/${decoded.email}`).pipe(
             tap((user: Usuario) => {
               sessionStorage.setItem('access_token_optisteel', res.token);
               sessionStorage.setItem('usuario_optisteel', JSON.stringify(user));
