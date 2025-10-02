@@ -149,6 +149,20 @@
     .row:hover td{ background:#f9fbff; }
   }
 
+  .table .cell-input{
+    width: 100%;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 4px 6px;
+    border-radius: 8px;
+    font: inherit;
+    color: inherit;
+    outline: none;
+  }
+  .table .cell-input:hover { background:#f6f8fc; border-color:#e6ecf6; }
+  .table .cell-input:focus { background:#fff; border-color:#cfe0ff; box-shadow:0 0 0 3px rgba(79,141,247,.12); }
+  .table .cell-num { text-align: right; }
+
   /* Checkbox */
   .cb{
     width:18px; height:18px; appearance:none; display:inline-grid; place-items:center;
