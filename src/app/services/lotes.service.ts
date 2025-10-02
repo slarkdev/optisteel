@@ -1,3 +1,4 @@
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -23,7 +24,6 @@ export class ApiLotesService {
   // private readonly base = '/api'; // proxy a optisteel.ingaria.com
   private readonly baseUrl = environment.apiUrl;
 
-
   getLotes(user_ID: string): Observable<any> {
     const response = this._http.get<any>(`${this.url}/trabajos/user/` + user_ID);
     return response;
@@ -37,6 +37,7 @@ export class ApiLotesService {
   // }
 
   addLotes(lote: {}): Observable<Lotes> {
+    console.log('lote:', lote);
     return this._http.post<Lotes>(
       `${this.url}/trabajos/`,
       lote,
@@ -44,8 +45,8 @@ export class ApiLotesService {
     );
   }
   
-  deleteLotes(ids: { id: string[] }): Observable<any> {
-    return this._http.request<any>('delete', 'api/folders/delete-multiple', {
+  deleteLotes(ids: { TrabajoIDs: string[] }): Observable<any> {
+    return this._http.request<any>('delete', `${this.url}/trabajos`, {
       body: ids,
       ...httpOption,
     });

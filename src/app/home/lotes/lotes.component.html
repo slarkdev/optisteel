@@ -1,7 +1,8 @@
 <main class="main">
-  <h1 class="page-title">Lotes del Proyecto</h1>
-  <p class="subtitle">Lote Actual: <strong>Ninguno</strong></p>
-
+  <h1 class="page-title">Lotes del proyecto</h1>
+  <p class="subtitle">Lote actual: <strong>Ninguno</strong></p>
+  
+    
   <app-tabla
     #tablaRef
     [data]="dataSource.data"
@@ -12,11 +13,11 @@
   >
     <div tabla-acciones class="toolbar-actions">
       <button (click)="crearLote()" class="btn btn-primary">
-        + Crear Lote
+        + Crear lote
       </button>
-      <button (click)="borrarSeleccion()" class="btn btn-muted">
-        🗑️ Borrar Selección
+      <button (click)="borrarLote()" class="btn btn-muted">
+        🗑️ Borrar lote
       </button>
     </div>
-  </app-tabla>
+  </app-tabla>  
 </main>
