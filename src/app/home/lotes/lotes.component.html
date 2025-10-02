@@ -1,1 +1,22 @@
-<p>lotes works!</p>
+<main class="main">
+  <h1 class="page-title">Lotes del Proyecto</h1>
+  <p class="subtitle">Lote Actual: <strong>Ninguno</strong></p>
+
+  <app-tabla
+    #tablaRef
+    [data]="dataSource.data"
+    [columnas]="columnasTabla"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (seleccionadosChange)="actualizarSeleccionados($event)"
+    (filaClick)="clickRow($event)"
+  >
+    <div tabla-acciones class="toolbar-actions">
+      <button (click)="crearLote()" class="btn btn-primary">
+        + Crear Lote
+      </button>
+      <button (click)="borrarSeleccion()" class="btn btn-muted">
+        🗑️ Borrar Selección
+      </button>
+    </div>
+  </app-tabla>
+</main>

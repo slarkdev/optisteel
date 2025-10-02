@@ -60,7 +60,7 @@
           <tr
             *ngFor="let element of pagedData"
             class="row"
-            (click)="filaClick.emit(element)"
+            (dblclick)="filaClick.emit(element)"
           >
             <!-- Checkbox por fila -->
             <td>

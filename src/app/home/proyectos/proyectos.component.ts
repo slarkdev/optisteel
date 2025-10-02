@@ -8,7 +8,6 @@ import {
 import { ApiAuthService } from '../../services/apiauth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, take, takeUntil } from 'rxjs';
-import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -28,17 +27,7 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   subscription = new Subject();
   usuarioLogeado: Usuario = this.apiAuthService.usuarioData;
 
-  displayedColumns: string[] = [
-    'select',
-    'name',
-    'createdAt',
-    'updatedAt',
-    'createdBy',
-    'trabajos_count',
-    'piezas_count',
-  ];
   dataSource = new MatTableDataSource<Proyectos>();
-  selection = new SelectionModel<Proyectos>(true, []);
   seleccionados: any[] = []; // te devuelve todos los proyectos que hayan sido seleccionados usando el checkbox
 
   columnasTabla = [
@@ -46,19 +35,19 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
       header: 'Nombre del proyecto',
       key: 'name',
       tipo: 'texto',
-      spanClase: '',
+      // spanClase: '',
     },
     {
       header: 'Fecha de creación',
       key: 'createdAt',
       tipo: 'fecha',
-      spanClase: '',
+      // spanClase: '',
     },
     {
       header: 'Última edición',
       key: 'updatedAt',
       tipo: 'fecha',
-      spanClase: '',
+      // spanClase: '',
     },
     { header: 'Creador', key: 'createdBy', tipo: 'texto', spanClase: '' },
     {
@@ -77,8 +66,6 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('tablaRef') tabla!: TablaComponent;
 
-  pageSize = 5;
-  pageIndex = 0;
   constructor(
     private apiAuthService: ApiAuthService,
     private apiProyectoService: ApiProyectosService,
@@ -241,5 +228,6 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
 
   clickRow(element: any): void {
     console.log(element);
+    this.router.navigate(['home/lotes']);
   }
 }

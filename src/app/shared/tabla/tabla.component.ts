@@ -26,7 +26,7 @@ export class TablaComponent implements OnInit, OnChanges {
     header: string;
     key: string;
     tipo: string;
-    spanClase: string;
+    spanClase?: string;
     // tdClase: string;
   }[] = [];
 
