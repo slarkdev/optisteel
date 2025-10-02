@@ -1,1 +1,121 @@
-<p>datos works!</p>
+<div class="app">
+  <!-- Sidebar
+  <aside class="sidebar" aria-label="Navegación">
+    <div class="dot" title="OPTISTEEL">A</div>
+    <button class="navbtn" title="Proyectos">📁</button>
+    <button class="navbtn" title="Datos">📄</button>
+    <button class="navbtn" title="Inventario">📦</button>
+    <button class="navbtn" title="Configuración">⚙️</button>
+    <div class="spacer"></div>
+    <button class="navbtn" title="Ayuda">❔</button>
+  </aside> -->
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- TOPBAR: proyecto/lote siempre visibles -->
+    <!-- <div class="topbar" role="navigation" aria-label="Contexto de proyecto y lote">
+      <div class="topbar-inner">
+        <div class="ctx">
+          <div class="pill">
+            <span class="k">Proyecto</span>
+            <select aria-label="Cambiar proyecto">
+              <option>OPTISTEEL — Producción 2025</option>
+              <option>Cliente A — Planta Norte</option>
+              <option>Cliente B — Ampliación</option>
+            </select>
+          </div>
+          <div class="pill">
+            <span class="k">Lote</span>
+            <select aria-label="Cambiar lote">
+              <option>Trabajo Desktop</option>
+              <option>PRUEBAS_NO_BORRAR</option>
+              <option>#Trabajo</option>
+            </select>
+          </div>
+        </div>
+        <span class="hint">Puedes cambiar de proyecto o lote desde aquí.</span>
+      </div>
+    </div> -->
+
+    <h2 class="page-title">Datos del trabajo</h2>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search" role="search">
+        🔎 <input type="search" placeholder="Buscar por perfil, referencia, formato…" aria-label="Buscar">
+      </div>
+
+      <select class="select" aria-label="Filas por página">
+        <option>20 por página</option>
+        <option>50 por página</option>
+        <option>100 por página</option>
+      </select>
+
+      <div class="filter" aria-expanded="false">
+        <button class="btn" aria-haspopup="true">
+          <svg class="icon"><use href="#i-filter"/></svg> Filtros
+        </button>
+        <div class="panel" role="menu" aria-label="Filtros">
+          <h4>Filtrar por</h4>
+          <label class="frow"><input type="checkbox" class="cb"> Formato HEA / IPE</label>
+          <label class="frow"><input type="checkbox" class="cb"> Material S275JR</label>
+          <label class="frow"><input type="checkbox" class="cb"> Solo cubiertos</label>
+          <label class="frow"><input type="checkbox" class="cb"> Peso &gt; 300kg</label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary">⬆️ Importar Excel / NC</button>
+      <button class="btn btn-muted">🗑️ Borrar selección</button>
+      <button class="btn btn-ghost-1">🔄 Actualizar</button>
+    </div>
+
+    <!-- Tabla -->
+    <section class="card" aria-label="Listado de piezas / perfiles">
+      <table class="table" role="grid">
+        <thead>
+          <tr>
+            <th><input class="cb" type="checkbox" aria-label="Seleccionar todas"></th>
+            <th>Referencia</th>
+            <th>Orden de prod.</th>
+            <th>Nombre de pieza</th>
+            <th>Perfil</th>
+            <th>Formato</th>
+            <th>Material</th>
+            <th>Longitud (mm)</th>
+            <th>Peso (kg)</th>
+            <th>Cantidad</th>
+            <th>Cubierto</th>
+            <th>Origen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_001</td><td>PROD_001</td><td>P01 (subido manual)</td><td>I</td><td>HEA240</td><td>S275JR</td><td>7,795</td><td>470.10</td><td>1</td><td title="Cubierto"><span class="sdot ok"></span></td><td>NC</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_001</td><td>PROD_001</td><td>Pr17</td><td>I</td><td>HEA240</td><td>S275JR</td><td>7,795</td><td>470.10</td><td>3</td><td title="No cubierto"><span class="sdot no"></span></td><td>Excel</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_001</td><td>PROD_001</td><td>Pr19</td><td>I</td><td>IPE300</td><td>S275JR</td><td>7,459</td><td>314.80</td><td>10</td><td title="No cubierto"><span class="sdot no"></span></td><td>Tekla</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_001</td><td>PROD_001</td><td>P11</td><td>I</td><td>HEA240</td><td>S275JR</td><td>7,795</td><td>470.10</td><td>1</td><td title="Cubierto"><span class="sdot ok"></span></td><td>Tekla</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_002</td><td>PROD_002</td><td>Q12</td><td>I</td><td>HEA200</td><td>S275JR</td><td>6,120</td><td>290.00</td><td>2</td><td title="Cubierto"><span class="sdot ok"></span></td><td>NC</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_003</td><td>PROD_002</td><td>Q13</td><td>I</td><td>HEA200</td><td>S275JR</td><td>6,100</td><td>285.00</td><td>2</td><td title="No cubierto"><span class="sdot no"></span></td><td>Excel</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_004</td><td>PROD_002</td><td>Q14</td><td>I</td><td>HEA220</td><td>S275JR</td><td>6,540</td><td>312.50</td><td>6</td><td title="Cubierto"><span class="sdot ok"></span></td><td>NC</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_005</td><td>PROD_003</td><td>R01</td><td>I</td><td>IPE300</td><td>S275JR</td><td>7,350</td><td>308.10</td><td>4</td><td title="No cubierto"><span class="sdot no"></span></td><td>Excel</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_006</td><td>PROD_003</td><td>R02</td><td>I</td><td>IPE300</td><td>S275JR</td><td>7,420</td><td>311.40</td><td>5</td><td title="Cubierto"><span class="sdot ok"></span></td><td>NC</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_007</td><td>PROD_004</td><td>S10</td><td>I</td><td>HEA260</td><td>S275JR</td><td>6,980</td><td>340.00</td><td>2</td><td title="No cubierto"><span class="sdot no"></span></td><td>Tekla</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_008</td><td>PROD_004</td><td>S11</td><td>I</td><td>HEA260</td><td>S275JR</td><td>6,940</td><td>336.60</td><td>2</td><td title="Cubierto"><span class="sdot ok"></span></td><td>Excel</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_009</td><td>PROD_005</td><td>T01</td><td>I</td><td>HEA280</td><td>S275JR</td><td>7,220</td><td>360.10</td><td>3</td><td title="Cubierto"><span class="sdot ok"></span></td><td>Excel</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_010</td><td>PROD_005</td><td>T02</td><td>I</td><td>HEA280</td><td>S275JR</td><td>7,210</td><td>359.90</td><td>1</td><td title="No cubierto"><span class="sdot no"></span></td><td>Tekla</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_011</td><td>PROD_006</td><td>U01</td><td>I</td><td>HEA300</td><td>S275JR</td><td>7,800</td><td>410.00</td><td>2</td><td title="Cubierto"><span class="sdot ok"></span></td><td>Excel</td></tr>
+          <tr class="row"><td><input class="cb" type="checkbox"></td><td>REF_012</td><td>PROD_006</td><td>U02</td><td>I</td><td>HEA300</td><td>S275JR</td><td>7,810</td><td>412.50</td><td>2</td><td title="No cubierto"><span class="sdot no"></span></td><td>NC</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Footer tabla -->
+    <div class="tfoot" role="navigation" aria-label="Paginación">
+      <span style="color:var(--muted);font-weight:600">1–20 de 123</span>
+      <div class="pager">
+        <button class="iconbtn" title="Anterior">◀</button>
+        <button class="iconbtn" title="Siguiente">▶</button>
+      </div>
+    </div>
+  </main>
+</div>
