@@ -395,6 +395,8 @@ body {
   font-weight: 800;
   color: var(--text-strong);
   padding-right: 0.3rem;
+  // min-width: 100px;
+  width: 100px;
 }
 .pill select:disabled {
   color: var(--muted);
@@ -409,7 +411,6 @@ body {
     display: none;
   }
 }
-
 
 /* Header */
 .page-title {
@@ -443,6 +444,7 @@ body {
   gap: 12px;
   align-items: center;
   justify-content: space-between;
+  margin: auto;
 }
 
 .toolbar > * {
@@ -636,9 +638,15 @@ th.ordenable:hover {
   background: #f8a166;
   color: #ffffff;
 }
-.chip.mid-orange{background:#F8A166;color:#ffffff}
+.chip.mid-orange {
+  background: #f8a166;
+  color: #ffffff;
+}
 
-.chip.grey{background:#032838;color:#ffffff}
+.chip.grey {
+  background: #032838;
+  color: #ffffff;
+}
 
 .text-align-center {
   text-align: center;
@@ -734,4 +742,34 @@ th.ordenable:hover {
   border-radius: 4px;
   margin-top: 10px;
   text-align: center;
+}
+
+/***************** SPINNER  ****************/
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  color: #666;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

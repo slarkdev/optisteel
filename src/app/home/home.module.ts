@@ -39,7 +39,9 @@ import { registerLocaleData } from '@angular/common';
     ProyectosComponent,
     ReportesComponent,
   ],
-  exports: [],
+  exports: [
+    MaterialModule
+  ],
   imports: [
     CommonModule,
     RouterModule,

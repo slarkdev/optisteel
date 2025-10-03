@@ -10,12 +10,30 @@
     >
       <aside class="sidebar" aria-label="Navegación">
         <div class="dot" title="OPTISTEEL">A</div>
-        <button class="navbtn" title="Proyectos" [routerLink]="['./proyectos']" >📁</button>
-        <button class="navbtn" title="Datos" [routerLink]="['./datos']">📄</button>
-        <button class="navbtn" title="Inventario" [routerLink]="['./inventario']">📦</button>
-        <button class="navbtn" title="Configuración" [routerLink]="['./configuracion']">⚙️</button>
+        <button class="navbtn" title="Proyectos" [routerLink]="['./proyectos']">
+          📁
+        </button>
+        <button class="navbtn" title="Datos" [routerLink]="['./datos']">
+          📄
+        </button>
+        <button
+          class="navbtn"
+          title="Inventario"
+          [routerLink]="['./inventario']"
+        >
+          📦
+        </button>
+        <button
+          class="navbtn"
+          title="Configuración"
+          [routerLink]="['./configuracion']"
+        >
+          ⚙️
+        </button>
         <div class="spacer"></div>
-        <button class="navbtn" title="Ayuda" [routerLink]="['./ayuda']">❔</button>
+        <button class="navbtn" title="Ayuda" [routerLink]="['./ayuda']">
+          ❔
+        </button>
         <button class="navbtn" title="Salir" (click)="logout()">🔚</button>
       </aside>
     </mat-drawer>
@@ -27,17 +45,34 @@
           <div class="ctx">
             <div class="pill">
               <span class="k">Proyecto</span>
-              <select aria-label="Cambiar proyecto">
-                <option>OPTISTEEL — Producción 2025</option>
-                <option>Cliente A — Planta Norte</option>
-                <option>Cliente B — Ampliación</option>
+              <select
+                aria-label="Cambiar proyecto"
+                [(ngModel)]="proyectoSeleccionado"
+                (change)="buscarLotesPorProyecto()"
+                [disabled]="proyectoDeshabilitado"
+              >
+                <option *ngFor="let proyecto of proyectos" [ngValue]="proyecto">
+                  {{ proyecto.name }}
+                </option>
               </select>
+
+              <i class="material-icons spin" *ngIf="isLoadingProyecto">autorenew</i>
             </div>
+
             <div class="pill">
               <span class="k">Lote</span>
-              <select aria-label="Cambiar lote" disabled>
-                <option>—</option>
+              <select
+                aria-label="Cambiar lote"
+                [(ngModel)]="loteSeleccionado"
+                (change)="buscarInventarioPorLote()"
+                [disabled]="loteDeshabilitado"
+              >
+                <option *ngFor="let lote of lotes" [ngValue]="lote">
+                  {{ lote.NombreTrabajo }}
+                </option>
               </select>
+
+              <i class="material-icons spin" *ngIf="isLoadingLote"  style="font-size: 20px;">autorenew</i>
             </div>
           </div>
 

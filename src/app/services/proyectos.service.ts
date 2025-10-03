@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Response } from '../models/response';
 import { Proyectos } from '../models/proyectos';
 import { connection } from '../security/production';
@@ -17,6 +17,9 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiProyectosService {
+  private folderSubject = new BehaviorSubject<any>(null);
+  folder$ = this.folderSubject.asObservable();
+
   url: string = connection;
   // private readonly base = '/api'; // proxy a optisteel.ingaria.com
   private readonly baseUrl = environment.apiUrl;
@@ -40,5 +43,12 @@ export class ApiProyectosService {
       body: ids,
       ...httpOption,
     });
+  }
+
+  setFolder(folder: any) {
+    const actual = this.folderSubject.getValue();
+    if (!actual || actual._id !== folder._id) {
+      this.folderSubject.next(folder);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -15,10 +16,12 @@ import {
   styleUrl: './tabla.component.scss',
   standalone: false,
 })
-export class TablaComponent implements OnInit, OnChanges {
+export class TablaComponent implements OnChanges {
   @Input() data: any[] = [];
   @Input() columns: string[] = [];
   @Input() pageSizeOptions: number[] = [5, 10, 25, 50];
+  @Input() key: number = 0;
+
   @Output() seleccionadosChange = new EventEmitter<any[]>();
   @Output() filaClick = new EventEmitter<any>();
 
@@ -37,16 +40,27 @@ export class TablaComponent implements OnInit, OnChanges {
   columnaOrden: string = '';
   ordenAscendente: boolean = true;
 
-  ngOnInit(): void {
-    this.dataFiltrada = [...this.data];
-  }
+  constructor(private cdRef: ChangeDetectorRef) {}
+  // ngOnInit(): void {
+  //   this.dataFiltrada = [...this.data];
+  //   console.log("Tabla On Init data filtrada", this.dataFiltrada);
+
+  // }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && changes['data'].currentValue) {
-      this.dataFiltrada = [...this.data];
+      console.log(
+        '✅ Tabla On Change Datos recibidos en hijo:',
+        changes['data'].currentValue
+      );
+      this.dataFiltrada = [...changes['data'].currentValue];
       this.pageIndex = 0;
-      console.log('Datos actualizados:', this.dataFiltrada);
+      // this.dataFiltrada = [...this.data];
+      // this.pageIndex = 0;
+      // this.cdRef.detectChanges();
+      // console.log('Datos actualizados:', this.dataFiltrada);
     }
+    // console.log(this.dataFiltrada);
   }
 
   emitSeleccionados() {
@@ -60,10 +74,6 @@ export class TablaComponent implements OnInit, OnChanges {
   get endIndex(): number {
     return Math.min(this.startIndex + this.pageSize, this.dataFiltrada.length);
   }
-
-  // get pagedData(): any[] {
-  //   return this.data.slice(this.startIndex, this.endIndex);
-  // }
 
   get rangoTexto(): string {
     const length = this.dataFiltrada.length;

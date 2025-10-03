@@ -1,8 +1,10 @@
 import {
   AfterViewInit,
   Component,
+  EventEmitter,
   OnDestroy,
   OnInit,
+  Output,
   ViewChild,
 } from '@angular/core';
 import { ApiAuthService } from '../../services/apiauth.service';
@@ -24,7 +26,7 @@ import { TablaComponent } from '../../shared/tabla/tabla.component';
   standalone: false,
 })
 export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
-  subscription = new Subject();
+  subscription = new Subject<void>();
   usuarioLogeado: Usuario = this.apiAuthService.usuarioData;
 
   dataSource = new MatTableDataSource<Proyectos>();
@@ -63,6 +65,7 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
       spanClase: 'chip orange text-align-right',
     },
   ];
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('tablaRef') tabla!: TablaComponent;
 
@@ -78,7 +81,7 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.subscription.next;
+    this.subscription.next();
     this.subscription.complete();
     //this.subscription.unsubscribe();
   }
@@ -89,7 +92,6 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   iniciar() {
-    console.log(this.apiAuthService.usuarioData._id);
     const _idUser = this.apiAuthService.usuarioData._id;
     this.apiProyectoService
       .getProyectos(_idUser)
@@ -227,7 +229,8 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clickRow(element: any): void {
-    console.log(element);
-    this.router.navigate(['home/lotes'], { state: { data: element } });
+    this.apiProyectoService.setFolder(element);
+    // localStorage.setItem('folder', JSON.stringify(element));
+    this.router.navigate(['home/lotes']);
   }
 }

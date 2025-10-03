@@ -1,23 +1,27 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
+  Input,
   OnDestroy,
   OnInit,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { ApiAuthService } from '../../services/apiauth.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, take, takeUntil } from 'rxjs';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { distinctUntilChanged, Subject, take, takeUntil } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Auth } from '../../models/auth';
-import { ApiLotesService } from '../../services/lotes.service';
+import { ApiLotesService } from '../../services/lote.service';
 import { Usuario } from '../../models/usuario';
 import { Lotes } from '../../models/lotes';
 import Swal from 'sweetalert2';
 import { TablaComponent } from '../../shared/tabla/tabla.component';
+import { ApiProyectosService } from '../../services/proyectos.service';
 
 @Component({
   selector: 'app-lotes',
@@ -26,7 +30,7 @@ import { TablaComponent } from '../../shared/tabla/tabla.component';
   standalone: false,
 })
 export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
-  subscription = new Subject();
+  subscription = new Subject<void>();
   usuarioLogeado: Usuario = this.apiAuthService.usuarioData;
 
   displayedColumns: string[] = [
@@ -92,67 +96,81 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   folder: any;
 
+  tablaData: any[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('tablaRef') tabla!: TablaComponent;
-
+  mostrarTabla = 0;
   constructor(
     private apiAuthService: ApiAuthService,
     private apiLotesService: ApiLotesService,
+    private apiProyectoService: ApiProyectosService,
     private router: Router,
     private route: ActivatedRoute,
-    private paginatorIntl: MatPaginatorIntl
-  ) {
-    // this.paginatorIntl.itemsPerPageLabel = 'Ítems por página';
-    // this.paginatorIntl.nextPageLabel = 'Siguiente página';
-    // this.paginatorIntl.previousPageLabel = 'Página anterior';
-    // this.paginatorIntl.firstPageLabel = 'Primera página';
-    // this.paginatorIntl.lastPageLabel = 'Última página';
-  }
+    private paginatorIntl: MatPaginatorIntl 
+  ) {}
 
-  ngOnInit(): void {
-    const element = history.state.data;
-    console.log('Elemento recibido:', element);
-    this.folder = element;
-    console.log(element);
-    this.iniciar();
+  ngOnInit() {
+    console.log('LotesComponent montado');
+    this.apiProyectoService.folder$
+      .pipe(
+        distinctUntilChanged((prev, curr) => prev?._id === curr?._id),
+        takeUntil(this.subscription)
+      )
+      .subscribe((folder) => {
+        if (folder && folder._id && folder.name) {
+          console.log('Recibido desde folder$:', folder);
+          // setTimeout(() => {
+            this.folder = folder;
+            this.iniciar();
+          // }, 0);
+        } else {
+          this.router.navigate(['home/proyectos']);
+        }
+      });
   }
 
   ngOnDestroy(): void {
-    this.subscription.next;
+    this.subscription.next();
     this.subscription.complete();
-    //this.subscription.unsubscribe();
+    console.log('🧹 LotesComponent destruido');
   }
+
   ngAfterViewInit() {
     if (this.dataSource) {
       this.dataSource.paginator = this.paginator;
     }
-    this.paginatorIntl.changes.next(); // ✅ aquí ya está todo enlazado
+    this.paginatorIntl.changes.next();
   }
 
   iniciar() {
     const _idUser = this.apiAuthService.usuarioData._id;
-    const folderID = this.folder._id;//'68d4038efdb5289a63177008'; // Hardcode temporal
-
+    
     this.apiLotesService
       .getLotes(_idUser)
       .pipe(takeUntil(this.subscription))
       .subscribe((response) => {
         if (response !== null) {
           // Filtrar por folderID
-          const lotesFiltrados = response.filter(
-            (lote: any) => lote.FolderID === folderID
-          );
-          lotesFiltrados.forEach((lote: any) => {
-            const cubiertos =
-              lote.unique_perfiles?.reduce(
-                (acc: number, perfil: any) => acc + perfil.nUsados,
-                0
-              ) || 0;
-            lote.cubiertos_count = cubiertos;
-            lote.no_cubiertos_count = lote.piezas_count - cubiertos;
-          });
+          const lotesFiltrados = response
+            .filter((lote: any) => lote.FolderID === this.folder._id)
+            .map((lote: any) => {
+              const cubiertos =
+                lote.unique_perfiles?.reduce(
+                  (acc: number, perfil: any) => acc + perfil.nUsados,
+                  0
+                ) || 0;
 
-          this.dataSource = new MatTableDataSource<Lotes>(lotesFiltrados);
+              return {
+                ...lote,
+                cubiertos_count: cubiertos,
+                no_cubiertos_count: lote.piezas_count - cubiertos,
+              };
+            });
+          // setTimeout(() => {
+          this.tablaData = [...lotesFiltrados];
+          this.mostrarTabla++;
+          // console.log('Lotes filtrados:', lotesFiltrados);
+          console.log('mostrarTabla activado:', this.mostrarTabla);
         }
       });
   }
@@ -202,7 +220,7 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
         };
 
         return this.apiLotesService
-          .addLotes(lotes)
+          .addLote(lotes)
           .pipe(take(1))
           .toPromise()
           .then((response: any) => {
@@ -263,9 +281,8 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
     }).then((result) => {
       if (result.isConfirmed) {
         const ids = {
-          TrabajoIDs: this.seleccionados.map((p) => p._id),
+          LotesIDs: this.seleccionados.map((p) => p._id),
         };
-
         this.apiLotesService.deleteLotes(ids).subscribe({
           next: () => {
             Swal.fire({
@@ -279,7 +296,7 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
 
             // Actualiza la tabla}
             this.dataSource.data = this.dataSource.data.filter(
-              (lote) => !ids.TrabajoIDs.includes(lote._id)
+              (lote) => !ids.LotesIDs.includes(lote._id)
             );
 
             this.seleccionados = [];

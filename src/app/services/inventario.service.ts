@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Inventory } from '../models/inventario';
 import { connection } from '../security/production'; // usa tu base ya definida
 
@@ -8,6 +8,12 @@ import { connection } from '../security/production'; // usa tu base ya definida
 export class InventarioService {
   // Normaliza la base para evitar '//' al concatenar
   private readonly base = connection.replace(/\/+$/, '');
+
+  private contextoSubject = new BehaviorSubject<{
+    idProyecto: any;
+    idLote: any;
+  } | null>(null);
+  contexto$ = this.contextoSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -27,7 +33,7 @@ export class InventarioService {
     rowOrRows: Partial<Inventory> | Array<Partial<Inventory>>
   ): Observable<Inventory[]> {
     const arr = Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows];
-    const payload = arr.map(r => ({
+    const payload = arr.map((r) => ({
       ...r,
       TrabajoID: workId, // requerido por la API
     }));
@@ -48,5 +54,9 @@ export class InventarioService {
   /** Azúcar: borrar uno solo usando el mismo endpoint */
   deleteOne(id: string): Observable<void> {
     return this.deleteMany([id]);
+  }
+
+  setContexto(idProyecto: any, idLote: any) {
+    this.contextoSubject.next({ idProyecto, idLote });
   }
 }

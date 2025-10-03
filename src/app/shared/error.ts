@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Error {
-  constructor() {}
+  constructor(private sb: MatSnackBar) {}
 
   public static getMessage(response: any): string {
     switch (response.status) {
@@ -27,8 +28,24 @@ export class Error {
     }
   }
 
+  public showErrorSnackBar(msj: any) {
+    // const msj = Error.getMessage(response);
+
+    this.sb.open(msj, 'Cerrar', { duration: 3000 });
+
+    // Swal.fire({
+    //   icon: 'error',
+    //   title: 'Ups!',
+    //   text: msj,
+    //   confirmButtonColor: '#f8a166',
+    //   timer: 3000,
+    // });
+  }
   public static showError(response: any) {
     const msj = this.getMessage(response);
+
+    // sb.open(msj, 'Cerrar', { duration: 3000 });
+
     Swal.fire({
       icon: 'error',
       title: 'Ups!',

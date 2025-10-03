@@ -1,7 +1,16 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, effect, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  computed,
+  effect,
+  signal,
+} from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
-import { lastValueFrom } from 'rxjs';
+import { distinctUntilChanged, lastValueFrom, Subject, switchMap, takeUntil } from 'rxjs';
 
 import { InventarioService } from '../../services/inventario.service';
 import { InventoryVM, toAPI, toVM } from './inventario.adapters';
@@ -18,12 +27,17 @@ type DraftVM = InventoryVM & { __draft?: true };
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class InventarioComponent {
+export class InventarioComponent implements OnInit, OnDestroy {
   private saveTimers = new Map<number, any>();
-
-  state = { proyecto: 'OPTISTEEL — Producción 2025', lote: '67891bc85f0d85bddfcb6abc' };
+  subscription = new Subject<void>();
+  state = {
+    proyecto: 'OPTISTEEL — Producción 2025',
+    lote: '67891bc85f0d85bddfcb6abc',
+  };
   onStateChanged() {}
-  get workId() { return this.state.lote; }
+  get workId() {
+    return this.state.lote;
+  }
 
   constructor(private inv: InventarioService, private sb: MatSnackBar) {}
 
@@ -47,66 +61,132 @@ export class InventarioComponent {
   newRow = signal<DraftVM>(this.makeEmptyVM());
 
   // Buscar + filtros con signals
-  private searchTermSig    = signal('');     // texto de búsqueda
-  private onlyAvailableSig = signal(false);  // cantidad > 0
+  private searchTermSig = signal(''); // texto de búsqueda
+  private onlyAvailableSig = signal(false); // cantidad > 0
   filtersOpen = false;
 
   // Facetas (si luego las usas en UI)
   perfilesFacetSig = computed(() =>
-    Array.from(new Set(this.items().map(i => (i.perfil ?? '').trim())))
+    Array.from(new Set(this.items().map((i) => (i.perfil ?? '').trim())))
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b, 'es'))
   );
   calidadesFacetSig = computed(() =>
-    Array.from(new Set(this.items().map(i => this.normCalidad(i.calidad))))
+    Array.from(new Set(this.items().map((i) => this.normCalidad(i.calidad))))
       .filter(Boolean)
       .sort()
   );
-  selectedPerfiles  = signal<Set<string>>(new Set());
+  selectedPerfiles = signal<Set<string>>(new Set());
   selectedCalidades = signal<Set<string>>(new Set());
 
   // selección y paginación con signals
   selected = new Set<number>();
-  private pageSig     = signal(1);
+  private pageSig = signal(1);
   private pageSizeSig = signal(20);
 
-  ngOnInit() { this.loadInventory(); }
-
-  private loadInventory() {
-    this.inv.list(this.workId).subscribe({
-      next: rows => {
-        const vm = rows.map((r, idx) => {
-          const v = toVM(r, idx + 1);
-          return { ...v, calidad: this.normCalidad(v.calidad) };
-        });
-        this.items.set(vm);
-        this.goToPage(1);
-      },
-      error: err => {
-        console.error('Inventario list error', err);
-        this.sb.open('Error al cargar inventario', 'Cerrar', { duration: 3000 });
-      }
-    });
+  ngOnInit() {
+    this.loadInventory();
   }
 
+  ngOnDestroy(): void {
+    this.subscription.next();
+    this.subscription.complete();
+  }
+
+  private loadInventory() {
+    this.inv.contexto$
+      .pipe(
+        takeUntil(this.subscription),
+        switchMap((ctx) => {
+          console.log('Contexto recibido:', ctx);
+
+          this.state.proyecto = ctx?.idProyecto;
+          this.state.lote = ctx?.idLote;
+
+          return this.inv.list(this.workId); // o ctx.idLote si depende del contexto
+        })
+      )
+      .subscribe({
+        next: (rows) => {
+          const vm = rows.map((r, idx) => {
+            const v = toVM(r, idx + 1);
+            return { ...v, calidad: this.normCalidad(v.calidad) };
+          });
+          this.items.set(vm);
+          this.goToPage(1);
+        },
+        error: (err) => {
+          console.error('Inventario list error', err);
+          this.sb.open('Error al cargar inventario', 'Cerrar', {
+            duration: 3000,
+          });
+        },
+      });
+  }
+  // private loadInventory() {
+  //   this.inv.contexto$.pipe(takeUntil(this.subscription)).subscribe((ctx) => {
+  //     console.log(ctx);
+
+  //     this.state.proyecto = ctx?.idProyecto;
+  //     this.state.lote = ctx?.idLote;
+  //   });
+
+  //   this.inv.list(this.workId).subscribe({
+  //     next: (rows) => {
+  //       const vm = rows.map((r, idx) => {
+  //         const v = toVM(r, idx + 1);
+  //         return { ...v, calidad: this.normCalidad(v.calidad) };
+  //       });
+  //       this.items.set(vm);
+  //       this.goToPage(1);
+  //     },
+  //     error: (err) => {
+  //       console.error('Inventario list error', err);
+  //       this.sb.open('Error al cargar inventario', 'Cerrar', {
+  //         duration: 3000,
+  //       });
+  //     },
+  //   });
+  // }
+
   // ====== BRIDGES para NO tocar tu HTML ======
-  get searchTerm() { return this.searchTermSig(); }
-  set searchTerm(v: string) { this.onSearchChange(v); }
+  get searchTerm() {
+    return this.searchTermSig();
+  }
+  set searchTerm(v: string) {
+    this.onSearchChange(v);
+  }
 
-  get onlyAvailable() { return this.onlyAvailableSig(); }
-  set onlyAvailable(v: boolean) { this.onOnlyAvailableChange(v); }
+  get onlyAvailable() {
+    return this.onlyAvailableSig();
+  }
+  set onlyAvailable(v: boolean) {
+    this.onOnlyAvailableChange(v);
+  }
 
-  get pagedItems() { return this.pagedSig(); }
+  get pagedItems() {
+    return this.pagedSig();
+  }
 
-  get pageSize() { return this.pageSizeSig(); }
-  set pageSize(v: number) { this.onPageSizeChange(v); }
+  get pageSize() {
+    return this.pageSizeSig();
+  }
+  set pageSize(v: number) {
+    this.onPageSizeChange(v);
+  }
 
-  get page() { return this.pageSig(); }
+  get page() {
+    return this.pageSig();
+  }
 
-  get filtered() { return this.filteredSig(); }
+  get filtered() {
+    return this.filteredSig();
+  }
 
   // ====== helpers filtros / texto ======
-  toggleFilters() { this.filtersOpen = !this.filtersOpen; }
+  toggleFilters() {
+    this.filtersOpen = !this.filtersOpen;
+  }
   onSearchChange(v: string) {
     this.searchTermSig.set((v || '').trim());
     this.goToPage(1);
@@ -115,22 +195,27 @@ export class InventarioComponent {
     this.onlyAvailableSig.set(!!v);
     this.goToPage(1);
   }
-  applyFilters() { this.goToPage(1); }
+  applyFilters() {
+    this.goToPage(1);
+  }
 
   // Normalizador de calidad
-  normCalidad = (s: string) => (s || '').toUpperCase().replace(/\s+/g, '').trim();
+  normCalidad = (s: string) =>
+    (s || '').toUpperCase().replace(/\s+/g, '').trim();
 
   togglePerfil(p: string, checked: boolean) {
     const set = new Set(this.selectedPerfiles());
     const key = (p ?? '').trim();
-    if (checked) set.add(key); else set.delete(key);
+    if (checked) set.add(key);
+    else set.delete(key);
     this.selectedPerfiles.set(set);
     this.goToPage(1);
   }
   toggleCalidad(c: string, checked: boolean) {
     const set = new Set(this.selectedCalidades());
     const key = this.normCalidad(c);
-    if (checked) set.add(key); else set.delete(key);
+    if (checked) set.add(key);
+    else set.delete(key);
     this.selectedCalidades.set(set);
     this.goToPage(1);
   }
@@ -141,18 +226,29 @@ export class InventarioComponent {
   }
 
   // ====== master checkbox ======
-  get masterChecked() { return this.selected.size > 0 && this.selected.size === this.pagedSig().length; }
-  get masterIndeterminate() { return this.selected.size > 0 && this.selected.size < this.pagedSig().length; }
+  get masterChecked() {
+    return (
+      this.selected.size > 0 && this.selected.size === this.pagedSig().length
+    );
+  }
+  get masterIndeterminate() {
+    return (
+      this.selected.size > 0 && this.selected.size < this.pagedSig().length
+    );
+  }
 
   // ====== filtro base ======
   private filterFn = (it: InventoryVM) => {
     const search = this.searchTermSig().toLowerCase();
-    const txt = `${(it.perfil || '').toString()} ${this.normCalidad(it.calidad)}`.toLowerCase();
+    const txt = `${(it.perfil || '').toString()} ${this.normCalidad(
+      it.calidad
+    )}`.toLowerCase();
     if (search && !txt.includes(search)) return false;
 
     const perfilesSel = this.selectedPerfiles();
     const calSel = this.selectedCalidades();
-    if (perfilesSel.size && !perfilesSel.has((it.perfil ?? '').trim())) return false;
+    if (perfilesSel.size && !perfilesSel.has((it.perfil ?? '').trim()))
+      return false;
     if (calSel.size && !calSel.has(this.normCalidad(it.calidad))) return false;
 
     if (this.onlyAvailableSig() && (it.cantidad ?? 0) <= 0) return false;
@@ -177,11 +273,17 @@ export class InventarioComponent {
     return total ? (this.pageSig() - 1) * this.pageSizeSig() + 1 : 0;
   }
   get rangeEnd() {
-    return Math.min(this.pageSig() * this.pageSizeSig(), this.filteredSig().length);
+    return Math.min(
+      this.pageSig() * this.pageSizeSig(),
+      this.filteredSig().length
+    );
   }
 
   private _repage = effect(() => {
-    const tp = Math.max(1, Math.ceil(this.filteredSig().length / this.pageSizeSig()));
+    const tp = Math.max(
+      1,
+      Math.ceil(this.filteredSig().length / this.pageSizeSig())
+    );
     if (this.pageSig() > tp) this.pageSig.set(tp);
   });
 
@@ -197,22 +299,31 @@ export class InventarioComponent {
     this.pageSizeSig.set(size);
     this.goToPage(1);
   }
-  prevPage() { this.goToPage(this.pageSig() - 1); }
-  nextPage() { this.goToPage(this.pageSig() + 1); }
+  prevPage() {
+    this.goToPage(this.pageSig() - 1);
+  }
+  nextPage() {
+    this.goToPage(this.pageSig() + 1);
+  }
 
   toggleAll(ev: Event) {
     const checked = (ev.target as HTMLInputElement).checked;
-    if (checked) this.pagedSig().forEach(it => this.selected.add(it.id));
-    else this.pagedSig().forEach(it => this.selected.delete(it.id));
+    if (checked) this.pagedSig().forEach((it) => this.selected.add(it.id));
+    else this.pagedSig().forEach((it) => this.selected.delete(it.id));
   }
   toggleOne(id: number, ev: Event) {
     const checked = (ev.target as HTMLInputElement).checked;
-    if (checked) this.selected.add(id); else this.selected.delete(id);
+    if (checked) this.selected.add(id);
+    else this.selected.delete(id);
   }
-  anySelected() { return this.selected.size > 0; }
+  anySelected() {
+    return this.selected.size > 0;
+  }
 
   // ====== borrar / importar / guardar ======
-  deleteSelected() { this.confirmAndDeleteSelected(); }
+  deleteSelected() {
+    this.confirmAndDeleteSelected();
+  }
 
   async confirmAndDeleteSelected() {
     if (!this.anySelected()) {
@@ -223,12 +334,15 @@ export class InventarioComponent {
     if (!ok) return;
 
     const current = this.items();
-    const rowsToDelete = current.filter(r => this.selected.has(r.id));
-    const backendIds = rowsToDelete.map(r => r._id).filter((v): v is string => !!v);
+    const rowsToDelete = current.filter((r) => this.selected.has(r.id));
+    const backendIds = rowsToDelete
+      .map((r) => r._id)
+      .filter((v): v is string => !!v);
 
     try {
-      if (backendIds.length) await lastValueFrom(this.inv.deleteMany(backendIds));
-      this.items.set(current.filter(r => !this.selected.has(r.id)));
+      if (backendIds.length)
+        await lastValueFrom(this.inv.deleteMany(backendIds));
+      this.items.set(current.filter((r) => !this.selected.has(r.id)));
       this.selected.clear();
       this.goToPage(this.pageSig());
       this.loadInventory();
@@ -241,7 +355,10 @@ export class InventarioComponent {
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(e: KeyboardEvent) {
-    if ((e.key === 'Delete' || e.key === 'Del' || e.key === 'Supr') && this.anySelected()) {
+    if (
+      (e.key === 'Delete' || e.key === 'Del' || e.key === 'Supr') &&
+      this.anySelected()
+    ) {
       this.confirmAndDeleteSelected();
     }
   }
@@ -259,7 +376,7 @@ export class InventarioComponent {
 
       for (const row of json) {
         const vm: InventoryVM = {
-          id: (this.items().length + 1),
+          id: this.items().length + 1,
           _id: row['_id'] ?? null,
           perfil: row['Perfil'] ?? '',
           calidad: this.normCalidad(row['Calidad'] ?? ''),
@@ -284,15 +401,22 @@ export class InventarioComponent {
   private alnum = /^[a-zA-Z0-9]+$/;
   private validateRow(vm: InventoryVM) {
     return (
-      !!vm.calidad && this.alnum.test(vm.calidad) &&
-      !!vm.perfil  && this.alnum.test(vm.perfil)  &&
-      vm.longitud > 0 && vm.cantidad > 0
+      !!vm.calidad &&
+      this.alnum.test(vm.calidad) &&
+      !!vm.perfil &&
+      this.alnum.test(vm.perfil) &&
+      vm.longitud > 0 &&
+      vm.cantidad > 0
     );
   }
 
   // ====== edición en línea (filas existentes) ======
-  onCellEdit(row: InventoryVM, key: 'perfil' | 'calidad' | 'longitud' | 'cantidad', value: any) {
-    const updated = this.items().map(r => {
+  onCellEdit(
+    row: InventoryVM,
+    key: 'perfil' | 'calidad' | 'longitud' | 'cantidad',
+    value: any
+  ) {
+    const updated = this.items().map((r) => {
       if (r.id !== row.id) return r;
 
       let v: any = value;
@@ -304,7 +428,7 @@ export class InventarioComponent {
 
     this.items.set(updated);
 
-    const vm = updated.find(r => r.id === row.id)!;
+    const vm = updated.find((r) => r.id === row.id)!;
     this.saveRowSoon(vm);
   }
 
@@ -322,7 +446,11 @@ export class InventarioComponent {
 
   saveRow(vm: InventoryVM) {
     if (!this.validateRow(vm)) {
-      this.sb.open(`Fila ${vm.id}: hay campos obligatorios sin completar`, 'Cerrar', { duration: 3200 });
+      this.sb.open(
+        `Fila ${vm.id}: hay campos obligatorios sin completar`,
+        'Cerrar',
+        { duration: 3200 }
+      );
       return;
     }
 
@@ -330,20 +458,25 @@ export class InventarioComponent {
       next: (res: any) => {
         const newId = Array.isArray(res) ? res?.[0]?._id : res?._id;
         if (newId) {
-          this.items.update(list => list.map(x => x.id === vm.id ? { ...x, _id: newId } : x));
+          this.items.update((list) =>
+            list.map((x) => (x.id === vm.id ? { ...x, _id: newId } : x))
+          );
         }
         this.sb.open(`Fila ${vm.id} guardada`, 'Cerrar', { duration: 2000 });
       },
-      error: () => this.sb.open('Error al guardar fila', 'Cerrar', { duration: 3000 })
+      error: () =>
+        this.sb.open('Error al guardar fila', 'Cerrar', { duration: 3000 }),
     });
   }
 
   // ====== edición/alta en la fila en blanco (draft) ======
   private isRowReady(vm: InventoryVM) {
-    return !!vm.perfil?.trim()
-        && !!vm.calidad?.trim()
-        && (vm.longitud ?? 0) > 0
-        && (vm.cantidad ?? 0) > 0;
+    return (
+      !!vm.perfil?.trim() &&
+      !!vm.calidad?.trim() &&
+      (vm.longitud ?? 0) > 0 &&
+      (vm.cantidad ?? 0) > 0
+    );
   }
 
   onDraftEdit<K extends keyof InventoryVM>(key: K, value: any) {
@@ -362,9 +495,10 @@ export class InventarioComponent {
       next: (res: any) => {
         this.sb.open('Fila creada', 'Cerrar', { duration: 2000 });
         this.newRow.set(this.makeEmptyVM()); // reponer otra fila vacía
-        this.loadInventory();               // refrescar listado
+        this.loadInventory(); // refrescar listado
       },
-      error: () => this.sb.open('Error al crear fila', 'Cerrar', { duration: 3000 })
+      error: () =>
+        this.sb.open('Error al crear fila', 'Cerrar', { duration: 3000 }),
     });
   }
 
