@@ -10,7 +10,13 @@ import {
 } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
-import { distinctUntilChanged, lastValueFrom, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+  distinctUntilChanged,
+  lastValueFrom,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 
 import { InventarioService } from '../../services/inventario.service';
 import { InventoryVM, toAPI, toVM } from './inventario.adapters';
@@ -34,6 +40,10 @@ export class InventarioComponent implements OnInit, OnDestroy {
     proyecto: 'OPTISTEEL — Producción 2025',
     lote: '67891bc85f0d85bddfcb6abc',
   };
+
+  nombreLote: string = '';
+  nombreProyecto: string = '';
+
   onStateChanged() {}
   get workId() {
     return this.state.lote;
@@ -97,12 +107,14 @@ export class InventarioComponent implements OnInit, OnDestroy {
     this.inv.contexto$
       .pipe(
         takeUntil(this.subscription),
-        switchMap((ctx) => {
+        switchMap((ctx: any) => {
           console.log('Contexto recibido:', ctx);
 
           this.state.proyecto = ctx?.idProyecto;
           this.state.lote = ctx?.idLote;
 
+          this.nombreLote = ctx?.nombreLote;
+          this.nombreProyecto = ctx?.nombreProyecto;
           return this.inv.list(this.workId); // o ctx.idLote si depende del contexto
         })
       )

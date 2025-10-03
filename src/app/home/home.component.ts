@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ProyectosComponent } from './proyectos/proyectos.component';
 import { ApiProyectosService } from '../services/proyectos.service';
-import { Subject, takeUntil } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { Usuario } from '../models/usuario';
 import { ApiLotesService } from '../services/lote.service';
 import { InventarioService } from '../services/inventario.service';
@@ -71,6 +71,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.proyectoDeshabilitado = true;
     this.isLoadingProyecto = true;
     const _idUser = this.apiAuthService.usuarioData._id;
+
+    // obtenemos el proyecto seleccionado y actualizamos el select de proyectos
+    // this.apiLoteService.loter$
+    //       .pipe(
+    //         distinctUntilChanged((prev, curr) => prev?._id === curr?._id),
+    //         takeUntil(this.subscription)
+    //       )
+    //       .subscribe((proyecto) => {
+    //         if (proyecto && proyecto._id && proyecto.name) {
+    //           console.log('Recibido desde proyectos$:', proyecto);
+    //           // setTimeout(() => {
+    //             this.proyecto = proyecto;
+    //             this.iniciar();
+    //           // }, 0);
+    //         } else {
+    //           this.router.navigate(['home/proyectos']);
+    //         }
+    //       });
+
+    
     this.apiProyectoService
       .getProyectos(_idUser)
       .pipe(takeUntil(this.subscription))
@@ -146,7 +166,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           if (response !== null) {
             this.apiInventarioService.setContexto(
               this.proyectoSeleccionado._id,
-              this.loteSeleccionado._id
+              this.loteSeleccionado._id,
+              this.proyectoSeleccionado.name,
+              this.loteSeleccionado.NombreTrabajo
             );
             this.router.navigate(['home/inventario']);
           } else {

@@ -56,7 +56,7 @@ export class InventarioService {
     return this.deleteMany([id]);
   }
 
-  setContexto(idProyecto: any, idLote: any) {
+  setContexto(idProyecto: any, idLote: any, nombreProyecto: string, nombreLote: string) {
     this.contextoSubject.next({ idProyecto, idLote });
   }
 }

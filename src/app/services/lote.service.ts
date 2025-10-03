@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Response } from '../models/response';
 import { Lotes } from '../models/lotes';
 import { connection } from '../security/production';
@@ -17,9 +17,12 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiLotesService {
+  private loteSubject = new BehaviorSubject<any>(null);
+  loter$ = this.loteSubject.asObservable();
+
   private readonly url: string = connection;
   // private readonly base = '/api'; // proxy a optisteel.ingaria.com
-//   private readonly baseUrl = environment.apiUrl;
+  //   private readonly baseUrl = environment.apiUrl;
 
   constructor(private _http: HttpClient) {}
 
@@ -28,11 +31,7 @@ export class ApiLotesService {
   }
 
   addLote(lote: {}): Observable<Lotes> {
-    return this._http.post<Lotes>(
-      `${this.url}/trabajos`,
-      lote,
-      httpOption
-    );
+    return this._http.post<Lotes>(`${this.url}/trabajos`, lote, httpOption);
   }
 
   deleteLotes(ids: { LotesIDs: string[] }): Observable<any> {
@@ -40,5 +39,12 @@ export class ApiLotesService {
       body: ids,
       ...httpOption,
     });
+  }
+
+  setLote(folder: any) {
+    const actual = this.loteSubject.getValue();
+    if (!actual || actual._id !== folder._id) {
+      this.loteSubject.next(folder);
+    }
   }
 }

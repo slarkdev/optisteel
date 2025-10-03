@@ -13,10 +13,12 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { MaterialModule } from './shared/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ForgetPasswordComponent } from './login/forget-password/forget-password.component';
+import { UpdatePasswordComponent } from './login/update-password/update-password.component';
 
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, NotFoundComponent],
+  declarations: [AppComponent, LoginComponent, NotFoundComponent, ForgetPasswordComponent, UpdatePasswordComponent],
   imports: [
     ReactiveFormsModule,
     RouterModule,

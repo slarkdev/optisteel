@@ -204,26 +204,28 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
           return;
         }
 
-        const lotes = {
+        const lote = {
           NombreTrabajo: nombre,
           UserID: [this.usuarioLogeado._id],
           CreadoPor: this.usuarioLogeado.UserName,
           FechaCreacion: this.getFormattedDate(),
           UltimaEdicion: this.getFormattedDateTime(),
-          Organizacion: 'Organizacion Ejemplo',
-          OrganizacionID: '67538203842272d6e79123db',
-          FolderID: '68d4038efdb5289a63177008', // Hardcode temporal
+          Organizacion: this.usuarioLogeado.Organizacion, //'Organizacion Ejemplo',
+          OrganizacionID: this.usuarioLogeado.OrganizacionID, //'67538203842272d6e79123db',
+          FolderID: this.folder._id,//'68d4038efdb5289a63177008', // Hardcode temporal
           cubiertos_count: 0,
-          id: 'DASDASS',
+          id: this.folder._id,//  'DASDASS',
           no_cubiertos_count: 0,
           piezas_count: 0,
+          _id: ""
         };
 
         return this.apiLotesService
-          .addLote(lotes)
+          .addLote(lote)
           .pipe(take(1))
           .toPromise()
           .then((response: any) => {
+            console.log('response de Lote: ', response);
             if (!response) {
               Swal.showValidationMessage(
                 'Ocurrió un error, inténtelo más tarde'
@@ -234,21 +236,16 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
             Swal.fire({
               position: 'top-end',
               icon: 'success',
-              title: 'Proyecto Creado',
+              title: 'Lote Creado',
               showConfirmButton: false,
               timer: 3000,
             });
 
-            const proyectoConCamposNumericos = {
-              ...response,
-              piezas_count: response.piezas_count ?? 0,
-              trabajos_count: response.trabajos_count ?? 0,
-            };
-
             //this.router.navigate(['home/proyectos']);
+            this.tablaData = [...this.tablaData, lote ];
             this.dataSource.data = [
               ...this.dataSource.data,
-              proyectoConCamposNumericos,
+              lote,
             ];
             this.tabla.filtro = '';
           })
@@ -288,7 +285,7 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
             Swal.fire({
               icon: 'success',
               title: 'Eliminado',
-              text: 'Los proyectos fueron eliminados correctamente.',
+              text: 'Los lotes fueron eliminados correctamente.',
               timer: 3000,
               showConfirmButton: false,
               position: 'top-end',
@@ -306,7 +303,7 @@ export class LotesComponent implements OnInit, OnDestroy, AfterViewInit {
             Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: 'Ocurrió un error al eliminar los proyectos.',
+              text: 'Ocurrió un error al eliminar los lotes.',
               confirmButtonColor: '#f8a166',
             });
           },

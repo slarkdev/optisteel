@@ -6,6 +6,8 @@ import { Login } from '../models/login';
 import { Error } from '../shared/error';
 import { Auth } from '../models/auth';
 import Swal from 'sweetalert2';
+import { MatDialog } from '@angular/material/dialog';
+import { ForgetPasswordComponent } from './forget-password/forget-password.component';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +23,7 @@ export class LoginComponent {
   loginErrorMessage: string | null = null;
 
   constructor(
+    private dialog: MatDialog,
     private form: FormBuilder,
     private apiAuthService: ApiAuthService,
     private router: Router
@@ -70,5 +73,13 @@ export class LoginComponent {
         },
       });
     }
+  }
+
+  forgetPassword(){
+    console.log('ir a olvide mi contraseña')
+    this.dialog.open(ForgetPasswordComponent, {
+      width: '400px', 
+      data: { email: '' }
+    });
   }
 }

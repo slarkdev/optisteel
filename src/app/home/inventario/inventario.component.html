@@ -1,7 +1,7 @@
-<div class="inv">
+<div class="main">
   <!-- Título -->
   <h1 class="page-title">Inventario</h1>
-  <p class="subtitle">Proyecto: <strong> {{ state.proyecto }}</strong> Lote: <strong> {{ state.lote }}</strong></p>
+  <p class="subtitle">Proyecto: <strong> {{ nombreProyecto }}</strong> Lote: <strong> {{ nombreLote }}</strong></p>
   <!-- Toolbar -->
   <div class="toolbar">
     <label class="search" role="search">
@@ -15,15 +15,15 @@
       />
     </label>
 
-    <label class="select">
-      <span class="txt">{{ pageSize }} por página</span>
-      <select [(ngModel)]="pageSize" aria-label="Filas por página">
+    <!-- <label class="select"> -->
+      <!-- <span class="txt">{{ pageSize }} por página</span> -->
+      <select [(ngModel)]="pageSize" aria-label="Filas por página"  class="select">
         <option [ngValue]="20">20 por página</option>
         <option [ngValue]="50">50 por página</option>
         <option [ngValue]="100">100 por página</option>
       </select>
-      <span class="caret">▾</span>
-    </label>
+      <!-- <span class="caret">▾</span> -->
+    <!-- </label> -->
 
     <div class="filter" [attr.aria-expanded]="filtersOpen">
       <button class="btn btn-filter" type="button" (click)="toggleFilters()">
@@ -69,122 +69,124 @@
   <div class="note">(*) Los campos marcados con asterisco son obligatorios.</div>
 
   <!-- Tabla -->
-  <section class="card" aria-label="Inventario">
-    <table class="table" role="grid">
-      <thead>
-        <tr>
-          <th>
-            <input
-              type="checkbox"
-              class="cb"
-              [checked]="masterChecked"
-              [indeterminate]="masterIndeterminate"
-              (change)="toggleAll($event)"
-              aria-label="Seleccionar todos"
-            />
-          </th>
-          <th>Perfil (*)</th>
-          <th>Calidad (*)</th>
-          <th>Longitud (*)</th>
-          <th>Cantidad (*)</th>
-          <th>Consumido</th>
-          <th>Longitud de pieza más larga</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row" *ngFor="let it of pagedItems; trackBy: trackById">
-          <td><input class="cb" type="checkbox" [checked]="selected.has(it.id)" (change)="toggleOne(it.id, $event)" /></td>
+  <section class="card-table" aria-label="Inventario">
+    <div class="table-wrapper">
+      <table class="table" role="grid">
+        <thead>
+          <tr>
+            <th>
+              <input
+                type="checkbox"
+                class="cb"
+                [checked]="masterChecked"
+                [indeterminate]="masterIndeterminate"
+                (change)="toggleAll($event)"
+                aria-label="Seleccionar todos"
+              />
+            </th>
+            <th>Perfil (*)</th>
+            <th>Calidad (*)</th>
+            <th>Longitud (*)</th>
+            <th>Cantidad (*)</th>
+            <th>Consumido</th>
+            <th>Longitud de pieza más larga</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row" *ngFor="let it of pagedItems; trackBy: trackById">
+            <td><input class="cb" type="checkbox" [checked]="selected.has(it.id)" (change)="toggleOne(it.id, $event)" /></td>
 
-          <!-- Perfil (editable) -->
-          <td data-label="Perfil">
-            <input class="cell-input"
-                  [ngModel]="it.perfil"
-                  (ngModelChange)="onCellEdit(it, 'perfil', $event)"
-                  (keydown.enter)="commitEdit($event)" />
-          </td>
+            <!-- Perfil (editable) -->
+            <td data-label="Perfil">
+              <input class="cell-input"
+                    [ngModel]="it.perfil"
+                    (ngModelChange)="onCellEdit(it, 'perfil', $event)"
+                    (keydown.enter)="commitEdit($event)" />
+            </td>
 
-          <!-- Calidad (editable, normalizada) -->
-          <td data-label="Calidad">
-            <input class="cell-input"
-                  [ngModel]="it.calidad"
-                  (ngModelChange)="onCellEdit(it, 'calidad', $event)"
-                  (keydown.enter)="commitEdit($event)" />
-          </td>
+            <!-- Calidad (editable, normalizada) -->
+            <td data-label="Calidad">
+              <input class="cell-input"
+                    [ngModel]="it.calidad"
+                    (ngModelChange)="onCellEdit(it, 'calidad', $event)"
+                    (keydown.enter)="commitEdit($event)" />
+            </td>
 
-          <!-- Longitud (editable, numérico) -->
-          <td data-label="Longitud">
-            <input class="cell-input cell-num" type="number" min="0" step="1"
-                  [ngModel]="it.longitud"
-                  (ngModelChange)="onCellEdit(it, 'longitud', $event)"
-                  (keydown.enter)="commitEdit($event)" />
-          </td>
+            <!-- Longitud (editable, numérico) -->
+            <td data-label="Longitud">
+              <input class="cell-input cell-num" type="number" min="0" step="1"
+                    [ngModel]="it.longitud"
+                    (ngModelChange)="onCellEdit(it, 'longitud', $event)"
+                    (keydown.enter)="commitEdit($event)" />
+            </td>
 
-          <!-- Cantidad (editable numérico) -->
-          <td data-label="Cantidad">
-            <input class="cell-input cell-num" type="number" min="0" step="1"
-                  [ngModel]="it.cantidad"
-                  (ngModelChange)="onCellEdit(it, 'cantidad', $event)"
-                  (keydown.enter)="commitEdit($event)" />
-          </td>
+            <!-- Cantidad (editable numérico) -->
+            <td data-label="Cantidad">
+              <input class="cell-input cell-num" type="number" min="0" step="1"
+                    [ngModel]="it.cantidad"
+                    (ngModelChange)="onCellEdit(it, 'cantidad', $event)"
+                    (keydown.enter)="commitEdit($event)" />
+            </td>
 
-          <!-- Consumido (no editable) -->
-          <td data-label="Consumido">{{ it.consumido }}</td>
-          <!-- Pieza más larga (no editable) -->
-          <td data-label="Pieza más larga">{{ it.piezaMasLarga | number:'1.0-0':'en-US' }}</td>
-        </tr>
-        <tr *ngIf="pagedItems.length === 0">
-          <td colspan="7" style="color:var(--muted);padding:20px">Sin resultados para tu búsqueda/filtros.</td>
-        </tr>
-        <!-- Fila en blanco para crear -->
-        <tr class="row row-draft">
-          <td><!-- sin checkbox --></td>
+            <!-- Consumido (no editable) -->
+            <td data-label="Consumido">{{ it.consumido }}</td>
+            <!-- Pieza más larga (no editable) -->
+            <td data-label="Pieza más larga">{{ it.piezaMasLarga | number:'1.0-0':'en-US' }}</td>
+          </tr>
+          <tr *ngIf="pagedItems.length === 0">
+            <td colspan="7" style="color:var(--muted);padding:20px">Sin resultados para tu búsqueda/filtros.</td>
+          </tr>
+          <!-- Fila en blanco para crear -->
+          <tr class="row row-draft">
+            <td><!-- sin checkbox --></td>
 
-          <!-- Perfil -->
-          <td data-label="Perfil">
-            <input class="cell-input"
-                  [ngModel]="newRow().perfil"
-                  (ngModelChange)="onDraftEdit('perfil', $event)"
-                  (keydown.enter)="commitEdit($event); saveDraftIfReady()"
-                  (blur)="saveDraftIfReady()"
-                  placeholder="Nuevo perfil (*)" />
-          </td>
+            <!-- Perfil -->
+            <td data-label="Perfil">
+              <input class="cell-input"
+                    [ngModel]="newRow().perfil"
+                    (ngModelChange)="onDraftEdit('perfil', $event)"
+                    (keydown.enter)="commitEdit($event); saveDraftIfReady()"
+                    (blur)="saveDraftIfReady()"
+                    placeholder="Nuevo perfil (*)" />
+            </td>
 
-          <!-- Calidad -->
-          <td data-label="Calidad">
-            <input class="cell-input"
-                  [ngModel]="newRow().calidad"
-                  (ngModelChange)="onDraftEdit('calidad', $event)"
-                  (keydown.enter)="commitEdit($event); saveDraftIfReady()"
-                  (blur)="saveDraftIfReady()"
-                  placeholder="Calidad (*)" />
-          </td>
+            <!-- Calidad -->
+            <td data-label="Calidad">
+              <input class="cell-input"
+                    [ngModel]="newRow().calidad"
+                    (ngModelChange)="onDraftEdit('calidad', $event)"
+                    (keydown.enter)="commitEdit($event); saveDraftIfReady()"
+                    (blur)="saveDraftIfReady()"
+                    placeholder="Calidad (*)" />
+            </td>
 
-          <!-- Longitud -->
-          <td data-label="Longitud">
-            <input class="cell-input cell-num" type="number" min="0" step="1"
-                  [ngModel]="newRow().longitud"
-                  (ngModelChange)="onDraftEdit('longitud', $event)"
-                  (keydown.enter)="commitEdit($event); saveDraftIfReady()"
-                  (blur)="saveDraftIfReady()"
-                  placeholder="0" />
-          </td>
+            <!-- Longitud -->
+            <td data-label="Longitud">
+              <input class="cell-input cell-num" type="number" min="0" step="1"
+                    [ngModel]="newRow().longitud"
+                    (ngModelChange)="onDraftEdit('longitud', $event)"
+                    (keydown.enter)="commitEdit($event); saveDraftIfReady()"
+                    (blur)="saveDraftIfReady()"
+                    placeholder="0" />
+            </td>
 
-          <!-- Cantidad -->
-          <td data-label="Cantidad">
-            <input class="cell-input cell-num" type="number" min="0" step="1"
-                  [ngModel]="newRow().cantidad"
-                  (ngModelChange)="onDraftEdit('cantidad', $event)"
-                  (keydown.enter)="commitEdit($event); saveDraftIfReady()"
-                  (blur)="saveDraftIfReady()"
-                  placeholder="0" />
-          </td>
+            <!-- Cantidad -->
+            <td data-label="Cantidad">
+              <input class="cell-input cell-num" type="number" min="0" step="1"
+                    [ngModel]="newRow().cantidad"
+                    (ngModelChange)="onDraftEdit('cantidad', $event)"
+                    (keydown.enter)="commitEdit($event); saveDraftIfReady()"
+                    (blur)="saveDraftIfReady()"
+                    placeholder="0" />
+            </td>
 
-          <!-- No editables -->
-          <td data-label="Consumido">—</td>
-          <td data-label="Pieza más larga">—</td>
-        </tr>
-      </tbody>
-    </table>
+            <!-- No editables -->
+            <td data-label="Consumido">—</td>
+            <td data-label="Pieza más larga">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <!-- Footer / pager -->

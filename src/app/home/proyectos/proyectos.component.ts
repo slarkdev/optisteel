@@ -77,6 +77,9 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    // tiene que reiniciar el select de proyectos en el padre
+
+    //luego cargar todos los proyectos
     this.iniciar();
   }
 

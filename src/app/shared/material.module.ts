@@ -13,6 +13,8 @@ import {MatChipsModule} from '@angular/material/chips';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialogModule } from '@angular/material/dialog';
+
 
 import { TablaComponent } from './tabla/tabla.component';
 import { CommonModule } from '@angular/common';
@@ -39,7 +41,10 @@ import { FormsModule } from '@angular/forms';
     MatCheckboxModule,
     MatPaginatorModule,
     MatChipsModule,
-    TablaComponent
+    MatDialogModule,
+    TablaComponent,
+    
+
   ],
   providers: [],
 })
