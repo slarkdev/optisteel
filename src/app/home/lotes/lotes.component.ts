@@ -23,6 +23,7 @@ import { ApiProyectosService } from '../../services/proyectos.service';
 import { Proyecto } from '../../models/proyecto';
 import { InventarioService } from '../../services/inventario.service';
 import { Error } from '../../shared/error';
+import { DatosService } from '../../services/datos.service';
 
 @Component({
   selector: 'app-lotes',
@@ -106,6 +107,7 @@ export class LotesComponent implements OnInit, OnDestroy {
     private apiLotesService: ApiLotesService,
     private apiProyectoService: ApiProyectosService,
     private apiInventarioService: InventarioService,
+    private apiDatosService: DatosService,
     private error: Error,
     private router: Router,
     private route: ActivatedRoute
@@ -171,7 +173,7 @@ export class LotesComponent implements OnInit, OnDestroy {
           OrganizacionID: this.usuarioLogeado.OrganizacionID, //'67538203842272d6e79123db',
           FolderID: this.proyectoActual._id, //'68d4038efdb5289a63177008', // Hardcode temporal
           cubiertos_count: 0,
-          id: this.proyectoActual._id, //  'DASDASS',
+          id:'', // NO DEBE SER IGUAL A NINGUNO ES ID UNICO  'DASDASS',
           no_cubiertos_count: 0,
           piezas_count: 0,
           _id: '',
@@ -268,31 +270,57 @@ export class LotesComponent implements OnInit, OnDestroy {
   clickRow(lote: any): void {
     //enviar informacion al componente padre sobre el elemento seleccionado para actualizar el select lote
     this.apiLotesService.actualizarLoteSeleccionado(lote);
-
-    this.apiInventarioService
+    this.apiDatosService
       .list(lote._id)
       .pipe(takeUntil(this.subscription))
       .subscribe({
         next: (response) => {
           if (response !== null) {
-            this.apiInventarioService.setContexto(
+            this.apiDatosService.setContexto(
               this.proyectoActual._id,
               lote._id,
               this.proyectoActual.name,
               lote.NombreTrabajo
             );
-            this.router.navigate(['home/inventario']);
+            this.router.navigate(['home/datos']);
           } else {
             this.error.showErrorSnackBar(
-              'No se encontraron inventarios para el lote.'
+              'No se encontraron Datos para el lote.'
             );
           }
         },
         error: (err) => {
           this.error.showErrorSnackBar(
-            'No se encontraron inventarios para el lote'
+            'No se encontraron Datos para el lote'
           );
         },
       });
+    // this.apiInventarioService
+    //   .list(lote._id)
+    //   .pipe(takeUntil(this.subscription))
+    //   .subscribe({
+    //     next: (response) => {
+    //       if (response !== null) {
+    //         this.apiInventarioService.setContexto(
+    //           this.proyectoActual._id,
+    //           lote._id,
+    //           this.proyectoActual.name,
+    //           lote.NombreTrabajo
+    //         );
+    //         this.router.navigate(['home/inventario']);
+    //       } else {
+    //         this.error.showErrorSnackBar(
+    //           'No se encontraron inventarios para el lote.'
+    //         );
+    //       }
+    //     },
+    //     error: (err) => {
+    //       this.error.showErrorSnackBar(
+    //         'No se encontraron inventarios para el lote'
+    //       );
+    //     },
+    //   });
+
+
   }
 }

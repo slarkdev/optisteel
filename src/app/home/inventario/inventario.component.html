@@ -173,11 +173,11 @@
             <!-- Cantidad -->
             <td data-label="Cantidad">
               <input class="cell-input cell-num" type="number" min="0" step="1"
-                    [ngModel]="newRow().cantidad"
-                    (ngModelChange)="onDraftEdit('cantidad', $event)"
-                    (keydown.enter)="commitEdit($event); saveDraftIfReady()"
-                    (blur)="saveDraftIfReady()"
-                    placeholder="0" />
+                  [ngModel]="newRow().cantidad"
+                  (ngModelChange)="onDraftEdit('cantidad', $event)"
+                  (keydown.enter)="commitEdit($event); saveDraftIfReady()"
+                  (blur)="saveDraftIfReady()"
+                  placeholder="0" />
             </td>
 
             <!-- No editables -->

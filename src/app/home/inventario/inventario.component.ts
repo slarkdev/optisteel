@@ -152,7 +152,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
   //     },
   //     error: (err) => {
   //       console.error('Inventario list error', err);
-  //       this.sb.open('Error al cargar inventario', 'Cerrar', {
+  //       this.sb.open('Erral cargar inventario', 'Cerrar', {
   //         duration: 3000,
   //       });
   //     },

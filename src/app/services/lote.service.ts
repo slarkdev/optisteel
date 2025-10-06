@@ -98,7 +98,7 @@ export class ApiLotesService {
   }
 
   deleteLotes(ids: { LotesIDs: string[] }): Observable<any> {
-    return this._http.request<any>('delete', 'api/trabajos/delete-multiple', {
+    return this._http.request<any>('delete', `${this.url}/trabajos/delete-multiple`, {
       body: ids,
       ...httpOption,
     });
