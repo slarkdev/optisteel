@@ -1,21 +1,17 @@
 import {
   AfterViewInit,
   Component,
-  EventEmitter,
   OnDestroy,
   OnInit,
-  Output,
   ViewChild,
 } from '@angular/core';
 import { ApiAuthService } from '../../services/apiauth.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, take, takeUntil } from 'rxjs';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { distinctUntilChanged, Subject, take, takeUntil } from 'rxjs';
 
 import { ApiProyectosService } from '../../services/proyectos.service';
 import { Usuario } from '../../models/usuario';
-import { Proyectos } from '../../models/proyectos';
+import { Proyecto } from '../../models/proyecto';
 import Swal from 'sweetalert2';
 import { TablaComponent } from '../../shared/tabla/tabla.component';
 
@@ -25,12 +21,13 @@ import { TablaComponent } from '../../shared/tabla/tabla.component';
   styleUrl: './proyectos.component.scss',
   standalone: false,
 })
-export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ProyectosComponent implements OnInit, OnDestroy {
   subscription = new Subject<void>();
   usuarioLogeado: Usuario = this.apiAuthService.usuarioData;
 
-  dataSource = new MatTableDataSource<Proyectos>();
   seleccionados: any[] = []; // te devuelve todos los proyectos que hayan sido seleccionados usando el checkbox
+
+  proyectos: Proyecto[] = [];
 
   columnasTabla = [
     {
@@ -65,8 +62,6 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
       spanClase: 'chip orange text-align-right',
     },
   ];
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('tablaRef') tabla!: TablaComponent;
 
   constructor(
@@ -77,40 +72,24 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    // tiene que reiniciar el select de proyectos en el padre
-
-    //luego cargar todos los proyectos
-    this.iniciar();
+    console.log('ProyectosComponent montado');
+    this.apiProyectoService
+      .getProyectos()
+      .pipe(takeUntil(this.subscription))
+      .subscribe((data) => {
+        this.proyectos = data;
+      });
   }
 
   ngOnDestroy(): void {
     this.subscription.next();
     this.subscription.complete();
-    //this.subscription.unsubscribe();
-  }
-  ngAfterViewInit() {
-    if (this.dataSource) {
-      this.dataSource.paginator = this.paginator;
-    }
-  }
-
-  iniciar() {
-    const _idUser = this.apiAuthService.usuarioData._id;
-    this.apiProyectoService
-      .getProyectos(_idUser)
-      .pipe(takeUntil(this.subscription))
-      .subscribe((response) => {
-        if (response !== null) {
-          this.dataSource = new MatTableDataSource<Proyectos>(response);
-          this.dataSource.paginator = this.paginator;
-          //this.updatePage();
-        }
-      });
+    console.log('🧹 ProyectosComponent destruido');
   }
 
   crearProyecto() {
     Swal.fire({
-      title: 'Ingrese el nombre del Folder',
+      title: 'Ingrese el nombre del Proyecto',
       input: 'text',
       inputAttributes: { autocapitalize: 'off' },
       showCancelButton: true,
@@ -130,6 +109,8 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
           userName: this.usuarioLogeado.UserName,
         };
 
+        console.log(proyecto);
+        
         return this.apiProyectoService
           .addProyecto(proyecto)
           .pipe(take(1))
@@ -157,10 +138,8 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
             };
 
             //this.router.navigate(['home/proyectos']);
-            this.dataSource.data = [
-              ...this.dataSource.data,
-              proyectoConCamposNumericos,
-            ];
+            this.apiProyectoService.actualizarListaProyectos(proyectoConCamposNumericos);
+
             this.tabla.filtro = '';
           })
           .catch(() => {
@@ -205,11 +184,13 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
               showConfirmButton: false,
               position: 'top-end',
             });
+            // Actualiza la tabla
+            this.apiProyectoService.eliminarProyectosLocalmente(ids.FolderIDs);
 
             // Actualiza la tabla}
-            this.dataSource.data = this.dataSource.data.filter(
-              (proyecto) => !ids.FolderIDs.includes(proyecto._id)
-            );
+            // this.dataSource.data = this.dataSource.data.filter(
+            //   (proyecto) => !ids.FolderIDs.includes(proyecto._id)
+            // );
 
             this.seleccionados = [];
             this.tabla.filtro = '';
@@ -232,8 +213,7 @@ export class ProyectosComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clickRow(element: any): void {
-    this.apiProyectoService.setFolder(element);
-    // localStorage.setItem('folder', JSON.stringify(element));
-    this.router.navigate(['home/lotes']);
+    this.apiProyectoService.actualizarProyectoSeleccionado(element);
+    this.router.navigate(['home/lotes']); // o con parámetro
   }
 }

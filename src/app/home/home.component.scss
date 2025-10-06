@@ -18,11 +18,6 @@
   padding: 16px;
 }
 
-.ancho-sidenav {
-  width: 60px;
-  height: 100%;
-}
-
 .select-horizontal {
   display: flex;
   align-items: center;
@@ -35,3 +30,80 @@
   color: #333;
 }
 
+.ancho-sidenav {
+  width: 4rem;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+.ancho-sidenav.collapsed .label {
+  opacity: 0;
+  width: 0;
+}
+
+.ancho-sidenav.expanded .label {
+  opacity: 1;
+  width: auto;
+}
+
+.ancho-sidenav.expanded {
+  width: 14rem;
+  background-color: whitesmoke;
+}
+
+.top-sidenav-logo {
+  display: flex;
+  height: 55px;
+  align-items: center;
+  border-bottom: 1px solid chocolate;
+}
+
+.icon {
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  margin-right: 0.8rem;
+}
+
+.label-icon {
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.3s ease, width 0.3s ease;
+}
+
+.top-brand {
+  display: flex;
+  align-items: center;
+  color: #3e3b38;
+  gap: 10px;
+  padding: 0.35rem 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  font-family: "Gotham", "Arial";
+  font-size: 1.5rem;
+}
+
+// .spacer {
+//   flex-grow: 1;
+// }
+
+.brand-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.mat-drawer-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+// mat-drawer {
+//   transition: transform 0.4s ease, opacity 0.4s ease !important;
+//   // transform: translateX(-20px) !important;
+//   // background: linear-gradient(to bottom, #2c3e50, #34495e);
+//   // color: white !important;
+
+//   // background: rgba(255, 255, 255, 0.1);
+//   // backdrop-filter: blur(10px);
+//   // border-right: 1px solid rgba(255, 255, 255, 0.2);
+
+// }

@@ -1,13 +1,13 @@
 <main class="main">
   <h1 class="page-title">Lotes del proyecto</h1>
   <p class="subtitle">
-    Lote actual: <strong>{{ folder?.name || "" }}</strong>
+    Proyecto actual: <strong>{{ proyectoActual?.name || "" }}</strong>
   </p>
-
-  <ng-container *ngIf="mostrarTabla">
+<!-- 
+  <ng-container *ngIf="mostrarTabla"> -->
     <app-tabla
       #tablaRef
-      [data]="tablaData"
+      [data]="lotes"
       [columnas]="columnasTabla"
       [pageSizeOptions]="[5, 10, 25, 50]"
       (seleccionadosChange)="actualizarSeleccionados($event)"
@@ -23,5 +23,5 @@
         </button>
       </div>
     </app-tabla>
-  </ng-container>
+  <!-- </ng-container> -->
 </main>

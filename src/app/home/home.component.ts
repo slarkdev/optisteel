@@ -19,6 +19,7 @@ import { InventarioService } from '../services/inventario.service';
 import { Error } from '../shared/error';
 import Swal from 'sweetalert2';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Proyecto } from '../models/proyecto';
 
 @Component({
   selector: 'app-home',
@@ -27,6 +28,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   standalone: false,
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  private _idUser = this.apiAuthService.usuarioData._id;
   subscription = new Subject<void>();
   usuarioLogeado: Usuario = this.apiAuthService.usuarioData;
 
@@ -35,8 +37,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   drawerMode: 'side' | 'over' = 'side';
   drawerOpened = true;
-  proyectos: any[] = [];
-  proyectoSeleccionado: any;
+  proyectos: Proyecto[] = [];
+  proyectoSeleccionado: any | null = null;
 
   lotes: any[] = [];
   loteSeleccionado: any;
@@ -45,6 +47,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   proyectoDeshabilitado = true;
   isLoadingLote = false;
   isLoadingProyecto = true;
+
+  isExpanded = false;
   constructor(
     private apiAuthService: ApiAuthService,
     private apiProyectoService: ApiProyectosService,
@@ -68,40 +72,40 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
   ngOnInit() {
+    console.log('home cargando proyectos,');
+
     this.proyectoDeshabilitado = true;
     this.isLoadingProyecto = true;
-    const _idUser = this.apiAuthService.usuarioData._id;
 
-    // obtenemos el proyecto seleccionado y actualizamos el select de proyectos
-    // this.apiLoteService.loter$
-    //       .pipe(
-    //         distinctUntilChanged((prev, curr) => prev?._id === curr?._id),
-    //         takeUntil(this.subscription)
-    //       )
-    //       .subscribe((proyecto) => {
-    //         if (proyecto && proyecto._id && proyecto.name) {
-    //           console.log('Recibido desde proyectos$:', proyecto);
-    //           // setTimeout(() => {
-    //             this.proyecto = proyecto;
-    //             this.iniciar();
-    //           // }, 0);
-    //         } else {
-    //           this.router.navigate(['home/proyectos']);
-    //         }
-    //       });
+    this.apiProyectoService.cargarProyectos(this._idUser);
 
-    
-    this.apiProyectoService
-      .getProyectos(_idUser)
+    this.apiProyectoService.proyectos$
       .pipe(takeUntil(this.subscription))
-      .subscribe((response) => {
-        if (response !== null) {
-          this.proyectos = response;
-          this.isLoadingProyecto = false;
-          this.proyectoDeshabilitado = false;
-          // console.log(response);
-        }
+      .subscribe((data) => {
+        this.proyectos = data;
       });
+
+    this.apiProyectoService
+      .getProyectoSeleccionado()
+      .pipe(takeUntil(this.subscription))
+      .subscribe((proyecto) => {
+        this.proyectoSeleccionado = proyecto;
+      });
+
+    this.apiLoteService.lotesFiltrados$
+      .pipe(takeUntil(this.subscription))
+      .subscribe((data) => {
+        this.lotes = [...data]; // ✅ copia por referencia
+      });
+    this.apiLoteService
+      .getLoteSeleccionado()
+      .pipe(takeUntil(this.subscription))
+      .subscribe((lote) => {
+        this.loteSeleccionado = lote;
+      });
+
+    this.isLoadingProyecto = false;
+    this.proyectoDeshabilitado = false;
   }
 
   ngOnDestroy(): void {
@@ -114,47 +118,21 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['login']);
   }
 
-  buscarLotesPorProyecto(): void {
+  async buscarLotesPorProyecto(): Promise<void> {
+    console.log('click en select de buscar lotes ');
+
+    this.loteSeleccionado = null;
     this.isLoadingLote = true;
     this.loteDeshabilitado = true;
-    console.log('click en select');
-    // this.apiProyectoService.setFolder(this.proyectoSeleccionado);
-    // console.log(this.proyectoSeleccionado);
 
-    // if (this.router.url !== '/home/lotes') {
-    //   this.router.navigate(['home/lotes']);
-    // }
-    const _idUser = this.apiAuthService.usuarioData._id;
+    await this.apiProyectoService.actualizarProyectoSeleccionado(
+      this.proyectoSeleccionado
+    );
+    await this.apiLoteService.cargarLotes(this._idUser);
 
-    this.apiLoteService
-      .getLotes(_idUser)
-      .pipe(takeUntil(this.subscription))
-      .subscribe((response) => {
-        if (response !== null) {
-          // Filtrar por folderID
-          const lotesFiltrados = response.filter(
-            (lote: any) => lote.FolderID === this.proyectoSeleccionado._id
-          );
-
-          // .map((lote: any) => {
-          //   const cubiertos =
-          //     lote.unique_perfiles?.reduce(
-          //       (acc: number, perfil: any) => acc + perfil.nUsados,
-          //       0
-          //     ) || 0;
-
-          //   return {
-          //     ...lote,
-          //     cubiertos_count: cubiertos,
-          //     no_cubiertos_count: lote.piezas_count - cubiertos,
-          //   };
-          //}
-          //);
-          this.isLoadingLote = false;
-          this.loteDeshabilitado = false;
-          this.lotes = lotesFiltrados;
-        }
-      });
+    this.isLoadingLote = false;
+    this.loteDeshabilitado = false;
+    this.router.navigate(['home/lotes']);
   }
 
   buscarInventarioPorLote() {
@@ -172,14 +150,30 @@ export class HomeComponent implements OnInit, OnDestroy {
             );
             this.router.navigate(['home/inventario']);
           } else {
-            this.error.showErrorSnackBar('No se encontraron inventarios para el lote.');
+            this.error.showErrorSnackBar(
+              'No se encontraron inventarios para el lote.'
+            );
           }
         },
         error: (err) => {
           this.error.showErrorSnackBar(
-            'No se encontraron inventarios para el lote',
+            'No se encontraron inventarios para el lote'
           );
         },
       });
+  }
+
+  navigateToProyectos() {
+    console.log('navegar a proyectos');
+
+    this.proyectoSeleccionado = null;
+    this.loteSeleccionado = null;
+    this.loteDeshabilitado = true;
+    // this.router.navigate(['home/proyectos']);
+    // this.toggleSidenav();
+  }
+
+  toggleSidenav(): void {
+    this.isExpanded = !this.isExpanded;
   }
 }

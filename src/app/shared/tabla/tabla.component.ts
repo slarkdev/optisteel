@@ -49,12 +49,12 @@ export class TablaComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && changes['data'].currentValue) {
-      console.log(
-        '✅ Tabla On Change Datos recibidos en hijo:',
-        changes['data'].currentValue
-      );
+      
       this.dataFiltrada = [...changes['data'].currentValue];
       this.pageIndex = 0;
+      console.log(
+        '✅ Tabla On Change Datos recibidos en hijo:', this.dataFiltrada.length
+      );
       // this.dataFiltrada = [...this.data];
       // this.pageIndex = 0;
       // this.cdRef.detectChanges();

@@ -12,6 +12,8 @@ export class InventarioService {
   private contextoSubject = new BehaviorSubject<{
     idProyecto: any;
     idLote: any;
+    nombreProyecto: string, 
+    nombreLote: string
   } | null>(null);
   contexto$ = this.contextoSubject.asObservable();
 
@@ -57,6 +59,6 @@ export class InventarioService {
   }
 
   setContexto(idProyecto: any, idLote: any, nombreProyecto: string, nombreLote: string) {
-    this.contextoSubject.next({ idProyecto, idLote });
+    this.contextoSubject.next({ idProyecto, idLote, nombreProyecto, nombreLote });
   }
 }

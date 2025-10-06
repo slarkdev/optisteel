@@ -1,4 +1,4 @@
-export interface Lotes {
+export interface Lote {
   _id: string;
   NombreTrabajo: string;
   FechaCreacion: string;

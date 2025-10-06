@@ -1,11 +1,19 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { Response } from '../models/response';
-import { Lotes } from '../models/lotes';
+import { Lote } from '../models/lote';
 import { connection } from '../security/production';
+import {
+  map,
+  filter,
+  switchMap,
+  tap,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+import { ApiProyectosService } from './proyectos.service';
 
 const httpOption = {
   headers: new HttpHeaders({
@@ -17,21 +25,76 @@ const httpOption = {
   providedIn: 'root',
 })
 export class ApiLotesService {
-  private loteSubject = new BehaviorSubject<any>(null);
-  loter$ = this.loteSubject.asObservable();
-
   private readonly url: string = connection;
-  // private readonly base = '/api'; // proxy a optisteel.ingaria.com
-  //   private readonly baseUrl = environment.apiUrl;
 
-  constructor(private _http: HttpClient) {}
+  private loteSubject = new BehaviorSubject<any>(null);
+  lote$ = this.loteSubject.asObservable();
 
-  getLotes(user_ID: string): Observable<any> {
-    return this._http.get<any>(`${this.url}trabajos/user/` + user_ID);
+  // subject lotes
+  private lotes$ = new BehaviorSubject<Lote[]>([]);
+  lotesCargado = false;
+  private loteSeleccionado$ = new BehaviorSubject<Lote | null>(null);
+  lotesFiltrados$: Observable<Lote[]>;
+
+  constructor(
+    private _http: HttpClient,
+    private apiProyectoService: ApiProyectosService
+  ) {
+    this.lotesFiltrados$ = combineLatest([
+      this.lotes$,
+      this.apiProyectoService.getProyectoSeleccionado(),
+    ]).pipe(
+      map(([lotes, proyecto]) =>
+        lotes.filter((l) => l.FolderID === proyecto?._id)
+      ),
+      distinctUntilChanged(
+        (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+      )
+    );
   }
 
-  addLote(lote: {}): Observable<Lotes> {
-    return this._http.post<Lotes>(`${this.url}/trabajos`, lote, httpOption);
+  cargarLotes(user_ID: string): Promise<void> {
+    if (this.lotesCargado) return Promise.resolve();
+
+    return this._http
+      .get<any>(`${this.url}trabajos/user/` + user_ID)
+      .pipe(
+        map((response) => {
+          const lotesTransformados = response.map((lote: any) => {
+            const cubiertos =
+              lote.unique_perfiles?.reduce(
+                (acc: number, perfil: any) => acc + perfil.nUsados,
+                0
+              ) || 0;
+
+            return {
+              ...lote,
+              cubiertos_count: cubiertos,
+              no_cubiertos_count: lote.piezas_count - cubiertos,
+            };
+          });
+
+          this.lotes$.next([...lotesTransformados]);
+          this.lotesCargado = true;
+        })
+      )
+      .toPromise(); // esto convierte el Observable en Promise
+  }
+
+  getLotesPorProyecto(proyectoId: string): Observable<any[]> {
+    return this.lotes$.pipe(
+      map((lotes: any[]) =>
+        lotes.filter((lote: any) => lote.FolderID === proyectoId)
+      )
+    );
+  }
+
+  getLotesTodos(): Observable<any[]> {
+    return this.lotes$.asObservable();
+  }
+
+  addLote(lote: {}): Observable<Lote> {
+    return this._http.post<Lote>(`${this.url}/trabajos`, lote, httpOption);
   }
 
   deleteLotes(ids: { LotesIDs: string[] }): Observable<any> {
@@ -39,6 +102,19 @@ export class ApiLotesService {
       body: ids,
       ...httpOption,
     });
+  }
+
+  actualizarLoteSeleccionado(lote: Lote) {
+    this.loteSeleccionado$.next(lote);
+  }
+
+  getLoteSeleccionado(): Observable<Lote | null> {
+    return this.loteSeleccionado$.asObservable();
+  }
+
+  resetearLotes() {
+    this.lotes$.next([]);
+    this.lotesCargado = false;
   }
 
   setLote(folder: any) {

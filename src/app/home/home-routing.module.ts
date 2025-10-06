@@ -9,6 +9,7 @@ import { ConfiguracionComponent } from './configuracion/configuracion.component'
 import { ProyectosComponent } from './proyectos/proyectos.component';
 import { AnalisisComponent } from './analisis/analisis.component';
 import { ReportesComponent } from './reportes/reportes.component';
+import { NotFoundComponent } from '../not-found/not-found.component';
 //import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
@@ -75,6 +76,14 @@ const routes: Routes = [
       {
         path: 'reportes',
         component: ReportesComponent,
+        data: {
+          acceso: [],
+        },
+      },
+
+      {
+        path: 'ayuda',
+        component: NotFoundComponent,
         data: {
           acceso: [],
         },

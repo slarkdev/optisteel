@@ -2,39 +2,88 @@
   <!-- Barra lateral fija -->
   <mat-drawer-container autosize>
     <mat-drawer
-      #drawer
       class="ancho-sidenav"
-      [mode]="drawerMode"
-      [opened]="drawerOpened"
+      mode="side"
+      opened
       position="start"
+      [class.expanded]="isExpanded"
+      [class.collapsed]="!isExpanded"
     >
       <aside class="sidebar" aria-label="Navegación">
-        <div class="dot" title="OPTISTEEL">A</div>
-        <button class="navbtn" title="Proyectos" [routerLink]="['./proyectos']">
-          📁
+        <div
+          class="top-sidenav-logo"
+          title="OPTISTEEL"
+          (click)="toggleSidenav()"
+        >
+          <div class="top-brand" aria-label="OPTISTEEL">
+            <img src="optLogo.svg" alt="OPTISTEEL Logo" class="brand-icon" />
+            <span class="label-icon" *ngIf="isExpanded">OPTISTEEL</span>
+          </div>
+        </div>
+
+        <button
+          class="navbtn"
+          title="Proyectos"
+          [routerLink]="['./proyectos']"
+          (click)="navigateToProyectos()"
+          routerLinkActive="active"
+        >
+          <mat-icon class="icon">folder</mat-icon>
+          <span class="label-icon" *ngIf="isExpanded">Proyectos</span>
         </button>
-        <button class="navbtn" title="Datos" [routerLink]="['./datos']">
-          📄
+        <button
+          class="navbtn"
+          title="Datos"
+          [routerLink]="['./datos']"
+          routerLinkActive="active"
+        >
+          <mat-icon class="icon">description</mat-icon>
+          <span class="label-icon" *ngIf="isExpanded">Datos</span>
         </button>
         <button
           class="navbtn"
           title="Inventario"
           [routerLink]="['./inventario']"
+          routerLinkActive="active"
         >
-          📦
+          <mat-icon class="icon">inventory_2</mat-icon>
+          <span class="label-icon" *ngIf="isExpanded">Inventario</span>
+        </button>
+        <button
+          class="navbtn"
+          title="Analisis"
+          [routerLink]="['./analisis']"
+          routerLinkActive="active"
+        >
+          <mat-icon class="icon">manufacturing</mat-icon>
+          <span class="label-icon" *ngIf="isExpanded">Análisis</span>
         </button>
         <button
           class="navbtn"
           title="Configuración"
           [routerLink]="['./configuracion']"
+          routerLinkActive="active"
         >
-          ⚙️
+          <mat-icon class="icon"
+            ><span class="material-symbols-rounded">settings</span></mat-icon
+          >
+
+          <span class="label-icon" *ngIf="isExpanded">Configuración</span>
         </button>
         <div class="spacer"></div>
-        <button class="navbtn" title="Ayuda" [routerLink]="['./ayuda']">
-          ❔
+        <button
+          class="navbtn"
+          title="Ayuda"
+          [routerLink]="['./ayuda']"
+          routerLinkActive="active"
+        >
+          <mat-icon class="icon">help</mat-icon>
+          <span class="label-icon" *ngIf="isExpanded">Ayuda</span>
         </button>
-        <button class="navbtn" title="Salir" (click)="logout()">🔚</button>
+        <button class="navbtn" title="Salir" (click)="logout()">
+          <mat-icon class="icon">exit_to_app</mat-icon>
+          <span class="label-icon" *ngIf="isExpanded">Cerrar Sesión</span>
+        </button>
       </aside>
     </mat-drawer>
 
@@ -56,7 +105,9 @@
                 </option>
               </select>
 
-              <i class="material-icons spin" *ngIf="isLoadingProyecto">autorenew</i>
+              <i class="material-icons spin" *ngIf="isLoadingProyecto"
+                >autorenew</i
+              >
             </div>
 
             <div class="pill">
@@ -72,7 +123,12 @@
                 </option>
               </select>
 
-              <i class="material-icons spin" *ngIf="isLoadingLote"  style="font-size: 20px;">autorenew</i>
+              <i
+                class="material-icons spin"
+                *ngIf="isLoadingLote"
+                style="font-size: 20px"
+                >autorenew</i
+              >
             </div>
           </div>
 
@@ -81,53 +137,20 @@
             >Gestiona proyectos del proyecto seleccionado.</span
           >
 
-          <button
+          <!-- <button
             *ngIf="drawerMode === 'over'"
             mat-icon-button
             (click)="drawer.toggle()"
           >
             <mat-icon>menu</mat-icon>
-          </button>
-
-          <!-- <button matIconButton [matMenuTriggerFor]="menuUser">
-            <mat-icon>account_circle</mat-icon>
-          </button>
-
-          <mat-menu #menuUser="matMenu">
-            <button mat-menu-item (click)="logout()">
-              <mat-icon>exit_to_app</mat-icon>
-              <span>Cerrar Sesión</span>
-            </button>
-          </mat-menu> -->
+          </button> -->
         </div>
       </div>
 
       <!-- Contenido debajo del toolbar -->
       <main class="main">
-        <router-outlet
-          (activate)="drawerMode === 'over' ? drawer.close() : null"
-        ></router-outlet>
+        <router-outlet></router-outlet>
       </main>
     </div>
   </mat-drawer-container>
 </div>
-
-<!-- <div class="container">
-  <mat-drawer-container class="example-container" autosize>
-    <mat-drawer #drawer class="ancho-sidenav" mode="side" opened>
-      <aside class="sidebar" aria-label="Navegación">
-        <div class="dot" title="OPTISTEEL">A</div>
-        <button class="navbtn" title="Proyectos">📁</button>
-        <button class="navbtn" title="Datos">📄</button>
-        <button class="navbtn" title="Inventario">📦</button>
-        <button class="navbtn" title="Configuración">⚙️</button>
-        <div class="spacer"></div>
-        <button class="navbtn" title="Ayuda">❔</button>
-      </aside>
-    </mat-drawer>
-
-    <div>
-      <router-outlet></router-outlet>
-    </div>
-  </mat-drawer-container>
-</div> -->

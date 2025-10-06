@@ -1,4 +1,4 @@
-export interface Proyectos {
+export interface Proyecto {
   createdAt: string;
   createdBy: string;
   name: string;
@@ -8,5 +8,4 @@ export interface Proyectos {
   userId: string;
   _id: string;
   seleccionado?: boolean;
-
 }

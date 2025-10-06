@@ -108,8 +108,6 @@ export class InventarioComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.subscription),
         switchMap((ctx: any) => {
-          console.log('Contexto recibido:', ctx);
-
           this.state.proyecto = ctx?.idProyecto;
           this.state.lote = ctx?.idLote;
 
