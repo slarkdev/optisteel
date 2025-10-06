@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { distinctUntilChanged, Subject, take, takeUntil } from 'rxjs';
 
 import { ApiProyectosService } from '../../services/proyectos.service';
+import { ApiLotesService } from '../../services/lote.service';
 import { Usuario } from '../../models/usuario';
 import { Proyecto } from '../../models/proyecto';
 import Swal from 'sweetalert2';
@@ -67,6 +68,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   constructor(
     private apiAuthService: ApiAuthService,
     private apiProyectoService: ApiProyectosService,
+    private apiLoteService: ApiLotesService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -214,6 +216,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
   clickRow(element: any): void {
     this.apiProyectoService.actualizarProyectoSeleccionado(element);
+    this.apiLoteService.cargarLotes(element.userId)
     this.router.navigate(['home/lotes']); // o con parámetro
   }
 }
