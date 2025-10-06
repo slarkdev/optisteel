@@ -1,3 +1,4 @@
+import { FormBuilder } from '@angular/forms';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ApiAuthService } from '../../services/apiauth.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -100,7 +101,6 @@ export class LotesComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('tablaRef') tabla!: TablaComponent;
-  mostrarTabla = 0;
 
   constructor(
     private apiAuthService: ApiAuthService,
@@ -151,6 +151,8 @@ export class LotesComponent implements OnInit, OnDestroy {
     Swal.fire({
       title: 'Ingrese el nombre del lote',
       input: 'text',
+      inputPlaceholder: 'lote',
+      inputValue: 'lote',
       inputAttributes: { autocapitalize: 'off' },
       showCancelButton: true,
       confirmButtonText: 'Crear',
@@ -173,10 +175,9 @@ export class LotesComponent implements OnInit, OnDestroy {
           OrganizacionID: this.usuarioLogeado.OrganizacionID, //'67538203842272d6e79123db',
           FolderID: this.proyectoActual._id, //'68d4038efdb5289a63177008', // Hardcode temporal
           cubiertos_count: 0,
-          id:'', // NO DEBE SER IGUAL A NINGUNO ES ID UNICO  'DASDASS',
+          id:`new-${Date.now()}`, // NO DEBE SER IGUAL A NINGUNO ES ID UNICO  'DASDASS',
           no_cubiertos_count: 0,
           piezas_count: 0,
-          _id: '',
         };
 
         return this.apiLotesService
@@ -191,7 +192,6 @@ export class LotesComponent implements OnInit, OnDestroy {
               );
               return;
             }
-
             Swal.fire({
               position: 'top-end',
               icon: 'success',
@@ -199,6 +199,15 @@ export class LotesComponent implements OnInit, OnDestroy {
               showConfirmButton: false,
               timer: 3000,
             });
+            
+            
+            const loteCompleto = {
+              ...lote,
+              _id: response.id,
+            };
+            this.apiLotesService.actualizarListaLotes(loteCompleto);
+
+            this.tabla.filtro = '';
           })
           .catch(() => {
             Swal.showValidationMessage('Ocurrió un error, inténtelo más tarde');
@@ -229,7 +238,7 @@ export class LotesComponent implements OnInit, OnDestroy {
     }).then((result) => {
       if (result.isConfirmed) {
         const ids = {
-          LotesIDs: this.seleccionados.map((p) => p._id),
+          TrabajoIDs: this.seleccionados.map((p) => p._id),
         };
         this.apiLotesService.deleteLotes(ids).subscribe({
           next: () => {
@@ -259,6 +268,7 @@ export class LotesComponent implements OnInit, OnDestroy {
             });
           },
         });
+        this.apiLotesService.eliminarLotesLocalmente(ids.TrabajoIDs);
       }
     });
   }

@@ -97,15 +97,29 @@ export class ApiLotesService {
     return this._http.post<Lote>(`${this.url}/trabajos`, lote, httpOption);
   }
 
-  deleteLotes(ids: { LotesIDs: string[] }): Observable<any> {
-    return this._http.request<any>('delete', `${this.url}/trabajos/delete-multiple`, {
+  deleteLotes(ids: { TrabajoIDs: string[] }): Observable<any> {
+    return this._http.request<any>('delete', `${this.url}/trabajos`, {
       body: ids,
       ...httpOption,
     });
   }
 
+  actualizarListaLotes(lote: Lote) {
+    const actual = this.lotes$.getValue();
+    const actualizados = [...actual, lote];
+    this.lotes$.next(actualizados);
+    console.log('✅ Lotes después de agregar:', actualizados);
+  }
+
+  
   actualizarLoteSeleccionado(lote: Lote) {
     this.loteSeleccionado$.next(lote);
+  }
+  
+  eliminarLotesLocalmente(ids: string[]) {
+    const actual = this.lotes$.getValue();
+    const filtrados = actual.filter((p) => !ids.includes(p._id));
+    this.lotes$.next(filtrados);
   }
 
   getLoteSeleccionado(): Observable<Lote | null> {
@@ -122,5 +136,9 @@ export class ApiLotesService {
     if (!actual || actual._id !== folder._id) {
       this.loteSubject.next(folder);
     }
+  }
+
+  async actualizarProyectoSeleccionado(lotes: Lote) {
+    this.loteSeleccionado$.next(lotes);
   }
 }
