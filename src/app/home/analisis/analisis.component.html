@@ -1,1 +1,398 @@
-<p>analisis works!</p>
+<main class="main">
+  <h1 class="page-title">Análisis — W_Profiles</h1>
+  <p class="subtitle">
+    <!-- <strong> Proyecto: {{ proyectoSeleccionado?.name || ""}} Lote: {{ loteSeleccionado?.NombreTrabajo || "" }}</strong> -->
+  </p>
+
+  <div class="ctx">
+    <div class="actions">
+      <button class="btn btn-ghost-1">🔄 Actualizar</button>
+      <button class="btn btn-ghost">🧹 Limpiar</button>
+      <button class="btn btn-ghost-1">⤓ Exportar</button>
+      <button class="btn btn-primary">💾 Guardar</button>
+    </div>
+  </div>
+
+  <section class="fila">
+    <div class="contenedor">
+      <label class="stock-indicator" title="Estado de stock">
+        <span class="pill" data-stock="true">Sí hay stock</span>
+      </label>
+
+      <span class="kpi"
+        ><span class="badge">✔</span> Cubiertos <strong>124</strong></span
+      >
+      <span class="kpi warn"
+        ><span class="badge">✖</span> No Cubiertos <strong>18</strong></span
+      >
+      <span class="kpi"
+        ><span class="badge">Σ</span> Total <strong>142</strong></span
+      >
+    </div>
+  </section>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-tab="con">
+      Patrones con empate
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="sin">
+      Patrones sin empate
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="res">
+      Resultados
+    </button>
+  </div>
+
+  <section
+    class="card tabpanel"
+    id="panel-con"
+    role="tabpanel"
+    aria-labelledby="con"
+  >
+    <div class="card-hd">
+      Patrones de corte <span class="muted">· 10 resultados</span>
+    </div>
+    <div class="card-bd">
+      <!-- Patrón 1 -->
+      <div class="section" aria-expanded="true">
+        <div class="row expand">
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24">
+            <path fill="currentColor" d="m7 10l5 5l5-5H7z" />
+          </svg>
+          <div class="header-grid" style="flex: 1">
+            <div class="h-cell">Proyecto</div>
+            <div class="h-cell">Perfil</div>
+            <div class="h-cell">Patrón de Corte</div>
+            <div class="h-cell">Cantidad</div>
+            <div class="h-cell">Piezas</div>
+            <div class="h-cell">Saldo (mm)</div>
+            <div class="h-cell">Longitud (mm)</div>
+            <div class="h-cell">Saldo (%)</div>
+            <div class="h-cell">Cortes</div>
+
+            <div>Puente Norte</div>
+            <div>W310×39</div>
+            <div>W-90-A01</div>
+            <div>4</div>
+            <div>12</div>
+            <div>35</div>
+            <div>11000</div>
+            <div>2.9%</div>
+            <div>9</div>
+          </div>
+        </div>
+
+        <div class="pattern-bar" style="margin: 6px 0 10px">
+          <span class="seg gray" style="left: 0; width: 32%">P1 · 3200mm</span>
+          <span class="seg gray" style="left: 32%; width: 36%"
+            >P2 · 3600mm</span
+          >
+          <span class="seg_hachu gray" style="left: 68%; width: 25%"
+            >P3_1 · 3000mm</span
+          >
+          <span class="seg orange" style="left: 93%; width: 7%"></span>
+          <span class="note-right">Saldo +90mm</span>
+        </div>
+
+        <div class="detail">
+          <div class="detail-head">
+            <div>Ref (res nombre)</div>
+            <div>Cant</div>
+            <div>Cant Total</div>
+            <div>Largo (mm)</div>
+          </div>
+          <div class="detail-row">
+            <div>P1</div>
+            <div>1</div>
+            <div>4</div>
+            <div>3200</div>
+          </div>
+          <div class="detail-row">
+            <div>P2</div>
+            <div>1</div>
+            <div>4</div>
+            <div>3600</div>
+          </div>
+          <div class="detail-row">
+            <div>P3_1</div>
+            <div>1</div>
+            <div>4</div>
+            <div>3000</div>
+          </div>
+          <div class="detail-row">
+            <div>Saldo</div>
+            <div>—</div>
+            <div>—</div>
+            <div>1200</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patrón 2 -->
+      <div class="section" aria-expanded="true">
+        <div class="row expand">
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24">
+            <path fill="currentColor" d="m7 10l5 5l5-5H7z" />
+          </svg>
+          <div class="header-grid" style="flex: 1">
+            <div class="h-cell">Proyecto</div>
+            <div class="h-cell">Perfil</div>
+            <div class="h-cell">Patrón de Corte</div>
+            <div class="h-cell">Cantidad</div>
+            <div class="h-cell">Piezas</div>
+            <div class="h-cell">Saldo (mm)</div>
+            <div class="h-cell">Longitud (mm)</div>
+            <div class="h-cell">Saldo (%)</div>
+            <div class="h-cell">Cortes</div>
+
+            <div>Edificio A</div>
+            <div>W250×33</div>
+            <div>W-80-S07</div>
+            <div>2</div>
+            <div>8</div>
+            <div>12</div>
+            <div>6500</div>
+            <div>0.9%</div>
+            <div>7</div>
+          </div>
+        </div>
+
+        <div class="pattern-bar" style="margin: 6px 0 10px">
+          <span class="seg_hachu gray" style="left: 0; width: 45%"
+            >P3_2 · 2500mm</span
+          >
+          <span class="seg gray" style="left: 45%; width: 30%"
+            >P5 · 2000mm</span
+          >
+          <span class="seg gray" style="left: 75%; width: 20%"
+            >P6 · 1500mm</span
+          >
+          <span class="seg red" style="left: 95%; width: 5%"></span>
+        </div>
+
+        <div class="detail">
+          <div class="detail-head">
+            <div>Ref (res nombre)</div>
+            <div>Cant</div>
+            <div>Cant Total</div>
+            <div>Largo (mm)</div>
+          </div>
+          <div class="detail-row">
+            <div>P3_2</div>
+            <div>1</div>
+            <div>2</div>
+            <div>2500</div>
+          </div>
+          <div class="detail-row">
+            <div>P5</div>
+            <div>1</div>
+            <div>2</div>
+            <div>2000</div>
+          </div>
+          <div class="detail-row">
+            <div>P6</div>
+            <div>1</div>
+            <div>2</div>
+            <div>1500</div>
+          </div>
+          <div class="detail-row">
+            <div>Saldo</div>
+            <div>—</div>
+            <div>—</div>
+            <div>500</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patrón 3 -->
+      <div class="section" aria-expanded="true">
+        <div class="row expand">
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24">
+            <path fill="currentColor" d="m7 10l5 5l5-5H7z" />
+          </svg>
+          <div class="header-grid" style="flex: 1">
+            <div class="h-cell">Proyecto</div>
+            <div class="h-cell">Perfil</div>
+            <div class="h-cell">Patrón de Corte</div>
+            <div class="h-cell">Cantidad</div>
+            <div class="h-cell">Piezas</div>
+            <div class="h-cell">Saldo (mm)</div>
+            <div class="h-cell">Longitud (mm)</div>
+            <div class="h-cell">Saldo (%)</div>
+            <div class="h-cell">Cortes</div>
+
+            <div>Planta Sur</div>
+            <div>W200×26</div>
+            <div>W-06-C03</div>
+            <div>6</div>
+            <div>18</div>
+            <div>55</div>
+            <div>7500</div>
+            <div>3.2%</div>
+            <div>11</div>
+          </div>
+        </div>
+
+        <div class="pattern-bar" style="margin: 6px 0 10px">
+          <span class="seg gray" style="left: 0; width: 28%">P4 · 2800mm</span>
+          <span class="seg_hachu gray" style="left: 28%; width: 32%"
+            >P7_1 · 1900mm</span
+          >
+          <span class="seg gray" style="left: 60%; width: 30%"
+            >P8 · 1800mm</span
+          >
+          <span class="seg orange" style="left: 90%; width: 10%"></span>
+          <span class="note-right">Saldo +47mm</span>
+        </div>
+
+        <div class="detail">
+          <div class="detail-head">
+            <div>Ref (res nombre)</div>
+            <div>Cant</div>
+            <div>Cant Total</div>
+            <div>Largo (mm)</div>
+          </div>
+          <div class="detail-row">
+            <div>P4</div>
+            <div>1</div>
+            <div>6</div>
+            <div>2800</div>
+          </div>
+          <div class="detail-row">
+            <div>P7_1</div>
+            <div>1</div>
+            <div>6</div>
+            <div>1900</div>
+          </div>
+          <div class="detail-row">
+            <div>P8</div>
+            <div>1</div>
+            <div>6</div>
+            <div>1800</div>
+          </div>
+          <div class="detail-row">
+            <div>Saldo</div>
+            <div>—</div>
+            <div>—</div>
+            <div>1000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patrón 4 -->
+      <div class="section" aria-expanded="true">
+        <div class="row expand">
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24">
+            <path fill="currentColor" d="m7 10l5 5l5-5H7z" />
+          </svg>
+          <div class="header-grid" style="flex: 1">
+            <div class="h-cell">Proyecto</div>
+            <div class="h-cell">Perfil</div>
+            <div class="h-cell">Patrón de Corte</div>
+            <div class="h-cell">Cantidad</div>
+            <div class="h-cell">Piezas</div>
+            <div class="h-cell">Saldo (mm)</div>
+            <div class="h-cell">Longitud (mm)</div>
+            <div class="h-cell">Saldo (%)</div>
+            <div class="h-cell">Cortes</div>
+
+            <div>Terminal</div>
+            <div>W360×51</div>
+            <div>W-09-G12</div>
+            <div>8</div>
+            <div>28</div>
+            <div>20</div>
+            <div>11000</div>
+            <div>1.4%</div>
+            <div>10</div>
+          </div>
+        </div>
+
+        <div class="pattern-bar" style="margin: 6px 0 10px">
+          <span class="seg gray" style="left: 0; width: 30%">P10 · 2400mm</span>
+          <span class="seg gray" style="left: 30%; width: 40%"
+            >P9 · 3200mm</span
+          >
+          <span class="seg_hachu gray" style="left: 70%; width: 25%"
+            >P7_2 · 3000mm</span
+          >
+          <span class="seg red" style="left: 95%; width: 5%"></span>
+          <span class="note-right">Saldo +10mm</span>
+        </div>
+
+        <div class="detail">
+          <div class="detail-head">
+            <div>Ref (res nombre)</div>
+            <div>Cant</div>
+            <div>Cant Total</div>
+            <div>Largo (mm)</div>
+          </div>
+          <div class="detail-row">
+            <div>P10</div>
+            <div>1</div>
+            <div>8</div>
+            <div>2400</div>
+          </div>
+          <div class="detail-row">
+            <div>P9</div>
+            <div>1</div>
+            <div>8</div>
+            <div>3200</div>
+          </div>
+          <div class="detail-row">
+            <div>P7_2</div>
+            <div>1</div>
+            <div>8</div>
+            <div>3000</div>
+          </div>
+          <div class="detail-row">
+            <div>Saldo</div>
+            <div>—</div>
+            <div>—</div>
+            <div>700</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card tabpanel" id="panel-sin" role="tabpanel" hidden>
+    <div class="card-hd">Patrones sin empate</div>
+    <div class="card-bd center muted">
+      Sin datos de ejemplo aquí — usa la pestaña “con empate”.
+    </div>
+  </section>
+
+  <section class="card tabpanel" id="panel-res" role="tabpanel" hidden>
+    <div class="card-hd">Resultados</div>
+    <div class="card-bd center muted">
+      Resumen final del nesting (placeholder).
+    </div>
+  </section>
+
+  <div class="grid3">
+    <div class="stat">
+      <h4>Saldos</h4>
+      <div class="kline"><span>Saldo total (mm)</span><strong>620</strong></div>
+      <div class="kline"><span>Saldo / series</span><strong>1.9%</strong></div>
+      <div class="kline">
+        <span>Resto utilizable (mm)</span><strong>180</strong>
+      </div>
+    </div>
+    <div class="stat">
+      <h4>Postprocesado</h4>
+      <div class="kline"><span>Despiece</span><strong>0.6%</strong></div>
+      <div class="kline">
+        <span># Barras utilizadas</span><strong>14</strong>
+      </div>
+      <div class="kline"><span># Cortes</span><strong>35</strong></div>
+    </div>
+    <div class="stat">
+      <h4>Resumen</h4>
+      <div class="kline"><span>Empates</span><strong>2</strong></div>
+      <div class="kline"><span>Perfiles W Series</span><strong>16</strong></div>
+      <div class="kline"><span>Patrones</span><strong>10</strong></div>
+      <div class="kline"><span>Piezas</span><strong>48</strong></div>
+    </div>
+  </div>
+</main>
