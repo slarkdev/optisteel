@@ -294,7 +294,7 @@ export class DatosComponent implements OnInit, OnDestroy {
     }).then((result) => {
       if (result.isConfirmed) {
         const ids = {
-          LotesIDs: this.seleccionados.map((p) => p._id),
+          TrabajoIDs: this.seleccionados.map((p) => p._id),
         };
         this.apiLotesService.deleteLotes(ids).subscribe({
           next: () => {

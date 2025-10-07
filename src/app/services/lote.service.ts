@@ -27,8 +27,8 @@ const httpOption = {
 export class ApiLotesService {
   private readonly url: string = connection;
 
-  private loteSubject = new BehaviorSubject<any>(null);
-  lote$ = this.loteSubject.asObservable();
+  // private loteSubject = new BehaviorSubject<any>(null);
+  // lote$ = this.loteSubject.asObservable();
 
   // subject lotes
   private lotes$ = new BehaviorSubject<Lote[]>([]);
@@ -131,14 +131,20 @@ export class ApiLotesService {
     this.lotesCargado = false;
   }
 
-  setLote(folder: any) {
-    const actual = this.loteSubject.getValue();
-    if (!actual || actual._id !== folder._id) {
-      this.loteSubject.next(folder);
-    }
-  }
+  // setLote(folder: any) {
+  //   const actual = this.loteSubject.getValue();
+  //   if (!actual || actual._id !== folder._id) {
+  //     this.loteSubject.next(folder);
+  //   }
+  // }
 
-  async actualizarProyectoSeleccionado(lotes: Lote) {
-    this.loteSeleccionado$.next(lotes);
-  }
+  // async actualizarProyectoSeleccionado(lotes: Lote) {
+  //   this.loteSeleccionado$.next(lotes);
+  // }
+  // setLote(folder: any) {
+  //   const actual = this.loteSubject.getValue();
+  //   if (!actual || actual._id !== folder._id) {
+  //     this.loteSubject.next(folder);
+  //   }
+  // }
 }

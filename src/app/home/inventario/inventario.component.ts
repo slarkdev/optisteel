@@ -11,8 +11,12 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
 import {
+  catchError,
   distinctUntilChanged,
+  forkJoin,
   lastValueFrom,
+  map,
+  of,
   Subject,
   switchMap,
   takeUntil,
@@ -20,6 +24,8 @@ import {
 
 import { InventarioService } from '../../services/inventario.service';
 import { InventoryVM, toAPI, toVM } from './inventario.adapters';
+import { UpdateDialogComponent } from './update-dialog/update-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 type Calidad = string; // ya no restringimos
 
@@ -49,7 +55,11 @@ export class InventarioComponent implements OnInit, OnDestroy {
     return this.state.lote;
   }
 
-  constructor(private inv: InventarioService, private sb: MatSnackBar) {}
+  constructor(
+    private inv: InventarioService,
+    private sb: MatSnackBar,
+    private dialog: MatDialog
+  ) {}
 
   // ====== STATE (datos) ======
   private items = signal<InventoryVM[]>([]);
@@ -426,6 +436,8 @@ export class InventarioComponent implements OnInit, OnDestroy {
     key: 'perfil' | 'calidad' | 'longitud' | 'cantidad',
     value: any
   ) {
+    console.log('onCellEdit');
+
     const updated = this.items().map((r) => {
       if (r.id !== row.id) return r;
 
@@ -443,11 +455,15 @@ export class InventarioComponent implements OnInit, OnDestroy {
   }
 
   commitEdit(e: Event) {
+    console.log('commitEdit');
+
     (e as any)?.preventDefault?.();
     (e.target as HTMLElement)?.blur?.();
   }
 
   saveRowSoon(vm: InventoryVM) {
+    console.log('save row soon', vm);
+
     const prev = this.saveTimers.get(vm.id);
     if (prev) clearTimeout(prev);
     const t = setTimeout(() => this.saveRow(vm), 500);
@@ -455,6 +471,8 @@ export class InventarioComponent implements OnInit, OnDestroy {
   }
 
   saveRow(vm: InventoryVM) {
+    console.log('save row');
+
     if (!this.validateRow(vm)) {
       this.sb.open(
         `Fila ${vm.id}: hay campos obligatorios sin completar`,
@@ -513,4 +531,66 @@ export class InventarioComponent implements OnInit, OnDestroy {
   }
 
   trackById = (_: number, it: InventoryVM) => it.id;
+
+  async modificarCantidadLongitud() {
+    if (!this.anySelected()) {
+      this.sb.open('No hay filas seleccionadas', 'Cerrar', { duration: 2200 });
+      return;
+    }
+    const dialogRef = this.dialog.open(UpdateDialogComponent, {
+      width: '300px',
+      data: { cantidad: 0, longitud: 0 },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) return;
+      const { cantidad, longitud } = result;
+      // Usar estos datos para actualizar las filas seleccionadas
+
+      const current = this.items();
+      const rowsToUpdate = current.filter((r) => this.selected.has(r.id));
+
+      const updatedRows = rowsToUpdate.map((r) => ({
+        ...r,
+        cantidad,
+        longitud,
+      }));
+
+      const updateCalls = updatedRows.map((r) => {
+        console.log('Actualizando fila:', r);
+
+        return this.inv.upsert(this.workId, toAPI(r)).pipe(
+          map((res: any) => {
+            const newId = Array.isArray(res) ? res?.[0]?._id : res?._id;
+            if (newId) {
+              this.items.update((list) =>
+                list.map((x) => (x.id === r.id ? { ...x, _id: newId } : x))
+              );
+            }
+            return { success: true };
+          }),
+          catchError((err) => {
+            return of({ error: true });
+          })
+        );
+      });
+
+      forkJoin(updateCalls).subscribe((results) => {
+        const hasError = results.some((res: any) => res?.error);
+
+        if (hasError) {
+          this.sb.open('Algunas filas no se pudieron actualizar', 'Cerrar', {
+            duration: 4000,
+          });
+        } else {
+          this.sb.open('Todas las filas fueron actualizadas', 'Cerrar', {
+            duration: 2000,
+          });
+        }
+
+        this.loadInventory();
+      });
+    });
+    //
+  }
 }

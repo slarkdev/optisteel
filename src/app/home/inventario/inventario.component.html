@@ -63,6 +63,7 @@
     <input #fileInput type="file" accept=".xlsx,.xls" hidden (change)="onFileInputChange($event)" />
     <button class="btn btn-primary" type="button" (click)="fileInput.click()">+ Agregar desde archivo</button>
     <button class="btn btn-muted" type="button" [disabled]="!anySelected()" (click)="confirmAndDeleteSelected()">Borrar selección</button>
+    <button class="btn btn-muted" type="button" [disabled]="!anySelected()" (click)="modificarCantidadLongitud()">Actualizar Datos</button>
   </div>
 
   <!-- Nota -->

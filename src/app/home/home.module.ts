@@ -18,14 +18,11 @@ import { LotesComponent } from './lotes/lotes.component';
 import { ProyectosComponent } from './proyectos/proyectos.component';
 import { ReportesComponent } from './reportes/reportes.component';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-
-import { MatPaginatorIntl } from '@angular/material/paginator';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MAT_PAGINATOR_INTL_PROVIDER } from '@angular/material/paginator';
 import { LOCALE_ID } from '@angular/core';
-import localeEs from '@angular/common/locales/es';
-import { registerLocaleData } from '@angular/common';
+import { UpdateDialogComponent } from './inventario/update-dialog/update-dialog.component';
 
 @NgModule({
   declarations: [
@@ -38,11 +35,13 @@ import { registerLocaleData } from '@angular/common';
     LotesComponent,
     ProyectosComponent,
     ReportesComponent,
+    UpdateDialogComponent
   ],
   exports: [
     MaterialModule
   ],
   imports: [
+    ReactiveFormsModule,
     CommonModule,
     RouterModule,
     FormsModule,

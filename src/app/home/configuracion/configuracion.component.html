@@ -1,1 +1,242 @@
-<p>configuracion works!</p>
+<form [formGroup]="configform" (ngSubmit)="saveConfiguracion()">
+  <div class="main">
+    <h1 class="page-title">Configuración</h1>
+    <p class="subtitle">
+      <strong>
+        Proyecto: {{ proyectoSeleccionado?.name || "" }} Lote:
+        {{ loteSeleccionado?.NombreTrabajo || "" }}</strong
+      >
+    </p>
+    <div style="display: flex; justify-content: end">
+      <div style="display: flex; flex-direction: row; gap: 1rem">
+        <button type="submit" class="btn btn-orange" [disabled]="loteSeleccionado === null ">💾 Guardar</button>
+        <button class="btn btn-warning">⟲ Resetear</button>
+      </div>
+    </div>
+
+    <!-- Resultados -->
+    <section class="card">
+      <div class="card-hd">Resultados</div>
+      <div class="card-bd">
+        <input
+          formControlName="resultados"
+          #speedSlider
+          id="speed"
+          type="range"
+          class="range"
+          min="0"
+          max="100"
+          value="60"
+          aria-label="Rápido vs óptimo"
+          (input)="tintSpeed()"
+        />
+        <div class="scale">
+          <span>Rápido</span><span>20%</span><span>40%</span><span>60%</span
+          ><span>80%</span><span>Óptimo</span>
+        </div>
+        <div class="help">
+          Ajusta el balance entre velocidad y calidad del cálculo.
+        </div>
+      </div>
+    </section>
+
+    <!-- Partir piezas -->
+    <section class="card">
+      <div class="card-hd">Partir piezas</div>
+      <div class="card-bd">
+        <label class="switch"
+          ><input
+            formControlName="grappling"
+            class="cb"
+            type="checkbox"
+            checked
+          />
+          Partir piezas para aprovechamiento del retal</label
+        >
+        <div class="grid2" style="margin-top: 10px">
+          <input
+            formControlName="longitudMin"
+            class="input"
+            placeholder="Longitud mínima de retal aprovechable (mm)"
+            value="1000"
+          />
+          <input
+            formControlName="espacioAngulos"
+            class="input"
+            placeholder="Espacio entre ángulos (mm)"
+            value="10"
+          />
+          <input
+            formControlName="longitudMinAgujeros"
+            class="input"
+            placeholder="Distancia mínima de corte a los agujeros (mm)"
+          />
+          <input
+            formControlName="longitudAgarre"
+            class="input"
+            placeholder="Longitud de agarre (mm)"
+          />
+          <input
+            formControlName="anchoSierra"
+            class="input"
+            placeholder="Ancho de hoja de sierra (mm)"
+          />
+          <div></div>
+        </div>
+        <label class="switch" style="margin-top: 10px"
+          ><input
+            formControlName="rotarAnidar"
+            class="cb"
+            type="checkbox"
+            checked
+          />
+          Se puede rotar para anidar en ángulo</label
+        >
+      </div>
+    </section>
+
+    <!-- Zona de no corte -->
+    <section class="card">
+      <div class="card-hd">Zona de no corte de piezas</div>
+      <div class="card-bd">
+        <div class="help" style="margin-bottom: 8px">
+          Distribución de consumo de material
+        </div>
+
+        <!-- Barra compuesta -->
+        <div class="dist" id="dist">
+          <div #segA class="seg seg-a" id="segA" style="width: 30%"></div>
+          <!-- Inicio -->
+          <div
+            #segB
+            class="seg seg-b"
+            id="segB"
+            style="left: 30%; width: 40%"
+          ></div>
+          <!-- Mitad -->
+          <div #segC class="seg seg-c" id="segC" style="width: 30%"></div>
+          <!-- Final -->
+        </div>
+
+        <!-- Leyenda -->
+        <div class="legend">
+          <span class="tag"
+            ><span class="dot-a"></span> Inicio: <span id="pA">30%</span></span
+          >
+          <span class="tag"
+            ><span class="dot-b"></span> Mitad: <span id="pB">40%</span></span
+          >
+          <span class="tag"
+            ><span class="dot-c"></span> Final: <span id="pC">30%</span></span
+          >
+        </div>
+        <div class="small">
+          Mitad delimita cuánto pueden ocupar los laterales. Final se controla
+          de derecha a izquierda.
+        </div>
+
+        <!-- Sliders independientes -->
+        <div class="sliders3">
+          <div class="sld">
+            <label
+              ><span class="dot-a"></span> Inicio
+              <span #valA class="val" id="valA">30%</span></label
+            >
+            <input
+              formControlName="inicioPorcentaje"
+              #sA
+              id="sA"
+              type="range"
+              min="0"
+              max="60"
+              value="0"
+              step="0.5"
+              aria-label="Porcentaje Inicio"
+              (input)="onSliderInput()"
+            />
+          </div>
+          <div class="sld">
+            <label
+              ><span class="dot-b"></span> Mitad
+              <span #valB class="val" id="valB">40%</span></label
+            >
+            <input
+              formControlName="mitadPorcentaje"
+              #sB
+              id="sB"
+              type="range"
+              min="0"
+              max="50"
+              value="0"
+              step="0.5"
+              aria-label="Porcentaje Mitad (ancho centrado)"
+              (input)="onSliderInput()"
+            />
+          </div>
+          <div class="sld rtl">
+            <label
+              ><span class="dot-c"></span> Final
+              <span #valC class="val" id="valC">30%</span></label
+            >
+            <!-- Valor real (0..tope). Se ve invertido por CSS para mover de derecha→izquierda -->
+            <input
+              formControlName="finalPorcentaje"
+              #sC
+              id="sC"
+              type="range"
+              min="0"
+              max="60"
+              value="0"
+              step="0.5"
+              aria-label="Porcentaje Final (derecha a izquierda)"
+              (input)="onSliderInput()"
+            />
+          </div>
+        </div>
+
+        <!-- Descripción inferior -->
+        <div style="margin-top: 16px">
+          <div class="zone-row">
+            <div class="zone-tag"><span class="badge">↦</span> Inicio</div>
+            <div class="help">Zona de No corte desde el inicio</div>
+            <div class="minbox">
+              <span class="small">Mínimo (mm)</span
+              ><input
+                formControlName="inicioMinimoMM"
+                class="input"
+                style="width: 90px"
+                value="0"
+              />
+            </div>
+          </div>
+          <div class="zone-row">
+            <div class="zone-tag"><span class="badge">＋</span> Mitad</div>
+            <div class="help">Zona de No corte desde la mitad</div>
+            <div class="minbox">
+              <span class="small">Mínimo (mm)</span
+              ><input
+                formControlName="mitadMinimoMM"
+                class="input"
+                style="width: 90px"
+                value="10"
+              />
+            </div>
+          </div>
+          <div class="zone-row">
+            <div class="zone-tag"><span class="badge">↤</span> Final</div>
+            <div class="help">Zona de No corte desde el final</div>
+            <div class="minbox">
+              <span class="small">Mínimo (mm)</span
+              ><input
+                formControlName="finalMinimoMM"
+                class="input"
+                style="width: 90px"
+                value="0"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</form>

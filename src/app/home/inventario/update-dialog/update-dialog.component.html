@@ -1,0 +1,46 @@
+<!-- update-dialog.component.html -->
+<mat-toolbar color="primary">
+  <h2 mat-dialog-title>Actualizar valores</h2>
+</mat-toolbar>
+
+<mat-dialog-content [formGroup]="form">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Cantidad</mat-label>
+    <input matInput formControlName="cantidad" type="number" min="0" />
+    <mat-error *ngIf="form.get('cantidad')?.invalid"
+      >Cantidad requerida</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Longitud</mat-label>
+    <input matInput formControlName="longitud" type="number" min="0" />
+    <mat-error *ngIf="form.get('longitud')?.invalid"
+      >Longitud requerida</mat-error
+    >
+  </mat-form-field>
+
+  <div align="center" gap="1rem">
+    <button mat-button (click)="cancel()">Cancelar</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="confirm()"
+      [disabled]="form.invalid"
+    >
+      Confirmar
+    </button>
+  </div>
+</mat-dialog-content>
+
+<!-- <mat-dialog-actions align="center">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="confirm()"
+    [disabled]="form.invalid"
+  >
+    Confirmar
+  </button>
+</mat-dialog-actions> -->

@@ -18,8 +18,8 @@ const httpOption = {
 export class ApiProyectosService {
   private readonly url: string = connection;
 
-  private proyectoSubject = new BehaviorSubject<Proyecto | null>(null);
-  proyecto$ = this.proyectoSubject.asObservable();
+  // private proyectoSubject = new BehaviorSubject<Proyecto | null>(null);
+  // proyecto$ = this.proyectoSubject.asObservable();
 
   proyectos$ = new BehaviorSubject<Proyecto[]>([]);
   //listaProyectosSubject$ = new BehaviorSubject<Proyecto[]>([]);
@@ -86,16 +86,16 @@ export class ApiProyectosService {
     return this.proyectoSeleccionado$.asObservable();
   }
 
-  setProyecto(proyecto: any) {
-    const actual = this.proyectoSubject.getValue();
+  // setProyecto(proyecto: any) {
+  //   const actual = this.proyectoSubject.getValue();
 
-    if (!proyecto || !proyecto._id) {
-      this.proyectoSubject.next(null); // reinicia el proyecto
-      return;
-    }
+  //   if (!proyecto || !proyecto._id) {
+  //     this.proyectoSubject.next(null); // reinicia el proyecto
+  //     return;
+  //   }
 
-    if (!actual || actual._id !== proyecto._id) {
-      this.proyectoSubject.next(proyecto);
-    }
-  }
+  //   if (!actual || actual._id !== proyecto._id) {
+  //     this.proyectoSubject.next(proyecto);
+  //   }
+  // }
 }

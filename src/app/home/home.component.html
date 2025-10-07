@@ -49,15 +49,7 @@
           <mat-icon class="icon">inventory_2</mat-icon>
           <span class="label-icon" *ngIf="isExpanded">Inventario</span>
         </button>
-        <button
-          class="navbtn"
-          title="Analisis"
-          [routerLink]="['./analisis']"
-          routerLinkActive="active"
-        >
-          <mat-icon class="icon">manufacturing</mat-icon>
-          <span class="label-icon" *ngIf="isExpanded">Análisis</span>
-        </button>
+
         <button
           class="navbtn"
           title="Configuración"
@@ -70,6 +62,17 @@
 
           <span class="label-icon" *ngIf="isExpanded">Configuración</span>
         </button>
+        
+        <button
+          class="navbtn"
+          title="Analisis"
+          [routerLink]="['./analisis']"
+          routerLinkActive="active"
+        >
+          <mat-icon class="icon">manufacturing</mat-icon>
+          <span class="label-icon" *ngIf="isExpanded">Análisis</span>
+        </button>
+
         <div class="spacer"></div>
         <button
           class="navbtn"

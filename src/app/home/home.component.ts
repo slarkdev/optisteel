@@ -95,8 +95,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.apiLoteService.lotesFiltrados$
       .pipe(takeUntil(this.subscription))
       .subscribe((data) => {
-        this.lotes = [...data]; // ✅ copia por referencia
+        this.lotes = [...data]; 
       });
+
     this.apiLoteService
       .getLoteSeleccionado()
       .pipe(takeUntil(this.subscription))
@@ -135,7 +136,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['home/lotes']);
   }
 
-  buscarInventarioPorLote() {
+  async buscarInventarioPorLote() {
     this.apiInventarioService
       .list(this.loteSeleccionado._id)
       .pipe(takeUntil(this.subscription))
@@ -148,7 +149,9 @@ export class HomeComponent implements OnInit, OnDestroy {
               this.proyectoSeleccionado.name,
               this.loteSeleccionado.NombreTrabajo
             );
-            this.router.navigate(['home/inventario']);
+
+            this.apiLoteService.actualizarLoteSeleccionado(this.loteSeleccionado);
+            this.router.navigate(['home/datos']);
           } else {
             this.error.showErrorSnackBar(
               'No se encontraron inventarios para el lote.'

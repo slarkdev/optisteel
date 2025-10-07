@@ -1,0 +1,490 @@
+[1mdiff --git a/src/app/home/configuracion/configuracion.component.html b/src/app/home/configuracion/configuracion.component.html[m
+[1mindex c783800..7700cb0 100644[m
+[1m--- a/src/app/home/configuracion/configuracion.component.html[m
+[1m+++ b/src/app/home/configuracion/configuracion.component.html[m
+[36m@@ -1 +1,242 @@[m
+[31m-<p>configuracion works!</p>[m
+[32m+[m[32m<form [formGroup]="configform" (ngSubmit)="saveConfiguracion()">[m
+[32m+[m[32m  <div class="main">[m
+[32m+[m[32m    <h1 class="page-title">Configuración</h1>[m
+[32m+[m[32m    <p class="subtitle">[m
+[32m+[m[32m      <strong>[m
+[32m+[m[32m        Proyecto: {{ proyectoSeleccionado?.name || "" }} Lote:[m
+[32m+[m[32m        {{ loteSeleccionado?.NombreTrabajo || "" }}</strong[m
+[32m+[m[32m      >[m
+[32m+[m[32m    </p>[m
+[32m+[m[32m    <div style="display: flex; justify-content: end">[m
+[32m+[m[32m      <div style="display: flex; flex-direction: row; gap: 1rem">[m
+[32m+[m[32m        <button type="submit" class="btn btn-orange" [disabled]="loteSeleccionado === null ">💾 Guardar</button>[m
+[32m+[m[32m        <button class="btn btn-warning">⟲ Resetear</button>[m
+[32m+[m[32m      </div>[m
+[32m+[m[32m    </div>[m
+[32m+[m
+[32m+[m[32m    <!-- Resultados -->[m
+[32m+[m[32m    <section class="card">[m
+[32m+[m[32m      <div class="card-hd">Resultados</div>[m
+[32m+[m[32m      <div class="card-bd">[m
+[32m+[m[32m        <input[m
+[32m+[m[32m          formControlName="resultados"[m
+[32m+[m[32m          #speedSlider[m
+[32m+[m[32m          id="speed"[m
+[32m+[m[32m          type="range"[m
+[32m+[m[32m          class="range"[m
+[32m+[m[32m          min="0"[m
+[32m+[m[32m          max="100"[m
+[32m+[m[32m          value="60"[m
+[32m+[m[32m          aria-label="Rápido vs óptimo"[m
+[32m+[m[32m          (input)="tintSpeed()"[m
+[32m+[m[32m        />[m
+[32m+[m[32m        <div class="scale">[m
+[32m+[m[32m          <span>Rápido</span><span>20%</span><span>40%</span><span>60%</span[m
+[32m+[m[32m          ><span>80%</span><span>Óptimo</span>[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m        <div class="help">[m
+[32m+[m[32m          Ajusta el balance entre velocidad y calidad del cálculo.[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m      </div>[m
+[32m+[m[32m    </section>[m
+[32m+[m
+[32m+[m[32m    <!-- Partir piezas -->[m
+[32m+[m[32m    <section class="card">[m
+[32m+[m[32m      <div class="card-hd">Partir piezas</div>[m
+[32m+[m[32m      <div class="card-bd">[m
+[32m+[m[32m        <label class="switch"[m
+[32m+[m[32m          ><input[m
+[32m+[m[32m            formControlName="grappling"[m
+[32m+[m[32m            class="cb"[m
+[32m+[m[32m            type="checkbox"[m
+[32m+[m[32m            checked[m
+[32m+[m[32m          />[m
+[32m+[m[32m          Partir piezas para aprovechamiento del retal</label[m
+[32m+[m[32m        >[m
+[32m+[m[32m        <div class="grid2" style="margin-top: 10px">[m
+[32m+[m[32m          <input[m
+[32m+[m[32m            formControlName="longitudMin"[m
+[32m+[m[32m            class="input"[m
+[32m+[m[32m            placeholder="Longitud mínima de retal aprovechable (mm)"[m
+[32m+[m[32m            value="1000"[m
+[32m+[m[32m          />[m
+[32m+[m[32m          <input[m
+[32m+[m[32m            formControlName="espacioAngulos"[m
+[32m+[m[32m            class="input"[m
+[32m+[m[32m            placeholder="Espacio entre ángulos (mm)"[m
+[32m+[m[32m            value="10"[m
+[32m+[m[32m          />[m
+[32m+[m[32m          <input[m
+[32m+[m[32m            formControlName="longitudMinAgujeros"[m
+[32m+[m[32m            class="input"[m
+[32m+[m[32m            placeholder="Distancia mínima de corte a los agujeros (mm)"[m
+[32m+[m[32m          />[m
+[32m+[m[32m          <input[m
+[32m+[m[32m            formControlName="longitudAgarre"[m
+[32m+[m[32m            class="input"[m
+[32m+[m[32m            placeholder="Longitud de agarre (mm)"[m
+[32m+[m[32m          />[m
+[32m+[m[32m          <input[m
+[32m+[m[32m            formControlName="anchoSierra"[m
+[32m+[m[32m            class="input"[m
+[32m+[m[32m            placeholder="Ancho de hoja de sierra (mm)"[m
+[32m+[m[32m          />[m
+[32m+[m[32m          <div></div>[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m        <label class="switch" style="margin-top: 10px"[m
+[32m+[m[32m          ><input[m
+[32m+[m[32m            formControlName="rotarAnidar"[m
+[32m+[m[32m            class="cb"[m
+[32m+[m[32m            type="checkbox"[m
+[32m+[m[32m            checked[m
+[32m+[m[32m          />[m
+[32m+[m[32m          Se puede rotar para anidar en ángulo</label[m
+[32m+[m[32m        >[m
+[32m+[m[32m      </div>[m
+[32m+[m[32m    </section>[m
+[32m+[m
+[32m+[m[32m    <!-- Zona de no corte -->[m
+[32m+[m[32m    <section class="card">[m
+[32m+[m[32m      <div class="card-hd">Zona de no corte de piezas</div>[m
+[32m+[m[32m      <div class="card-bd">[m
+[32m+[m[32m        <div class="help" style="margin-bottom: 8px">[m
+[32m+[m[32m          Distribución de consumo de material[m
+[32m+[m[32m        </div>[m
+[32m+[m
+[32m+[m[32m        <!-- Barra compuesta -->[m
+[32m+[m[32m        <div class="dist" id="dist">[m
+[32m+[m[32m          <div #segA class="seg seg-a" id="segA" style="width: 30%"></div>[m
+[32m+[m[32m          <!-- Inicio -->[m
+[32m+[m[32m          <div[m
+[32m+[m[32m            #segB[m
+[32m+[m[32m            class="seg seg-b"[m
+[32m+[m[32m            id="segB"[m
+[32m+[m[32m            style="left: 30%; width: 40%"[m
+[32m+[m[32m          ></div>[m
+[32m+[m[32m          <!-- Mitad -->[m
+[32m+[m[32m          <div #segC class="seg seg-c" id="segC" style="width: 30%"></div>[m
+[32m+[m[32m          <!-- Final -->[m
+[32m+[m[32m        </div>[m
+[32m+[m
+[32m+[m[32m        <!-- Leyenda -->[m
+[32m+[m[32m        <div class="legend">[m
+[32m+[m[32m          <span class="tag"[m
+[32m+[m[32m            ><span class="dot-a"></span> Inicio: <span id="pA">30%</span></span[m
+[32m+[m[32m          >[m
+[32m+[m[32m          <span class="tag"[m
+[32m+[m[32m            ><span class="dot-b"></span> Mitad: <span id="pB">40%</span></span[m
+[32m+[m[32m          >[m
+[32m+[m[32m          <span class="tag"[m
+[32m+[m[32m            ><span class="dot-c"></span> Final: <span id="pC">30%</span></span[m
+[32m+[m[32m          >[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m        <div class="small">[m
+[32m+[m[32m          Mitad delimita cuánto pueden ocupar los laterales. Final se controla[m
+[32m+[m[32m          de derecha a izquierda.[m
+[32m+[m[32m        </div>[m
+[32m+[m
+[32m+[m[32m        <!-- Sliders independientes -->[m
+[32m+[m[32m        <div class="sliders3">[m
+[32m+[m[32m          <div class="sld">[m
+[32m+[m[32m            <label[m
+[32m+[m[32m              ><span class="dot-a"></span> Inicio[m
+[32m+[m[32m              <span #valA class="val" id="valA">30%</span></label[m
+[32m+[m[32m            >[m
+[32m+[m[32m            <input[m
+[32m+[m[32m              formControlName="inicioPorcentaje"[m
+[32m+[m[32m              #sA[m
+[32m+[m[32m              id="sA"[m
+[32m+[m[32m              type="range"[m
+[32m+[m[32m              min="0"[m
+[32m+[m[32m              max="60"[m
+[32m+[m[32m              value="0"[m
+[32m+[m[32m              step="0.5"[m
+[32m+[m[32m              aria-label="Porcentaje Inicio"[m
+[32m+[m[32m              (input)="onSliderInput()"[m
+[32m+[m[32m            />[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m          <div class="sld">[m
+[32m+[m[32m            <label[m
+[32m+[m[32m              ><span class="dot-b"></span> Mitad[m
+[32m+[m[32m              <span #valB class="val" id="valB">40%</span></label[m
+[32m+[m[32m            >[m
+[32m+[m[32m            <input[m
+[32m+[m[32m              formControlName="mitadPorcentaje"[m
+[32m+[m[32m              #sB[m
+[32m+[m[32m              id="sB"[m
+[32m+[m[32m              type="range"[m
+[32m+[m[32m              min="0"[m
+[32m+[m[32m              max="50"[m
+[32m+[m[32m              value="0"[m
+[32m+[m[32m              step="0.5"[m
+[32m+[m[32m              aria-label="Porcentaje Mitad (ancho centrado)"[m
+[32m+[m[32m              (input)="onSliderInput()"[m
+[32m+[m[32m            />[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m          <div class="sld rtl">[m
+[32m+[m[32m            <label[m
+[32m+[m[32m              ><span class="dot-c"></span> Final[m
+[32m+[m[32m              <span #valC class="val" id="valC">30%</span></label[m
+[32m+[m[32m            >[m
+[32m+[m[32m            <!-- Valor real (0..tope). Se ve invertido por CSS para mover de derecha→izquierda -->[m
+[32m+[m[32m            <input[m
+[32m+[m[32m              formControlName="finalPorcentaje"[m
+[32m+[m[32m              #sC[m
+[32m+[m[32m              id="sC"[m
+[32m+[m[32m              type="range"[m
+[32m+[m[32m              min="0"[m
+[32m+[m[32m              max="60"[m
+[32m+[m[32m              value="0"[m
+[32m+[m[32m              step="0.5"[m
+[32m+[m[32m              aria-label="Porcentaje Final (derecha a izquierda)"[m
+[32m+[m[32m              (input)="onSliderInput()"[m
+[32m+[m[32m            />[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m        </div>[m
+[32m+[m
+[32m+[m[32m        <!-- Descripción inferior -->[m
+[32m+[m[32m        <div style="margin-top: 16px">[m
+[32m+[m[32m          <div class="zone-row">[m
+[32m+[m[32m            <div class="zone-tag"><span class="badge">↦</span> Inicio</div>[m
+[32m+[m[32m            <div class="help">Zona de No corte desde el inicio</div>[m
+[32m+[m[32m            <div class="minbox">[m
+[32m+[m[32m              <span class="small">Mínimo (mm)</span[m
+[32m+[m[32m              ><input[m
+[32m+[m[32m                formControlName="inicioMinimoMM"[m
+[32m+[m[32m                class="input"[m
+[32m+[m[32m                style="width: 90px"[m
+[32m+[m[32m                value="0"[m
+[32m+[m[32m              />[m
+[32m+[m[32m            </div>[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m          <div class="zone-row">[m
+[32m+[m[32m            <div class="zone-tag"><span class="badge">＋</span> Mitad</div>[m
+[32m+[m[32m            <div class="help">Zona de No corte desde la mitad</div>[m
+[32m+[m[32m            <div class="minbox">[m
+[32m+[m[32m              <span class="small">Mínimo (mm)</span[m
+[32m+[m[32m              ><input[m
+[32m+[m[32m                formControlName="mitadMinimoMM"[m
+[32m+[m[32m                class="input"[m
+[32m+[m[32m                style="width: 90px"[m
+[32m+[m[32m                value="10"[m
+[32m+[m[32m              />[m
+[32m+[m[32m            </div>[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m          <div class="zone-row">[m
+[32m+[m[32m            <div class="zone-tag"><span class="badge">↤</span> Final</div>[m
+[32m+[m[32m            <div class="help">Zona de No corte desde el final</div>[m
+[32m+[m[32m            <div class="minbox">[m
+[32m+[m[32m              <span class="small">Mínimo (mm)</span[m
+[32m+[m[32m              ><input[m
+[32m+[m[32m                formControlName="finalMinimoMM"[m
+[32m+[m[32m                class="input"[m
+[32m+[m[32m                style="width: 90px"[m
+[32m+[m[32m                value="0"[m
+[32m+[m[32m              />[m
+[32m+[m[32m            </div>[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m      </div>[m
+[32m+[m[32m    </section>[m
+[32m+[m[32m  </div>[m
+[32m+[m[32m</form>[m
+[1mdiff --git a/src/app/home/configuracion/configuracion.component.scss b/src/app/home/configuracion/configuracion.component.scss[m
+[1mindex e69de29..4a77684 100644[m
+[1m--- a/src/app/home/configuracion/configuracion.component.scss[m
+[1m+++ b/src/app/home/configuracion/configuracion.component.scss[m
+[36m@@ -0,0 +1,292 @@[m
+[32m+[m[32m.btn {[m
+[32m+[m[32m  appearance: none;[m
+[32m+[m[32m  border: 1px solid transparent;[m
+[32m+[m[32m  cursor: pointer;[m
+[32m+[m[32m  padding: 0.66rem 0.9rem;[m
+[32m+[m[32m  border-radius: 999px;[m
+[32m+[m[32m  font-weight: 800;[m
+[32m+[m[32m  display: inline-flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: 0.45rem;[m
+[32m+[m[32m  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);[m
+[32m+[m[32m}[m
+[32m+[m[32m.btn-ghost {[m
+[32m+[m[32m  background: #ee6622;[m
+[32m+[m[32m  color: #fff;[m
+[32m+[m[32m}[m
+[32m+[m[32m.btn-ghost:hover {[m
+[32m+[m[32m  background: #a04517;[m
+[32m+[m[32m}[m
+[32m+[m[32m.btn-warning {[m
+[32m+[m[32m  background: #f8a166;[m
+[32m+[m[32m  color: white;[m
+[32m+[m[32m}[m
+[32m+[m[32m.btn-warning:hover {[m
+[32m+[m[32m  background: #da8d59;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.h1 {[m
+[32m+[m[32m  margin: 8px auto 0 auto;[m
+[32m+[m[32m  max-width: var(--content-max);[m
+[32m+[m[32m  color: var(--text-strong);[m
+[32m+[m[32m  font-weight: 800;[m
+[32m+[m[32m  font-size: clamp(22px, 2.6vw, 30px);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Cards e inputs */[m
+[32m+[m[32m.card {[m
+[32m+[m[32m  background: var(--card);[m
+[32m+[m[32m  border-radius: var(--radius-xl);[m
+[32m+[m[32m  box-shadow: var(--shadow);[m
+[32m+[m[32m  max-width: var(--content-max);[m
+[32m+[m[32m  margin: 0 auto;[m
+[32m+[m[32m  width: 100%;[m
+[32m+[m[32m}[m
+[32m+[m[32m.card + .card {[m
+[32m+[m[32m  margin-top: 6px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.card-hd {[m
+[32m+[m[32m  padding: 14px 16px;[m
+[32m+[m[32m  border-bottom: 1px solid var(--line);[m
+[32m+[m[32m  font-weight: 800;[m
+[32m+[m[32m  color: var(--text-strong);[m
+[32m+[m[32m}[m
+[32m+[m[32m.card-bd {[m
+[32m+[m[32m  padding: 16px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.help {[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m  font-size: 0.9rem;[m
+[32m+[m[32m}[m
+[32m+[m[32m.grid2 {[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  grid-template-columns: 1fr 1fr;[m
+[32m+[m[32m  gap: 12px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.input {[m
+[32m+[m[32m  width: 100%;[m
+[32m+[m[32m  padding: 0.7rem 0.8rem;[m
+[32m+[m[32m  border: 1px solid var(--line);[m
+[32m+[m[32m  border-radius: 12px;[m
+[32m+[m[32m  background: #fff;[m
+[32m+[m[32m  font: inherit;[m
+[32m+[m[32m}[m
+[32m+[m[32m.switch {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: 8px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.cb {[m
+[32m+[m[32m  width: 18px;[m
+[32m+[m[32m  height: 18px;[m
+[32m+[m[32m  appearance: none;[m
+[32m+[m[32m  display: inline-grid;[m
+[32m+[m[32m  place-items: center;[m
+[32m+[m[32m  border: 1.6px solid #cbd5e1;[m
+[32m+[m[32m  border-radius: 5px;[m
+[32m+[m[32m  background: #fff;[m
+[32m+[m[32m  cursor: pointer;[m
+[32m+[m[32m}[m
+[32m+[m[32m.cb:checked {[m
+[32m+[m[32m  background: #ee6622;[m
+[32m+[m[32m  border-color: #ee6622;[m
+[32m+[m[32m}[m
+[32m+[m[32m.cb:checked::after {[m
+[32m+[m[32m  content: "";[m
+[32m+[m[32m  width: 10px;[m
+[32m+[m[32m  height: 6px;[m
+[32m+[m[32m  border: 2px solid #fff;[m
+[32m+[m[32m  border-top: 0;[m
+[32m+[m[32m  border-right: 0;[m
+[32m+[m[32m  transform: rotate(-45deg) translateY(-1px);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Resultados - Slider corregido */[m
+[32m+[m[32m.range {[m
+[32m+[m[32m  -webkit-appearance: none;[m
+[32m+[m[32m  appearance: none;[m
+[32m+[m[32m  width: 100%;[m
+[32m+[m[32m  height: 6px;[m
+[32m+[m[32m  border-radius: 999px;[m
+[32m+[m[32m  outline: none;[m
+[32m+[m[32m  border: none;[m
+[32m+[m[32m  background: linear-gradient(to right, #f8a166 60%, #e5e7eb 60%);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* ✅ Reset del track nativo en Chrome/Safari/Edge */[m
+[32m+[m[32m.range::-webkit-slider-runnable-track {[m
+[32m+[m[32m  -webkit-appearance: none;[m
+[32m+[m[32m  appearance: none;[m
+[32m+[m[32m  background: transparent; /* 👈 evita el azul */[m
+[32m+[m[32m  border: none;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Chrome/Safari/Edge - Thumb */[m
+[32m+[m[32m.range::-webkit-slider-thumb {[m
+[32m+[m[32m  -webkit-appearance: none;[m
+[32m+[m[32m  appearance: none;[m
+[32m+[m[32m  width: 18px;[m
+[32m+[m[32m  height: 18px;[m
+[32m+[m[32m  border-radius: 50%;[m
+[32m+[m[32m  background: #fff;[m
+[32m+[m[32m  border: 2px solid #f8a166;[m
+[32m+[m[32m  cursor: pointer;[m
+[32m+[m[32m  margin-top: 0px; /* ✅ centra verticalmente */[m
+[32m+[m[32m  position: relative;[m
+[32m+[m[32m  z-index: 2;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Firefox */[m
+[32m+[m[32m.range::-moz-range-progress {[m
+[32m+[m[32m  background: #f8a166;[m
+[32m+[m[32m  height: 6px;[m
+[32m+[m[32m  border-radius: 999px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.range::-moz-range-track {[m
+[32m+[m[32m  background: #e5e7eb;[m
+[32m+[m[32m  height: 6px;[m
+[32m+[m[32m  border-radius: 999px;[m
+[32m+[m[32m}[m
+[32m+[m[32m/* Escala de valores */[m
+[32m+[m[32m.scale {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  justify-content: space-between;[m
+[32m+[m[32m  font-size: 0.82rem;[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m  margin-top: 6px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Barra compuesta (Inicio a la izquierda, Mitad centrada, Final a la derecha) */[m
+[32m+[m[32m.dist {[m
+[32m+[m[32m  position: relative;[m
+[32m+[m[32m  height: 40px;[m
+[32m+[m[32m  border-radius: 12px;[m
+[32m+[m[32m  overflow: hidden;[m
+[32m+[m[32m  border: 1px solid var(--line);[m
+[32m+[m[32m  background: #fff;[m
+[32m+[m[32m}[m
+[32m+[m[32m.seg {[m
+[32m+[m[32m  position: absolute;[m
+[32m+[m[32m  top: 0;[m
+[32m+[m[32m  bottom: 0;[m
+[32m+[m[32m}[m
+[32m+[m[32m.seg-a {[m
+[32m+[m[32m  left: 0;[m
+[32m+[m[32m  background: var(--green-100);[m
+[32m+[m[32m}[m
+[32m+[m[32m.seg-b {[m
+[32m+[m[32m  background: #03283867;[m
+[32m+[m[32m}[m
+[32m+[m[32m.seg-c {[m
+[32m+[m[32m  right: 0;[m
+[32m+[m[32m  background: var(--amber-100);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Sliders de la sección */[m
+[32m+[m[32m.legend {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  justify-content: space-between;[m
+[32m+[m[32m  margin-top: 8px;[m
+[32m+[m[32m  font-weight: 800;[m
+[32m+[m[32m}[m
+[32m+[m[32m.tag {[m
+[32m+[m[32m  display: inline-flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: 8px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.dot-a,[m
+[32m+[m[32m.dot-b,[m
+[32m+[m[32m.dot-c {[m
+[32m+[m[32m  width: 12px;[m
+[32m+[m[32m  height: 12px;[m
+[32m+[m[32m  border-radius: 999px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.dot-a {[m
+[32m+[m[32m  background: var(--green-100);[m
+[32m+[m[32m}[m
+[32m+[m[32m.dot-b {[m
+[32m+[m[32m  background: #03283867;[m
+[32m+[m[32m}[m
+[32m+[m[32m.dot-c {[m
+[32m+[m[32m  background: var(--amber-100);[m
+[32m+[m[32m}[m
+[32m+[m[32m.small {[m
+[32m+[m[32m  font-size: 0.86rem;[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m  font-weight: 600;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.sliders3 {[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  grid-template-columns: 1fr 1fr 1fr;[m
+[32m+[m[32m  gap: 12px;[m
+[32m+[m[32m  margin-top: 10px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.sld {[m
+[32m+[m[32m  background: #fff;[m
+[32m+[m[32m  border: 1px solid var(--line);[m
+[32m+[m[32m  border-radius: 12px;[m
+[32m+[m[32m  padding: 10px;[m
+[32m+[m[32m}[m
+[32m+[m[32m.sld label {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: 8px;[m
+[32m+[m[32m  font-weight: 800;[m
+[32m+[m[32m  margin-bottom: 6px;[m
+[32m+[
