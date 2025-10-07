@@ -23,6 +23,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_PAGINATOR_INTL_PROVIDER } from '@angular/material/paginator';
 import { LOCALE_ID } from '@angular/core';
 import { UpdateDialogComponent } from './inventario/update-dialog/update-dialog.component';
+import { TablaAnalisisComponent } from './analisis/tabla-analisis/tabla-analisis.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { UpdateDialogComponent } from './inventario/update-dialog/update-dialog.
     LotesComponent,
     ProyectosComponent,
     ReportesComponent,
-    UpdateDialogComponent
+    UpdateDialogComponent,
+    TablaAnalisisComponent
   ],
   exports: [
     MaterialModule

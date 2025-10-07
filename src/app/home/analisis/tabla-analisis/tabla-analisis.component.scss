@@ -1,0 +1,137 @@
+
+/* Tabla cabecera patrón */
+.header-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr 0.6fr 0.6fr 0.7fr 0.9fr 0.6fr 0.5fr;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.92rem;
+}
+.h-cell {
+  color: var(--muted);
+  font-weight: 800;
+}
+.row {
+  padding: 8px 0;
+  border-top: 1px dashed var(--line);
+}
+.row:first-child {
+  border-top: 0;
+}
+
+/* Barra de patrón */
+.pattern-bar {
+  position: relative;
+  height: 28px;
+  background: #f3f4f6;
+  overflow: hidden;
+  border: 1px solid #eaeaea;
+}
+.seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: #fff;
+  white-space: nowrap;
+}
+.seg.orange {
+  background: #f79009;
+  border: 2px solid #475467;
+}
+.seg.gray {
+  background: #98a2b3;
+  border: 2px solid #475467;
+}
+.seg.red {
+  background: #d92d20;
+  border: 2px solid #475467;
+}
+.note-right {
+  position: absolute;
+  right: 6px;
+  top: -22px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+/* Detalle piezas */
+.detail {
+  margin-top: 8px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.detail-head {
+  background: #fafafa;
+  padding: 8px 10px;
+  font-weight: 800;
+  color: var(--muted);
+  display: grid;
+  grid-template-columns: 1.2fr 0.5fr 0.5fr 0.8fr;
+}
+.detail-row {
+  padding: 8px 10px;
+  border-top: 1px solid #f2f2f2;
+  display: grid;
+  grid-template-columns: 1.2fr 0.5fr 0.5fr 0.8fr;
+}
+.detail-row:nth-child(even) {
+  background: #fcfcff;
+}
+
+/* Expand/collapse */
+.expand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.chev {
+  transition: 0.15s;
+}
+.section[aria-expanded="false"] .detail {
+  display: none;
+}
+.section[aria-expanded="false"] .chev {
+  transform: rotate(-90deg);
+}
+
+/* Resumen inferior */
+.grid3 {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+.stat {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+}
+.stat h4 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: var(--text-strong);
+}
+.kline {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+  color: var(--muted);
+}
+.kline strong {
+  color: var(--text-strong);
+}
