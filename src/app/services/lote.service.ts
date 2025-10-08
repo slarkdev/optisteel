@@ -57,7 +57,7 @@ export class ApiLotesService {
     if (this.lotesCargado) return Promise.resolve();
 
     return this._http
-      .get<any>(`${this.url}trabajos/user/` + user_ID)
+      .get<any>(`${this.url}/trabajos/user/` + user_ID)
       .pipe(
         map((response) => {
           const lotesTransformados = response.map((lote: any) => {

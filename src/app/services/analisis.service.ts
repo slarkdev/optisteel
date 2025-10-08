@@ -7,51 +7,51 @@ import { connection } from '../security/production';
 import { environment } from '../../environments/environment';
 
 const httpOption = {
-  headers: new HttpHeaders({
-    'Content-Type': 'application/json',
-  }),
+    headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+    }),
 };
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
 export class ApiAnalisisService {
-  private readonly url: string = connection;
+    private readonly url: string = connection;
 
-  private configuracionSubject = new BehaviorSubject<Configuracion | null>(
-    null
-  );
-  configuracion$ = this.configuracionSubject.asObservable();
-
-  constructor(private _http: HttpClient) {}
-
-  getPiezas(idTrabajo: string): Observable<Configuracion> {
-    return this._http.get<Configuracion>(
-      `${this.url}/piezas/${idTrabajo}`,
-      httpOption
+    private configuracionSubject = new BehaviorSubject<Configuracion | null>(
+        null
     );
-  }
+    configuracion$ = this.configuracionSubject.asObservable();
 
-  getPiezasSinEmpate(idTrabajo: string): Observable<Configuracion> {
-    return this._http.get<Configuracion>(
-      `${this.url}/piezas-sin-empates/${idTrabajo}`,
-      httpOption
-    );
-  }
+    constructor(private _http: HttpClient) {}
 
-  getPiezasConEmpate(idTrabajo: string): Observable<Configuracion> {
-    return this._http.get<Configuracion>(
-      `${this.url}/piezas-con-empates/${idTrabajo}`,
-      httpOption
-    );
-  }
+    getPiezas(idTrabajo: string): Observable<Configuracion> {
+        return this._http.get<Configuracion>(
+        `${this.url}/piezas/${idTrabajo}`,
+        httpOption
+        );
+    }
 
-  getInventarioPiezas(idTrabajo: string): Observable<Configuracion> {
-    return this._http.get<Configuracion>(
-      `${this.url}/inventario/piezas/${idTrabajo}`,
-      httpOption
-    );
-  }
+    getPiezasSinEmpate(idTrabajo: string): Observable<Configuracion> {
+        return this._http.get<Configuracion>(
+        `${this.url}/piezas-sin-empates/${idTrabajo}`,
+        httpOption
+        );
+    }
+
+    getPiezasConEmpate(idTrabajo: string): Observable<Configuracion> {
+        return this._http.get<Configuracion>(
+        `${this.url}/piezas-con-empates/${idTrabajo}`,
+        httpOption
+        );
+    }
+
+    getInventarioPiezas(idTrabajo: string): Observable<Configuracion> {
+        return this._http.get<Configuracion>(
+        `${this.url}/inventario/piezas/${idTrabajo}`,
+        httpOption
+        );
+    }
 
 }
 

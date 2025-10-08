@@ -17,12 +17,18 @@ export class AnalisisComponent implements OnInit {
   subscription = new Subject<void>();
   proyectoSeleccionado: any;
   loteSeleccionado: any;
+  estadoSeleccionado: string | null = null; 
+  usadosParaMostrar: string = '';
 
   dataPatronesConEmpate: any;
   dataPatronesSinEmpate: any;
 
   piezasConEmpate: any;
   piezasSinEmpate: any;
+  nUsados: number = 0;
+  nNoUsados: number = 0;
+  nTotal: number = 0;
+  stock: string = "No hay stock";
   piezas: any;
   configuracion: any;
   filtroInventarioPiezas: any;
@@ -71,7 +77,32 @@ export class AnalisisComponent implements OnInit {
       .pipe(takeUntil(this.subscription))
       .subscribe((piezasConEmpate) => {
         this.piezasConEmpate = piezasConEmpate;
-        console.log('piezas con Empate',piezasConEmpate);
+        console.log('piezas con Empate',piezasConEmpate);        
+        const piezasUnicasMap = new Map<
+          string, { Usados: string; nUsados: number;
+                    NoUsados: string; nNoUsados: number;
+                    Total: string; nTotal: number}
+          >();
+
+        this.piezasConEmpate.forEach((pieza: { Usados: string; nUsados: number; NoUsados: string; nNoUsados: number;
+                    Total: string; nTotal: number}) => {
+          const clave = pieza.Usados.trim(); // Puedes normalizar más si es necesario
+          if (!piezasUnicasMap.has(clave)) {
+            piezasUnicasMap.set(clave, pieza);
+          }
+        });
+
+        // Paso 2: Obtener los objetos únicos
+        const piezasUnicas = Array.from(piezasUnicasMap.values());
+
+        // Paso 3: Sumar los nUsados solo de los objetos únicos
+        this.nUsados = piezasUnicas.reduce(
+          (acc: number, pieza) => acc + (pieza.nUsados || 0), 0);
+        this.nNoUsados = piezasUnicas.reduce(
+          (acc: number, pieza) => acc + (pieza.nNoUsados || 0), 0);
+        this.nTotal = piezasUnicas.reduce(
+          (acc: number, pieza) => acc + (pieza.nTotal || 0), 0);
+
       });
 
     this.apiAnalisisService
@@ -81,6 +112,7 @@ export class AnalisisComponent implements OnInit {
         this.piezasSinEmpate = piezasSinEmpate;
         // console.log(piezasSinEmpate);
       });
+
 
     this.apiAnalisisService
       .getPiezas(this.loteSeleccionado._id)
@@ -103,9 +135,72 @@ export class AnalisisComponent implements OnInit {
 
   actualizar(){}
 
-  limpiar(){}
+  limpiar(){
+    this.usadosParaMostrar = '';
+    this.nUsados = 0;
+    this.nNoUsados = 0;
+    this.nTotal = 0;
+    this.piezasConEmpate = [];
+    this.piezasSinEmpate = [];
+    this.dataPatronesConEmpate = [];
+    this.dataPatronesSinEmpate = [];
+    // this.filtroInventarioPiezas = [];
+  }
 
   exportar(){}
 
   guardar(){}
+
+  toggleEstado(estado: string) {
+    this.estadoSeleccionado = this.estadoSeleccionado === estado ? null : estado;
+
+    const campoPorEstado: Record<string, keyof typeof this.piezasConEmpate[0]> = {
+      cubiertos: 'Usados',
+      noCubiertos: 'NoUsados',
+      total: 'Total'
+    };
+
+    const campo = campoPorEstado[this.estadoSeleccionado ?? ''];
+
+    if (campo) {
+      const concatenado = Array.from(
+        new Set(
+          this.piezasConEmpate
+            .flatMap((pieza: any) =>
+              pieza[campo]?.split(',').map((u: string) => u.trim()).filter((u: string) => u !== '')
+            )
+        )
+      ).join(', ');
+
+      this.usadosParaMostrar = concatenado.length > 0 ? concatenado : 'No hay piezas';
+    } else {
+      this.usadosParaMostrar = '';
+    }
+
+    if (this.usadosParaMostrar !== 'No hay piezas')    
+    {
+      const piezasRaw = this.usadosParaMostrar; // o cualquier string con las piezas separadas por coma
+
+      const resumenPorRaiz: Record<string, number> = {};
+
+      piezasRaw.split(',').forEach(pieza => {
+        const limpia = pieza.trim();
+        const partes = limpia.split('/');
+        if (partes.length === 2) {
+          const raiz = partes[0];
+          resumenPorRaiz[raiz] = (resumenPorRaiz[raiz] || 0) + 1;
+        }
+      });
+
+      // Convertir a array de strings tipo "raíz (cantidad)"
+      const resumenFormateado = Object.entries(resumenPorRaiz).map(
+        ([raiz, cantidad]) => `${raiz} (${cantidad})`
+      );
+
+      // Mostrar o guardar
+      console.log('Resumen por raíz:', resumenFormateado);
+      this.usadosParaMostrar = resumenFormateado.join(', ');
+    }
+
+  }
 }
