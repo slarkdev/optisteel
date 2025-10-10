@@ -15,11 +15,13 @@ import { MaterialModule } from './shared/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ForgetPasswordComponent } from './login/forget-password/forget-password.component';
 import { UpdatePasswordComponent } from './login/update-password/update-password.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 @NgModule({
   declarations: [AppComponent, LoginComponent, NotFoundComponent, ForgetPasswordComponent, UpdatePasswordComponent],
   imports: [
+    BrowserAnimationsModule,
     ReactiveFormsModule,
     RouterModule,
     BrowserModule,

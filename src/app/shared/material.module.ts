@@ -26,6 +26,7 @@ import { FormsModule } from '@angular/forms';
   imports:[
     CommonModule,
     FormsModule,
+    
     // NgChartsModule
   ],  
   declarations:[
@@ -48,6 +49,7 @@ import { FormsModule } from '@angular/forms';
     MatDialogModule,
     TablaComponent,
     MatTooltipModule,
+    
     // NgChartsModule
 
   ],

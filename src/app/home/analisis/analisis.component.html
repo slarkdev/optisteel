@@ -105,19 +105,40 @@
   </div>
   <div class="tabs" role="tablist">
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-tab="con">
+      <button
+        class="tab"
+        role="tab"
+        [attr.aria-selected]="tabSeleccionado === '1'"
+        (click)="seleccionarTab('1')"
+      >
         Patrones con empate
       </button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="sin">
+      <button
+        class="tab"
+        role="tab"
+        [attr.aria-selected]="tabSeleccionado === '2'"
+        (click)="seleccionarTab('2')"
+        [disabled]="configuracion?.Grappling || true"
+      >
         Patrones sin empate
       </button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="res">
+      <button
+        class="tab"
+        role="tab"
+        [attr.aria-selected]="tabSeleccionado === '3'"
+        (click)="seleccionarTab('3')"
+      >
         Resultados
       </button>
     </div>
   </div>
 
-  <section class="card tabpanel" id="panel-sin" role="tabpanel">
+  <section
+    class="card tabpanel"
+    id="panel-sin"
+    role="tabpanel"
+    [hidden]="tabSeleccionado !== '1'"
+  >
     <div class="card-hd">
       Patrones de corte
       <span class="muted"
@@ -131,11 +152,17 @@
         [proyecto]="proyectoSeleccionado"
         [lote]="loteSeleccionado"
         [hide]="hide"
+        [configuracion]="configuracion"
       ></app-tabla-analisis>
     </div>
   </section>
 
-  <section class="card tabpanel" id="panel-sin" role="tabpanel" hidden>
+  <section
+    class="card tabpanel"
+    id="panel-sin"
+    role="tabpanel"
+    [hidden]="tabSeleccionado !== '2'"
+  >
     <div class="card-hd">Patrones sin empate</div>
     <div class="card-bd center muted">
       <app-tabla-analisis
@@ -144,11 +171,17 @@
         [proyecto]="proyectoSeleccionado"
         [lote]="loteSeleccionado"
         [hide]="hide"
+        [configuracion]="configuracion"
       ></app-tabla-analisis>
     </div>
   </section>
 
-  <section class="card tabpanel" id="panel-res" role="tabpanel" hidden>
+  <section
+    class="card tabpanel"
+    id="panel-res"
+    role="tabpanel"
+    [hidden]="tabSeleccionado !== '3'"
+  >
     <div class="card-hd">Resultados</div>
     <div class="card-bd center muted">
       Resumen final del nesting (placeholder).

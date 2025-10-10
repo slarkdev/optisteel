@@ -43,7 +43,7 @@ export class AnalisisComponent implements OnInit {
   todosSeleccionados: boolean = false;
 
   hide = false;
-
+  tabSeleccionado: string = '1';
   constructor(
     private apiLoteService: ApiLotesService,
     private apiProyectoService: ApiProyectosService,
@@ -211,7 +211,7 @@ export class AnalisisComponent implements OnInit {
 
   actualizar() {}
 
-  limpiar(){
+  limpiar() {
     this.usadosParaMostrar = '';
     this.nUsados = 0;
     this.nNoUsados = 0;
@@ -228,6 +228,8 @@ export class AnalisisComponent implements OnInit {
   guardar() {}
 
   buscarDatosConPiezasySinPiezas() {
+    this.dataPiezasConEmpate = [];
+    let dataPiezasConEmpate = [];
     // elementos que fueron seleccionados sin el check box de seleccionar todos
     let seleccionados =
       this.perfilesSeleccionados.value?.filter(
@@ -241,7 +243,7 @@ export class AnalisisComponent implements OnInit {
           (v: any) => v !== this.selectAllValue
         ) || [];
 
-      this.dataPiezasConEmpate = this.piezasConEmpate.filter((r: any) =>
+      dataPiezasConEmpate = this.piezasConEmpate.filter((r: any) =>
         seleccionados.some(
           (s: any) => r?.Perfil === s?.Perfil && r?.Calidad === s?.Calidad
         )
@@ -253,17 +255,17 @@ export class AnalisisComponent implements OnInit {
         this.selectAllValue,
       ]);
 
-      this.dataPiezasConEmpate = this.piezasConEmpate;
+      dataPiezasConEmpate = this.piezasConEmpate;
     }
 
     // reconfiguramos los datos para tener la estructura de la tabla
-    this.transformarPiezasExpandibles(this.dataPiezasConEmpate);
+    this.transformarPiezasExpandibles(dataPiezasConEmpate);
   }
 
   transformarPiezasExpandibles(data: any[]) {
     const dataTransformada = data.map((item) => {
-      const piezasRaw = item.Piezas.split('+');
-      const longitudTotal = item.Cantidad; //['Longitud Stock Total'];
+      const piezasRaw = item.Piezas.split('+').map((p: any) => p.trim());
+      const cantidadPieza = item.Cantidad;
 
       const agrupadas = new Map<
         string,
@@ -272,6 +274,7 @@ export class AnalisisComponent implements OnInit {
           largo: number;
           cantidad: number;
           cantidadTotal: number;
+          subTotal: number;
         }
       >();
 
@@ -279,91 +282,69 @@ export class AnalisisComponent implements OnInit {
         const match = piezaStr.match(/^(.*?)\s*\(([\d.]+)\)$/);
         if (!match) return;
 
-        const cuerpo = match[1].trim(); // ej: "m316/4" o "m316/2_2"
-        const largo = parseFloat(match[2]); // ej: 339
-
-        let nombrePieza = cuerpo.includes('_') ? cuerpo : cuerpo.split('/')[0];
-
-        const clave = `${nombrePieza}|${largo}`;
-        if (!agrupadas.has(clave)) {
-          agrupadas.set(clave, {
-            nombrePieza,
-            largo: largo,
-            cantidad: 1,
-            cantidadTotal: longitudTotal, // inicial
-          });
-        } else {
-          const actual = agrupadas.get(clave)!;
-          actual.cantidad += 1;
-          actual.cantidadTotal = actual.cantidad * longitudTotal;
-        }
-      });
-
-      console.log(agrupadas);
-
-      return {
-        ...item,
-        detalleExpandido: Array.from(agrupadas.values()),
-      };
-    });
-
-    this.dataPiezasConEmpate = dataTransformada;
-    console.log(dataTransformada);
-  }
-
-  transformarDatosParaTabla(data: any[]) {
-    this.dataPiezasConEmpate = data.map((item) => {
-      const piezasRaw = item.Piezas.split('+') || [];
-      const longitudTotal = item.Cantidad;
-
-      const agrupadas = new Map<
-        string,
-        {
-          nombrePieza: string;
-          Largo: number;
-          cantidad: number;
-          cantidadTotal: number;
-        }
-      >();
-
-      console.log(piezasRaw);
-
-      piezasRaw.forEach((piezaStr: any) => {
-        const match = piezaStr.match(/^(.*?)\s*\(([\d.]+)\)$/);
-        if (!match) return;
-
-        const cuerpo = match[1].trim();
+        const cuerpo = match[1].trim(); // ej: "m112/40" o "m5/3_2"
         const largo = parseFloat(match[2]);
 
-        let nombrePieza = cuerpo.includes('_') ? cuerpo : cuerpo.split('/')[0];
+        // 🔍 Agrupación por nombre base
+        // const nombrePieza = cuerpo.includes('_')
+        //   ? cuerpo
+        //   : cuerpo.split('/')[0];
 
+        // // ✅ Clave solo por nombre base
+        // const clave = nombrePieza;
+
+        const nombrePieza = cuerpo.includes('_')
+          ? cuerpo
+          : cuerpo.split('/')[0];
         const clave = `${nombrePieza}|${largo}`;
+
         if (!agrupadas.has(clave)) {
           agrupadas.set(clave, {
             nombrePieza,
-            Largo: largo,
+            largo,
             cantidad: 1,
-            cantidadTotal: longitudTotal, // inicial
+            cantidadTotal: cantidadPieza,
+            subTotal: 1 * largo,
           });
         } else {
           const actual = agrupadas.get(clave)!;
           actual.cantidad += 1;
-          actual.cantidadTotal = actual.cantidad * longitudTotal;
+          actual.cantidadTotal = actual.cantidad * cantidadPieza;
+          actual.subTotal = actual.cantidad * largo;
         }
+      });
+
+      const detalleExpandido = Array.from(agrupadas.values());
+
+      const sumaLargos = detalleExpandido.reduce(
+        (acc, pieza) => acc + pieza.subTotal, //pieza.largo * pieza.cantidad,
+        0
+      );
+
+      const longitudTotal = item['Longitud Stock Total'] ?? 0;
+
+      const saldo =
+        longitudTotal -
+        (sumaLargos + this.configuracion.AnchoSierra * item.Cortes);
+
+      detalleExpandido.push({
+        nombrePieza: 'Saldo',
+        largo: '--' as any,
+        cantidad: '--' as any,
+        cantidadTotal: '--' as any,
+        subTotal: saldo,
       });
 
       return {
         ...item,
-        detalleExpandido: Array.from(agrupadas.values()),
+        detalleExpandido,
       };
     });
 
+    this.dataPiezasConEmpate = [...dataTransformada];
     console.log(this.dataPiezasConEmpate);
   }
 
-  splitPiezas(data: any) {
-    console.log(data);
-  }
   toggleSelectAll(event: MouseEvent): void {
     event.stopPropagation();
     this.todosSeleccionados = !this.todosSeleccionados;
@@ -376,7 +357,8 @@ export class AnalisisComponent implements OnInit {
         ...this.filtroInventarioPiezas,
         this.selectAllValue,
       ]);
-      this.dataPiezasConEmpate = this.piezasConEmpate;
+      this.buscarDatosConPiezasySinPiezas();
+      //this.dataPiezasConEmpate = buscarDatosConPiezasySinPiezas [...this.piezasConEmpate];
     }
   }
 
@@ -442,5 +424,9 @@ export class AnalisisComponent implements OnInit {
       console.log('Resumen por raíz:', resumenFormateado);
       this.usadosParaMostrar = resumenFormateado.join(', ');
     }
+  }
+
+  seleccionarTab(valor: string) {
+    this.tabSeleccionado = valor;
   }
 }

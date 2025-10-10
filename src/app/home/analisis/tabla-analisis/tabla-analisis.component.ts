@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
@@ -8,7 +15,7 @@ import { MatSort } from '@angular/material/sort';
   styleUrl: './tabla-analisis.component.scss',
   standalone: false,
 })
-export class TablaAnalisisComponent implements OnInit {
+export class TablaAnalisisComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'proyecto',
     'perfil',
@@ -21,7 +28,14 @@ export class TablaAnalisisComponent implements OnInit {
     'cortes',
   ];
   columnsToDisplayWithExpand = [...this.displayedColumns, 'expand'];
-  subColumns: string[] = ['nombrePieza', 'cantidad', 'cantidadTotal', 'Largo'];
+
+  subColumns: string[] = [
+    'nombrePieza',
+    'cantidad',
+    'cantidadTotal',
+    'largo',
+    'subTotal',
+  ];
 
   dataSource = new MatTableDataSource<any>();
 
@@ -29,27 +43,64 @@ export class TablaAnalisisComponent implements OnInit {
   @Input() proyecto: any;
   @Input() lote: any;
   @Input() hide: boolean = false;
+  @Input() configuracion: any;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   expandedElement: any | null;
 
+  columnsBase: string[] = [
+    'proyecto',
+    'perfil',
+    'patronCorte',
+    'cantidad',
+    'piezas',
+    'saldoMM',
+    'longitud',
+    'saldo%',
+    'cortes',
+    'expand',
+  ];
+
+  columnsExtras: string[] = ['graficoFila', 'expandedDetail'];
+
   constructor() {}
 
   ngOnInit(): void {
-    console.log(this.data);
+    // this.dataSource.data = this.data;
+    // console.log(this.data);
   }
   ngAfterViewInit() {
-    this.dataSource.data = this.data;
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data'] && changes['data'].currentValue) {
+      const nuevaData = changes['data'].currentValue;
+
+      // Reemplazamos el dataSource por uno nuevo para forzar el cambio
+      this.dataSource = new MatTableDataSource(nuevaData);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+      console.log('Datos actualizados:', nuevaData);
+    }
+    if (changes['hide'] && !this.hide) {
+      this.expandedElement = null;
+    }
+  }
+
+  get columnsToRender(): string[] {
+    return this.hide
+      ? [...this.columnsBase]
+      : [...this.columnsBase, ...this.columnsExtras];
+  }
+  
   isExpanded(element: any) {
     return this.expandedElement === element;
   }
 
-  /** Toggles the expanded state of an element. */
   toggle(element: any) {
     this.expandedElement = this.isExpanded(element) ? null : element;
   }
@@ -69,5 +120,56 @@ export class TablaAnalisisComponent implements OnInit {
       color: seg.color,
       label: seg.label,
     }));
+  }
+
+  getSegmentDataFromString(
+    element: any,
+    longitudTotal: number
+  ): {
+    label: string;
+    width: number;
+    clase: string;
+  }[] {
+    const piezaStr = element.Piezas;
+    const anchoSierra = this.configuracion.AnchoSierra || 0;
+    const cortes = element.Cortes || 0;
+    const piezasRaw = piezaStr.split('+').map((p: any) => p.trim());
+
+    const longitudUtil = longitudTotal - anchoSierra * cortes;
+
+    let acumulado = 0;
+
+    const segmentos = piezasRaw.flatMap((piezaStr: any) => {
+      const match = piezaStr.match(/^(.*?)\s*\(([\d.]+)\)$/);
+      if (!match) return [];
+
+      const nombre = match[1].trim();
+      const largo = parseFloat(match[2]);
+      const porcentaje = longitudUtil > 0 ? (largo / longitudUtil) * 100 : 0;
+      acumulado += largo;
+
+      const clase = nombre.includes('_') ? 'retazo-rayado' : 'retazo-gris';
+
+      return [
+        {
+          label: `${nombre} (${largo})`,
+          width: porcentaje,
+          clase,
+        },
+      ];
+    });
+
+    // Agregar saldo si existe
+    const saldo = element.DesplieguePiezas?.saldo || longitudUtil - acumulado;
+    if (saldo > 0.1) {
+      const porcentaje = (saldo / longitudUtil) * 100;
+      segmentos.push({
+        label: `Saldo (${saldo.toFixed(1)})`,
+        width: porcentaje,
+        clase: 'retazo-saldo',
+      });
+    }
+
+    return segmentos;
   }
 }

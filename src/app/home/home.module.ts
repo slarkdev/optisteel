@@ -24,6 +24,8 @@ import { MAT_PAGINATOR_INTL_PROVIDER } from '@angular/material/paginator';
 import { LOCALE_ID } from '@angular/core';
 import { UpdateDialogComponent } from './inventario/update-dialog/update-dialog.component';
 import { TablaAnalisisComponent } from './analisis/tabla-analisis/tabla-analisis.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -49,6 +51,7 @@ import { TablaAnalisisComponent } from './analisis/tabla-analisis/tabla-analisis
     FormsModule,
     HomeRoutingModule,
     MaterialModule,
+    // BrowserAnimationsModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'es' },

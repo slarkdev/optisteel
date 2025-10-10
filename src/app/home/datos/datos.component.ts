@@ -436,7 +436,7 @@ export class DatosComponent implements OnInit, OnDestroy {
         }
 
         if (extension === '.nc1') {
-          archivosNC1.push(file); // ✅ acumular para subir todos juntos
+          archivosNC1.push(file); 
         } 
         else if (extension === '.xlsx' || extension === '.xlsm') {
           const data = await file.arrayBuffer();
@@ -463,7 +463,7 @@ export class DatosComponent implements OnInit, OnDestroy {
               Origen: 'Excel',
             };
             
-            vms.push(vm); // ✅ Agregar al array
+            vms.push(vm); 
             console.log('🧱 VM generado:', vm);
             // await lastValueFrom(this.dat.upsert(this.workId, toAPI(vm)));
           }
@@ -476,7 +476,6 @@ export class DatosComponent implements OnInit, OnDestroy {
         }
       }
 
-      // ✅ Subir todos los archivos NC1 juntos
       if (archivosNC1.length > 0) {
         await this.handleSendDrag(archivosNC1);
       }
