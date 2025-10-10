@@ -7,7 +7,4 @@
     "logLevel": "debug",
     "pathRewrite": { "^/api/login": "" }
   }
-
-
-
 }
