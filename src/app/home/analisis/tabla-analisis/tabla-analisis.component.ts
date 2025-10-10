@@ -64,7 +64,8 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
 
   columnsExtras: string[] = ['graficoFila', 'expandedDetail'];
 
-  agrupados : any;
+  resumenPerfiles: any;
+  resumenSaldosYRestos: any;
   constructor() {}
 
   ngOnInit(): void {
@@ -84,7 +85,8 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
       this.dataSource = new MatTableDataSource(nuevaData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.getResumen();
+      this.getResumenPerfiles();
+      this.obtenerSaldos();
     }
     if (changes['hide'] && !this.hide) {
       this.expandedElement = null;
@@ -156,6 +158,56 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
     return segmentos;
   }
 
+  obtenerSaldos() {
+    const perfilesReducidos = Array.from(
+      this.data
+        .reduce((acc, item) => {
+          const clave = `${item.Perfil}|${item.Calidad}`;
+          if (!acc.has(clave)) {
+            acc.set(clave, item);
+          }
+          return acc;
+        }, new Map())
+        .values()
+    );
+    console.log(perfilesReducidos);
+
+    const totales: any = perfilesReducidos.reduce(
+      (acc: any, item: any) => {
+        acc.Barras += item.Barras || 0;
+        acc.EmpatesTotal += item.EmpatesTotal || 0;
+        acc.CortesTotal += item.CortesTotal || 0;
+        acc.SaldoTotal += item.SaldoTotal || 0;
+        acc.saldo_Corte_mm += item.saldo_Corte_mm || 0;
+        acc.saldo_Residuo_mm += item.saldo_Residuo_mm || 0;
+        
+        acc.saldo_Disponible += item.saldo_Disponible || 0;
+        acc.saldo_Corte += item.saldo_Corte || 0;
+        acc.MermaMedia += item.MermaMedia || 0;
+        
+        return acc;
+      },
+      {
+        Barras: 0,
+        EmpatesTotal: 0,
+        CortesTotal: 0,
+        SaldoTotal: 0,
+        saldo_Corte_mm: 0,
+        saldo_Residuo_mm: 0,
+        saldo_Disponible:0,
+        saldo_Corte:0,
+        MermaMedia: 0,
+      }
+    );
+
+    // Calculamos el total combinado de saldos
+    totales['SaldoConEmpate'] =
+      totales.SaldoTotal + totales.saldo_Corte_mm + totales.saldo_Residuo_mm;
+
+    this.resumenSaldosYRestos = totales;
+    console.log(totales);
+  }
+
   getSaldoConEmpate() {
     const saldoTotal =
       this.data.at(0).SaldoTotal +
@@ -172,8 +224,8 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
     );
     return piezas;
   }
-  
-  getResumen() {
+
+  getResumenPerfiles() {
     const agrupados = Array.from(
       this.data
         .reduce((acc: any, item: any) => {
@@ -191,7 +243,7 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
         }, new Map())
         .values()
     );
-    this.agrupados = agrupados;
-    console.log(this.agrupados);
+    this.resumenPerfiles = agrupados;
+    console.log(this.resumenPerfiles);
   }
 }

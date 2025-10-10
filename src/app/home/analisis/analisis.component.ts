@@ -72,8 +72,6 @@ export class AnalisisComponent implements OnInit {
         .pipe(takeUntil(this.subscription))
     );
 
-    console.log('configuracion', this.configuracion);
-
     this.piezasConEmpate = await firstValueFrom(
       this.apiAnalisisService
         .getPiezasConEmpate(this.loteSeleccionado._id)
@@ -209,7 +207,9 @@ export class AnalisisComponent implements OnInit {
       });
   }
 
-  actualizar() {}
+  actualizar() {
+    
+  }
 
   limpiar() {
     this.usadosParaMostrar = '';

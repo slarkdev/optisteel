@@ -9,8 +9,16 @@
     </p>
     <div style="display: flex; justify-content: end">
       <div style="display: flex; flex-direction: row; gap: 1rem">
-        <button type="submit" class="btn btn-orange" [disabled]="loteSeleccionado === null ">💾 Guardar</button>
-        <button class="btn btn-warning">⟲ Resetear</button>
+        <button
+          type="submit"
+          class="btn btn-orange"
+          [disabled]="loteSeleccionado === null"
+        >
+          <mat-icon>save</mat-icon> Guardar
+        </button>
+        <button class="btn btn-warning">
+          <mat-icon>refresh</mat-icon> Resetear
+        </button>
       </div>
     </div>
 
@@ -54,33 +62,72 @@
           Partir piezas para aprovechamiento del retal</label
         >
         <div class="grid2" style="margin-top: 10px">
-          <input
+          <mat-form-field>
+            <mat-label>Longitud mínima de retal aprovechable (mm)</mat-label>
+            <input
+              matInput
+              formControlName="longitudMin"
+              placeholder="10000"
+              value="1000" type="number" min="0"
+            />
+          </mat-form-field>
+
+          <!-- <input
             formControlName="longitudMin"
             class="input"
             placeholder="Longitud mínima de retal aprovechable (mm)"
             value="1000"
-          />
-          <input
+          /> -->
+
+          <mat-form-field>
+            <mat-label>Espacio entre ángulos (mm)</mat-label>
+            <input
+              matInput
+              formControlName="espacioAngulos"
+              placeholder="10"
+              value="10" type="number" min="0"
+            />
+          </mat-form-field>
+
+          <!-- <input
             formControlName="espacioAngulos"
             class="input"
             placeholder="Espacio entre ángulos (mm)"
             value="10"
-          />
-          <input
+          /> -->
+
+          <mat-form-field>
+            <mat-label>Distancia mínima de corte a los agujeros (mm)</mat-label>
+            <input matInput formControlName="longitudMinAgujeros" type="number" min="0" />
+          </mat-form-field>
+
+          <!-- <input
             formControlName="longitudMinAgujeros"
             class="input"
             placeholder="Distancia mínima de corte a los agujeros (mm)"
-          />
-          <input
+          /> -->
+
+          <mat-form-field>
+            <mat-label>Longitud de agarre (mm)</mat-label>
+            <input matInput formControlName="longitudAgarre" type="number" min="0" />
+          </mat-form-field>
+
+          <!-- <input
             formControlName="longitudAgarre"
             class="input"
             placeholder="Longitud de agarre (mm)"
-          />
-          <input
+          /> -->
+
+          <mat-form-field>
+            <mat-label>Ancho de hoja de sierra (mm)</mat-label>
+            <input matInput formControlName="anchoSierra" type="number" min="0" />
+          </mat-form-field>
+
+          <!-- <input
             formControlName="anchoSierra"
             class="input"
             placeholder="Ancho de hoja de sierra (mm)"
-          />
+          /> -->
           <div></div>
         </div>
         <label class="switch" style="margin-top: 10px"
@@ -205,7 +252,7 @@
                 formControlName="inicioMinimoMM"
                 class="input"
                 style="width: 90px"
-                value="0"
+                value="0" type="number" min="0"
               />
             </div>
           </div>
@@ -219,6 +266,7 @@
                 class="input"
                 style="width: 90px"
                 value="10"
+                type="number" min="0"
               />
             </div>
           </div>
@@ -231,7 +279,7 @@
                 formControlName="finalMinimoMM"
                 class="input"
                 style="width: 90px"
-                value="0"
+                value="0" type="number" min="0"
               />
             </div>
           </div>
