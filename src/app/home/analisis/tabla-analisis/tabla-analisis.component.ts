@@ -64,6 +64,8 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
 
   columnsExtras: string[] = ['graficoFila', 'expandedDetail'];
 
+  resumenPerfiles: any;
+  resumenSaldosYRestos: any;
   constructor() {}
 
   ngOnInit(): void {
@@ -83,8 +85,8 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
       this.dataSource = new MatTableDataSource(nuevaData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-
-      console.log('Datos actualizados:', nuevaData);
+      this.getResumenPerfiles();
+      this.obtenerSaldos();
     }
     if (changes['hide'] && !this.hide) {
       this.expandedElement = null;
@@ -103,23 +105,6 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
 
   toggle(element: any) {
     this.expandedElement = this.isExpanded(element) ? null : element;
-  }
-
-  getSegmentDataFicticio(): { width: number; color: string; label: string }[] {
-    const valores = [
-      { valor: 40, color: '#f44336', label: 'A' },
-      { valor: 25, color: '#2196f3', label: 'B' },
-      { valor: 15, color: '#4caf50', label: 'C' },
-      { valor: 20, color: '#ff9800', label: 'D' },
-    ];
-
-    const total = valores.reduce((acc, seg) => acc + seg.valor, 0);
-
-    return valores.map((seg) => ({
-      width: (seg.valor / total) * 100,
-      color: seg.color,
-      label: seg.label,
-    }));
   }
 
   getSegmentDataFromString(
@@ -173,16 +158,103 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
     return segmentos;
   }
 
-  getSaldoConEmpate(){
-    const saldoTotal =  this.data.at(0).SaldoTotal + this.data.at(0).saldo_Corte_mm + this.data.at(0).saldo_Residuo_mm 
-    // console.log(saldoTotal);    
+  obtenerSaldos() {
+    const perfilesReducidos = Array.from(
+      this.data
+        .reduce((acc, item) => {
+          const clave = `${item.Perfil}|${item.Calidad}`;
+          if (!acc.has(clave)) {
+            acc.set(clave, item);
+          }
+          return acc;
+        }, new Map())
+        .values()
+    );
+    console.log(perfilesReducidos);
+
+    const totales: any = perfilesReducidos.reduce(
+      (acc: any, item: any) => {
+        acc.Barras += item.Barras || 0;
+        acc.EmpatesTotal += item.EmpatesTotal || 0;
+        acc.CortesTotal += item.CortesTotal || 0;
+        acc.SaldoTotal += item.SaldoTotal || 0;
+        acc.saldo_Corte_mm += item.saldo_Corte_mm || 0;
+        acc.saldo_Residuo_mm += item.saldo_Residuo_mm || 0;
+
+        acc.saldo_Disponible += item.saldo_Disponible || 0;
+        acc.saldo_Corte += item.saldo_Corte || 0;
+        acc.MermaMedia += item.MermaMedia || 0;
+
+        return acc;
+      },
+      {
+        Barras: 0,
+        EmpatesTotal: 0,
+        CortesTotal: 0,
+        SaldoTotal: 0,
+        saldo_Corte_mm: 0,
+        saldo_Residuo_mm: 0,
+        saldo_Disponible: 0,
+        saldo_Corte: 0,
+        MermaMedia: 0,
+      }
+    );
+
+    const base = this.resumenPerfiles.reduce((acc: any, item: any) => {
+      return acc + (item.cantidad || 0) * (item.longitud || 0);
+    }, 0);
+
+    // Calculamos el total combinado de saldos
+    totales['SaldoConEmpate'] =
+      totales.SaldoTotal + totales.saldo_Corte_mm + totales.saldo_Residuo_mm;
+    totales['Saldototal(%)'] = (totales.SaldoConEmpate / base) * 100;
+    
+    totales['RestoUtilizable'] = totales.SaldoTotal;
+    totales['RestoUtilizable(%)'] = (totales.SaldoTotal / base) * 100;
+
+    totales['Desperdicio'] = totales.saldo_Corte_mm + totales.saldo_Residuo_mm;
+    totales['Desperdicio(%)'] = (totales.Desperdicio / base) * 100;
+
+    this.resumenSaldosYRestos = totales;
+    console.log(totales);
+  }
+
+  getSaldoConEmpate() {
+    const saldoTotal =
+      this.data.at(0).SaldoTotal +
+      this.data.at(0).saldo_Corte_mm +
+      this.data.at(0).saldo_Residuo_mm;
+    // console.log(saldoTotal);
     return saldoTotal;
   }
 
-  getPiezas(){
-    const piezas = this.data.reduce((acc,actual) => acc + actual.Piezas.split('+').length, 0 );
-    // console.log(piezas);
+  getPiezas() {
+    const piezas = this.data.reduce(
+      (acc, actual) => acc + actual.Piezas.split('+').length,
+      0
+    );
     return piezas;
-    
+  }
+
+  getResumenPerfiles() {
+    const agrupados = Array.from(
+      this.data
+        .reduce((acc: any, item: any) => {
+          const clave = `${item.Perfil}|${item['Longitud Stock Total']}`;
+          if (!acc.has(clave)) {
+            acc.set(clave, {
+              perfil: item.Perfil,
+              longitud: item['Longitud Stock Total'],
+              cantidad: 1,
+            });
+          } else {
+            acc.get(clave)!.cantidad += 1;
+          }
+          return acc;
+        }, new Map())
+        .values()
+    );
+    this.resumenPerfiles = agrupados;
+    console.log(this.resumenPerfiles);
   }
 }

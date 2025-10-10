@@ -26,7 +26,12 @@
     </ng-container>
 
     <ng-container matColumnDef="patronCorte">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10rem">
+      <th
+        mat-header-cell
+        *matHeaderCellDef
+        mat-sort-header
+        style="width: 10rem"
+      >
         Patron de corte
       </th>
       <td mat-cell *matCellDef="let element">{{ element.Item }}</td>
@@ -55,7 +60,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 6rem">
         Saldo (mm)
       </th>
-      <td mat-cell *matCellDef="let element">{{ element.Merma }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.Merma | number:'1.2-2' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="longitud">
@@ -63,7 +68,7 @@
         Longitud (mm)
       </th>
       <td mat-cell *matCellDef="let element">
-        {{ element["Longitud Stock Total"] }}
+        {{ element["Longitud Stock Total"] | number:'1.2'}}
       </td>
     </ng-container>
 
@@ -219,33 +224,63 @@
 <div class="grid3">
   <div class="stat">
     <h4>Saldos</h4>
-    <div class="kline"><span>Saldo total (mm)</span><strong>{{ getSaldoConEmpate().toFixed(2) || 0}}</strong></div>
-    <div class="kline"><span>Saldo / series</span><strong>{{ data.at(0).saldo_Corte +  data.at(0).saldo_Disponible || 0 }}%</strong></div>
     <div class="kline">
-      <span>Resto utilizable (mm)</span><strong>{{ data.at(0).SaldoTotal.toFixed(2) || 0 }}</strong>
+      <span>Saldo total (mm)</span
+      ><strong> {{ resumenSaldosYRestos.SaldoConEmpate | number:'1.2-2' }} </strong>
     </div>
     <div class="kline">
-      <span>Resto utilizable (%)</span><strong>{{ data.at(0).MermaMedia || 0 }}</strong>
+      <span>Saldo total (%)</span
+      ><strong
+        > {{ resumenSaldosYRestos['Saldototal(%)'].toFixed(2)}}%</strong
+      >
+    </div>
+    <div class="kline">
+      <span>Resto utilizable (mm)</span
+      ><strong> {{ resumenSaldosYRestos.SaldoTotal | number:'1.2-2' }}</strong>
+    </div>
+    <div class="kline">
+      <span>Resto utilizable (%)</span
+      ><strong>{{ resumenSaldosYRestos['RestoUtilizable(%)'].toFixed(2) }}%</strong>
       <!-- colocar como porcentaje -->
     </div>
     <div class="kline">
-      <span>Desperdicio(mm)</span><strong>{{ (data.at(0).saldo_Corte_mm + data.at(0).saldo_Residuo_mm).toFixed(2)  || 0 }}</strong>
+      <span>Desperdicio(mm)</span
+      ><strong> {{ (resumenSaldosYRestos.saldo_Corte_mm + resumenSaldosYRestos.saldo_Residuo_mm) | number:'1.2-2'  }}</strong>
     </div>
     <div class="kline">
-      <span>Desperdicio (%)</span><strong>{{ data.at(0).saldo_Corte  || 0 }}</strong> 
-      <!-- +  data.at(0).saldo_Residuo_mm colocar saldo residuo como porcentaje -->
-    </div>
+      <span>Desperdicio (%)</span
+      ><strong> {{ resumenSaldosYRestos['Desperdicio(%)'].toFixed(2)  }}%</strong>
+         </div>
   </div>
   <div class="stat">
     <h4>Postprocesado</h4>
-    <!-- <div class="kline"><span>Despiece</span><strong>--</strong></div> -->
-    <div class="kline"><span># Barras utilizadas</span><strong>{{ data.at(0).Barras || 0 }}</strong></div>
-    <div class="kline"><span># Cortes</span><strong>{{ data.at(0).CortesTotal || 0 }}</strong></div>
-    <div class="kline"><span># Empates</span><strong>{{ data.at(0).EmpatesTotal || 0 }}</strong></div>
-    <div class="kline"><span># Piezas</span><strong>{{ getPiezas() }}</strong></div>
+    <div class="kline">
+      <span># Barras utilizadas</span
+      ><strong> {{ resumenSaldosYRestos.Barras || 0 }} </strong>
+    </div>
+    <div class="kline">
+      <span># Cortes</span><strong> {{ resumenSaldosYRestos.CortesTotal  }}</strong>
+    </div>
+    <div class="kline">
+      <span># Empates</span><strong> {{ resumenSaldosYRestos.EmpatesTotal  }}</strong>
+    </div>
+    <div class="kline">
+      <span># Piezas</span><strong>{{ getPiezas() }}</strong>
+    </div>
   </div>
   <div class="stat">
     <h4>Resumen</h4>
-    <!-- agrupar por nobmre y longitud -->
+    <div class="fila-compacta">
+      <span><strong>Perfil</strong></span>
+      <span class="celda end"><strong>Longitud (mm)</strong></span>
+      <span class="celda end"><strong>Cantidad</strong></span>
+    </div>
+    <div class="fila-compacta" *ngFor="let grupo of resumenPerfiles">
+      <span class="celda">
+        <strong> {{ grupo.perfil }} </strong></span
+      >
+      <span class="celda end">{{ grupo.longitud | number:'1.2' }}mm</span>
+      <span class="celda end">{{ grupo.cantidad}}</span>
+    </div>
   </div>
 </div>

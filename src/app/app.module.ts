@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 //import { MaterialModule } from './shared/material.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -17,6 +17,11 @@ import { ForgetPasswordComponent } from './login/forget-password/forget-password
 import { UpdatePasswordComponent } from './login/update-password/update-password.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+import { TablaAnalisisComponent } from './home/analisis/tabla-analisis/tabla-analisis.component';
+
+registerLocaleData(localeEs);
 
 @NgModule({
   declarations: [AppComponent, LoginComponent, NotFoundComponent, ForgetPasswordComponent, UpdatePasswordComponent],
@@ -33,7 +38,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
   exports: [MaterialModule],
   providers: [
-    
+    { provide: LOCALE_ID, useValue: 'es' },
     QuicklinkStrategy,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     provideAnimationsAsync(),

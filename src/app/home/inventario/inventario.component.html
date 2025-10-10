@@ -5,7 +5,7 @@
   <!-- Toolbar -->
   <div class="toolbar">
     <label class="search" role="search">
-      <span class="icon">🔎</span>
+      <span class="icon"><mat-icon>search</mat-icon></span>
       <input
         type="search"
         placeholder="Buscar por perfil, material, calidad…"
@@ -61,9 +61,9 @@
     </div>
 
     <input #fileInput type="file" accept=".xlsx,.xls" hidden (change)="onFileInputChange($event)" />
-    <button class="btn btn-primary" type="button" (click)="fileInput.click()">+ Agregar desde archivo</button>
-    <button class="btn btn-muted" type="button" [disabled]="!anySelected()" (click)="confirmAndDeleteSelected()">Borrar selección</button>
-    <button class="btn btn-muted" type="button" [disabled]="!anySelected()" (click)="modificarCantidadLongitud()">Actualizar Datos</button>
+    <button class="btn btn-primary" type="button" (click)="fileInput.click()"> <mat-icon>add</mat-icon> Agregar desde archivo</button>
+    <button class="btn btn-muted" type="button" [disabled]="!anySelected()" (click)="confirmAndDeleteSelected()"> <mat-icon>delete</mat-icon> Borrar selección</button>
+    <button class="btn btn-muted" type="button" [disabled]="!anySelected()" (click)="modificarCantidadLongitud()"> <mat-icon>edit</mat-icon>  Actualizar Datos</button>
   </div>
 
   <!-- Nota -->

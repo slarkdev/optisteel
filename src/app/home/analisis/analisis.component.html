@@ -45,17 +45,17 @@
       </mat-form-field>
 
       <button class="btn btn-ghost-1" (click)="ejecutarNesting()">
-        🔄 Ejecutar Nesting
+      <mat-icon>construction</mat-icon> Ejecutar Nesting
       </button>
     </div>
 
     <div class="actions">
       <button class="btn btn-ghost-1" (click)="actualizar()">
-        🔄 Actualizar
+        <mat-icon>cached</mat-icon>Actualizar
       </button>
-      <button class="btn btn-ghost" (click)="limpiar()">🧹 Limpiar</button>
-      <button class="btn btn-ghost-1" (click)="exportar()">⤓ Exportar</button>
-      <button class="btn btn-primary" (click)="guardar()">💾 Guardar</button>
+      <button class="btn btn-ghost" (click)="limpiar()"><mat-icon>cleaning_services</mat-icon> Limpiar</button>
+      <button class="btn btn-ghost-1" (click)="exportar()"><mat-icon>cloud_download</mat-icon> Exportar</button>
+      <button class="btn btn-primary" (click)="guardar()"><mat-icon>save</mat-icon> Guardar</button>
     </div>
   </div>
 
@@ -98,11 +98,11 @@
     </div>
   </section>
 
-  <div style="display: flex; flex-direction: row">
+  <!-- <div style="display: flex; flex-direction: row">
     <button class="btn btn-ghost" (click)="clickEvent($event)">
       <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon> Preview
     </button>
-  </div>
+  </div> -->
   <div class="tabs" role="tablist">
     <div class="tabs" role="tablist">
       <button

@@ -260,7 +260,7 @@ tr.example-element-row:not(.example-expanded-row):active {
   font-weight: 800;
   font-size: 0.82rem;
   color: #fff;
-  white-space:nowrap;
+  white-space: nowrap;
   letter-spacing: 0.8px;
 }
 
@@ -277,7 +277,7 @@ tr.example-element-row:not(.example-expanded-row):active {
   color: #032838;
   font-weight: 800;
   font-size: 0.82rem;
-  white-space:nowrap
+  white-space: nowrap;
 }
 
 .retazo-saldo {
@@ -296,4 +296,39 @@ tr.example-element-row:not(.example-expanded-row):active {
   font-weight: bold;
   border: #475467 2px solid;
   background: linear-gradient(to right, #00bcd4, #2196f3); // celeste a azul
+}
+
+.tabla-compacta {
+  width: 100%;
+  border-collapse: collapse;
+  // font-size: 12px;
+  line-height: 1.2;
+}
+
+.tabla-compacta th,
+.tabla-compacta td {
+  padding: 2px 6px;
+  width: 4rem;
+  white-space: nowrap;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.fila-compacta {
+  display: grid;
+  grid-template-columns: 10rem 8rem 8rem;
+  gap: 4px;
+  // font-size: 11px;
+  padding: 2px 0;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+
+}
+.celda {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.end{
+  text-align: end;
 }

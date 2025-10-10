@@ -1,6 +1,6 @@
 <main class="main">
   <h1 class="page-title">Datos del proyecto</h1>
-  <p class="subtitle"> <strong> Proyecto: {{ nombreProyecto }} Lote: {{ nombreLote }}</strong></p>
+  <p class="subtitle"> <strong> Proyecto: {{ proyectoSeleccionado.name }} Lote: {{ loteSeleccionado.NombreTrabajo }}</strong></p>
 <!-- 
   <ng-container *ngIf="mostrarTabla"> -->
     <app-tabla
@@ -15,10 +15,11 @@
         <input #fileInput type="file" hidden (change)="onFileInputChange($event)" 
           accept=".nc1,.xlsx,.xlsm" multiple />
         <button (click)="fileInput.click()" class="btn btn-primary">
-          Importar Excel/NC
+          <mat-icon>cloud_upload</mat-icon> Importar Excel/NC
         </button>
         <button (click)="borrarDatos()" class="btn btn-muted">
-          🗑️ Borrar Datos
+          <mat-icon>delete</mat-icon>
+          Borrar Datos
         </button>
       </div>
     </app-tabla>
