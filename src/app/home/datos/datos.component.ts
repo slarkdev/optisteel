@@ -29,7 +29,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
 import { DatosVM, toAPI, toVM } from './datos.adapters';
 
-
 @Component({
   selector: 'app-datos',
   templateUrl: './datos.component.html',
@@ -38,7 +37,7 @@ import { DatosVM, toAPI, toVM } from './datos.adapters';
 })
 export class DatosComponent implements OnInit, OnDestroy {
   usuarioLogeado: Usuario = this.apiAuthService.usuarioData;
-  
+
   proyectoSeleccionado: any;
   loteSeleccionado: any;
   private saveTimers = new Map<number, any>();
@@ -92,7 +91,7 @@ export class DatosComponent implements OnInit, OnDestroy {
       header: 'Perfil',
       key: 'Formato',
       tipo: 'texto',
-      spanClase: ''
+      spanClase: '',
     },
     {
       header: 'Formato',
@@ -166,15 +165,18 @@ export class DatosComponent implements OnInit, OnDestroy {
       .getProyectoSeleccionado()
       .pipe(takeUntil(this.subscription))
       .subscribe((proyecto) => {
-        this.proyectoSeleccionado = proyecto;
+        if (proyecto !== null) this.proyectoSeleccionado = proyecto;
+        else this.router.navigate(['home/proyectos']);
       });
 
     this.apiLotesService
       .getLoteSeleccionado()
       .pipe(takeUntil(this.subscription))
       .subscribe((lote) => {
-        this.loteSeleccionado = lote;
-        this.loadDatos(this.workId);
+        if (lote !== null) {
+          this.loteSeleccionado = lote;
+          this.loadDatos(this.workId);
+        } else this.router.navigate(['home/proyectos']);
         console.log('DatosComponent montado');
       });
   }
@@ -186,38 +188,43 @@ export class DatosComponent implements OnInit, OnDestroy {
   }
 
   private loadDatos(workId: string): void {
-    this.apiDatosService.list(workId)
-    .pipe(
-      switchMap(() => this.apiDatosService.getDatosPorTrabajoID(workId)),
-      takeUntil(this.subscription)
-    )
-    .subscribe({
-      next: (response: Datos[]) => {
-        console.log("📥 Datos recibidos del backend:", response);
+    this.apiDatosService
+      .list(workId)
+      .pipe(
+        switchMap(() => this.apiDatosService.getDatosPorTrabajoID(workId)),
+        takeUntil(this.subscription)
+      )
+      .subscribe({
+        next: (response: Datos[]) => {
+          console.log('📥 Datos recibidos del backend:', response);
 
-        const archivosUnicos = new Map<string, Datos>();
-        response.forEach(item => {
-          if (item.Archivo && !archivosUnicos.has(item.Archivo)) {
-            archivosUnicos.set(item.Archivo, {
-              ...item,
-              Referencia: 'REF_001',
-              OrdenProduccion: 'PROD_001',
-              Origen: item.Origen ?? 'NC',
-              Formato: item.Perfil?.[0] ?? '',
-              Cubierto: item.archivo_usado === true ? '🟢' : '🔴',
-            });
-          }
-        });
+          const archivosUnicos = new Map<string, Datos>();
+          response.forEach((item) => {
+            if (item.Archivo && !archivosUnicos.has(item.Archivo)) {
+              archivosUnicos.set(item.Archivo, {
+                ...item,
+                Referencia: 'REF_001',
+                OrdenProduccion: 'PROD_001',
+                Origen: item.Origen ?? 'NC',
+                Formato: item.Perfil?.[0] ?? '',
+                Cubierto: item.archivo_usado === true ? '🟢' : '🔴',
+              });
+            }
+          });
 
-        this.datosDelTrabajo = Array.from(archivosUnicos.values());
-        console.log('📦 Datos únicos por Archivo con campos extra:', this.datosDelTrabajo);
-      },
-      error: (err) => {
-        console.error('❌ Error al cargar datos del trabajo:', err);
-        this.sb.open('Error al cargar datos', 'Cerrar', { duration: 3000 });
-      }
-    });
-
+          this.datosDelTrabajo = Array.from(archivosUnicos.values());
+          console.log(
+            '📦 Datos únicos por Archivo con campos extra:',
+            this.datosDelTrabajo
+          );
+        },
+        error: (err) => {
+          console.error('❌ Error al cargar piezas del lote:', err);
+          this.sb.open('Error al cargar piezas del lote.', 'Cerrar', {
+            duration: 3000,
+          });
+        },
+      });
   }
 
   getFormattedDate = (): string => {
@@ -235,17 +242,18 @@ export class DatosComponent implements OnInit, OnDestroy {
 
   borrarDatos(): void {
     if (this.seleccionados.length === 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Sin selección',
-        text: 'No se ha seleccionado ningún dato para eliminar.',
-        confirmButtonColor: '#f8a166',
-      });
+      this.error.showErrorSnackBar('No se ha seleccionado ninguna pieza para eliminar.');
+      // Swal.fire({
+      //   icon: 'warning',
+      //   title: 'Sin selección',
+      //   text: 'No se ha seleccionado ninguna pieza para eliminar.',
+      //   confirmButtonColor: '#f8a166',
+      // });
       return;
     }
 
     Swal.fire({
-      title: '¿Eliminar los datos seleccionados?',
+      title: '¿Eliminar las piezas seleccionados?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
@@ -254,24 +262,24 @@ export class DatosComponent implements OnInit, OnDestroy {
       confirmButtonColor: '#f8a166',
     }).then((result) => {
       if (result.isConfirmed) {
-        
-        console.log("this.seleccionados: ", this.seleccionados);
+        console.log('this.seleccionados: ', this.seleccionados);
 
-        const ids = this.seleccionados.map(p => ({
+        const ids = this.seleccionados.map((p) => ({
           TrabajoID: p.TrabajoID,
-          Archivo: p.Archivo
+          Archivo: p.Archivo,
         }));
 
         this.apiDatosService.deleteDatos(ids).subscribe({
           next: () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Eliminado',
-              text: 'Los datos fueron eliminados correctamente.',
-              timer: 3000,
-              showConfirmButton: false,
-              position: 'top-end',
-            });
+            this.error.showErrorSnackBar('Las piezas fueron eliminados correctamente.');
+            // Swal.fire({
+            //   icon: 'success',
+            //   title: 'Eliminado',
+            //   text: 'Las piezas fueron eliminados correctamente.',
+            //   timer: 3000,
+            //   showConfirmButton: false,
+            //   position: 'top-end',
+            // });
 
             // // Actualiza la tabla}
             // this.dataSource.data = this.dataSource.data.filter(
@@ -283,12 +291,13 @@ export class DatosComponent implements OnInit, OnDestroy {
             this.loadDatos(this.workId);
           },
           error: () => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ocurrió un error al eliminar los datos.',
-              confirmButtonColor: '#f8a166',
-            });
+            this.error.showErrorSnackBar('Ocurrió un error al eliminar las piezas.');
+            // Swal.fire({
+            //   icon: 'error',
+            //   title: 'Error',
+            //   text: 'Ocurrió un error al eliminar las piezas.',
+            //   confirmButtonColor: '#f8a166',
+            // });
           },
         });
       }
@@ -302,7 +311,7 @@ export class DatosComponent implements OnInit, OnDestroy {
   clickRow(lote: any): void {
     //enviar informacion al componente padre sobre el elemento seleccionado para actualizar el select lote
     this.apiLotesService.actualizarLoteSeleccionado(lote);
-    console.log("GGGGG")
+    console.log('GGGGG');
     this.apiDatosService
       .list(lote._id)
       .pipe(takeUntil(this.subscription))
@@ -318,14 +327,12 @@ export class DatosComponent implements OnInit, OnDestroy {
             this.router.navigate(['home/datos']);
           } else {
             this.error.showErrorSnackBar(
-              'No se encontraron Datos para el lote.'
+              'No se encontraron piezas para el lote.'
             );
           }
         },
         error: (err) => {
-          this.error.showErrorSnackBar(
-            'No se encontraron Datos para el lote'
-          );
+          this.error.showErrorSnackBar('No se encontraron piezas para el lote');
         },
       });
     // this.apiInventarioService
@@ -353,43 +360,57 @@ export class DatosComponent implements OnInit, OnDestroy {
     //       );
     //     },
     //   });
-
-
   }
 
   async handleSendDrag(files: File[]): Promise<void> {
     try {
-      console.log("📤 Subiendo archivos:", files.map(f => f.name));
-      console.log("this.workId: ", this.workId);
+      console.log(
+        '📤 Subiendo archivos:',
+        files.map((f) => f.name)
+      );
+      console.log('this.workId: ', this.workId);
 
-      const response = await this.apiDatosService.uploadFiles(files, this.workId);
-      console.log("📁 Archivos subidos:", response.files);
-      console.log("📂 URLs generadas:", response.urls);
+      const response = await this.apiDatosService.uploadFiles(
+        files,
+        this.workId
+      );
+      console.log('📁 Archivos subidos:', response.files);
+      console.log('📂 URLs generadas:', response.urls);
 
       this.archivosSubidos = response.files;
       this.rutasArchivos = response.urls;
 
-      const piezas = await this.apiDatosService.postFilesData(this.rutasArchivos, this.workId);
-      console.log("🧱 Piezas procesadas:", piezas);
+      const piezas = await this.apiDatosService.postFilesData(
+        this.rutasArchivos,
+        this.workId
+      );
+      console.log('🧱 Piezas procesadas:', piezas);
 
       if (piezas) {
         await this.postPiezasProcesadas(piezas); // ✅ guardar en la base de datos
         await lastValueFrom(this.apiDatosService.list(this.workId)); // ✅ actualizar datos$
-        const datos = await lastValueFrom(this.apiDatosService.getDatosPorTrabajoID(this.workId));
+        const datos = await lastValueFrom(
+          this.apiDatosService.getDatosPorTrabajoID(this.workId)
+        );
         this.datosDelTrabajo = this.procesarDatos(datos);
-        console.log('📦 Datos únicos por Archivo con campos extra:', this.datosDelTrabajo);
+        console.log(
+          '📦 Datos únicos por Archivo con campos extra:',
+          this.datosDelTrabajo
+        );
       }
 
-      this.sb.open('Archivo subido correctamente', 'Cerrar', { duration: 3000 });
+      this.sb.open('Archivo subido correctamente', 'Cerrar', {
+        duration: 3000,
+      });
     } catch (error) {
-      console.error("❌ Error al subir archivo:", error);
+      console.error('❌ Error al subir archivo:', error);
       this.sb.open('Error al subir archivo', 'Cerrar', { duration: 3000 });
     }
   }
 
   private procesarDatos(datos: Datos[]): Datos[] {
     const archivosUnicos = new Map<string, Datos>();
-    datos.forEach(item => {
+    datos.forEach((item) => {
       if (item.Archivo && !archivosUnicos.has(item.Archivo)) {
         archivosUnicos.set(item.Archivo, {
           ...item,
@@ -406,12 +427,17 @@ export class DatosComponent implements OnInit, OnDestroy {
 
   async postPiezasProcesadas(piezas: (Datos | DatosVM)[]): Promise<void> {
     try {
-      const resultado = await this.apiDatosService.postPiezasData('piezas', piezas);
-      console.log("🧱 Piezas guardadas en la base de datos:", resultado);
+      const resultado = await this.apiDatosService.postPiezasData(
+        'piezas',
+        piezas
+      );
+      console.log('🧱 Piezas guardadas en la base de datos:', resultado);
       this.loadDatos(this.workId); // recarga los datos desde la BD
-      this.sb.open('Piezas guardadas correctamente', 'Cerrar', { duration: 3000 });
+      this.sb.open('Piezas guardadas correctamente', 'Cerrar', {
+        duration: 3000,
+      });
     } catch (error) {
-      console.error("❌ Error al guardar piezas:", error);
+      console.error('❌ Error al guardar piezas:', error);
       this.sb.open('Error al guardar piezas', 'Cerrar', { duration: 3000 });
     }
   }
@@ -427,22 +453,28 @@ export class DatosComponent implements OnInit, OnDestroy {
     try {
       for (const file of files) {
         const fileName = file.name.toLowerCase();
-        const extension = allowedExtensions.find(ext => fileName.endsWith(ext));
-        const isAllowed = allowedExtensions.some(ext => fileName.endsWith(ext));
+        const extension = allowedExtensions.find((ext) =>
+          fileName.endsWith(ext)
+        );
+        const isAllowed = allowedExtensions.some((ext) =>
+          fileName.endsWith(ext)
+        );
 
         if (!isAllowed) {
-          this.sb.open(`Archivo no permitido: ${file.name}`, 'Cerrar', { duration: 3000 });
+          this.sb.open(`Archivo no permitido: ${file.name}`, 'Cerrar', {
+            duration: 3000,
+          });
           continue;
         }
 
         if (extension === '.nc1') {
-          archivosNC1.push(file); 
-        } 
-        else if (extension === '.xlsx' || extension === '.xlsm') {
+          archivosNC1.push(file);
+        } else if (extension === '.xlsx' || extension === '.xlsm') {
           const data = await file.arrayBuffer();
           const wb = XLSX.read(data, { type: 'array' });
           const sheet = wb.Sheets[wb.SheetNames[0]];
-          const json: Array<Record<string, any>> = XLSX.utils.sheet_to_json(sheet);
+          const json: Array<Record<string, any>> =
+            XLSX.utils.sheet_to_json(sheet);
 
           const vms: DatosVM[] = [];
 
@@ -462,17 +494,22 @@ export class DatosComponent implements OnInit, OnDestroy {
               Agujeros: row['Agujeros'] ?? '',
               Origen: 'Excel',
             };
-            
-            vms.push(vm); 
+
+            vms.push(vm);
             console.log('🧱 VM generado:', vm);
             // await lastValueFrom(this.dat.upsert(this.workId, toAPI(vm)));
           }
           console.log('📦 Lista de VMs generados:', vms);
           await this.postPiezasProcesadas(vms); // ✅ guardar en la base de datos
           await lastValueFrom(this.apiDatosService.list(this.workId)); // ✅ actualizar datos$
-          const datos = await lastValueFrom(this.apiDatosService.getDatosPorTrabajoID(this.workId));
+          const datos = await lastValueFrom(
+            this.apiDatosService.getDatosPorTrabajoID(this.workId)
+          );
           this.datosDelTrabajo = this.procesarDatos(datos);
-          console.log('📦 Datos únicos por Archivo con campos extra:', this.datosDelTrabajo);
+          console.log(
+            '📦 Datos únicos por Archivo con campos extra:',
+            this.datosDelTrabajo
+          );
         }
       }
 
@@ -481,10 +518,10 @@ export class DatosComponent implements OnInit, OnDestroy {
       }
 
       await this.loadDatos(this.workId);
-      this.sb.open('Datos cargados', 'Cerrar', { duration: 2500 });
+      this.sb.open('Datos cargados', 'Cerrar', { duration: 4000 });
     } catch (err) {
       console.error('Error leyendo archivos', err);
-      this.sb.open('Error al cargar archivo', 'Cerrar', { duration: 3000 });
+      this.sb.open('Error al cargar archivo', 'Cerrar', { duration: 4000 });
     } finally {
       input.value = '';
     }

@@ -148,11 +148,18 @@ export class LotesComponent implements OnInit, OnDestroy {
   };
 
   crearLote() {
+    if (this.proyectoActual === null) {
+      this.error.showErrorSnackBar(
+        'Seleccione un proyecto antes de crear el lote'
+      );
+      return;
+    }
+
     Swal.fire({
       title: 'Ingrese el nombre del lote',
       input: 'text',
       inputPlaceholder: 'lote',
-      inputValue: 'lote',
+      inputValue: '',
       inputAttributes: { autocapitalize: 'off' },
       showCancelButton: true,
       confirmButtonText: 'Crear',
@@ -175,7 +182,7 @@ export class LotesComponent implements OnInit, OnDestroy {
           OrganizacionID: this.usuarioLogeado.OrganizacionID, //'67538203842272d6e79123db',
           FolderID: this.proyectoActual._id, //'68d4038efdb5289a63177008', // Hardcode temporal
           cubiertos_count: 0,
-          id:`new-${Date.now()}`, // NO DEBE SER IGUAL A NINGUNO ES ID UNICO  'DASDASS',
+          id: `new-${Date.now()}`, // NO DEBE SER IGUAL A NINGUNO ES ID UNICO  'DASDASS',
           no_cubiertos_count: 0,
           piezas_count: 0,
         };
@@ -192,15 +199,15 @@ export class LotesComponent implements OnInit, OnDestroy {
               );
               return;
             }
-            Swal.fire({
-              position: 'top-end',
-              icon: 'success',
-              title: 'Lote Creado',
-              showConfirmButton: false,
-              timer: 3000,
-            });
-            
-            
+            this.error.showErrorSnackBar('Lote Creado');
+            // Swal.fire({
+            //   position: 'top-end',
+            //   icon: 'success',
+            //   title: 'Lote Creado',
+            //   showConfirmButton: false,
+            //   timer: 3000,
+            // });
+
             const loteCompleto = {
               ...lote,
               _id: response.id,
@@ -218,17 +225,14 @@ export class LotesComponent implements OnInit, OnDestroy {
 
   borrarLote(): void {
     if (this.seleccionados.length === 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Sin selección',
-        text: 'No se ha seleccionado ningún folder para eliminar.',
-        confirmButtonColor: '#f8a166',
-      });
+      this.error.showErrorSnackBar(
+        'No se ha seleccionado ningún lote para eliminar.'
+      );
       return;
     }
 
     Swal.fire({
-      title: '¿Eliminar los folders seleccionados?',
+      title: '¿Eliminar los lotes seleccionados?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
@@ -242,14 +246,18 @@ export class LotesComponent implements OnInit, OnDestroy {
         };
         this.apiLotesService.deleteLotes(ids).subscribe({
           next: () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Eliminado',
-              text: 'Los lotes fueron eliminados correctamente.',
-              timer: 3000,
-              showConfirmButton: false,
-              position: 'top-end',
-            });
+            this.error.showErrorSnackBar(
+              'Los lotes fueron eliminados correctamente.'
+            );
+
+            // Swal.fire({
+            //   icon: 'success',
+            //   title: 'Eliminado',
+            //   text: 'Los lotes fueron eliminados correctamente.',
+            //   timer: 3000,
+            //   showConfirmButton: false,
+            //   position: 'top-end',
+            // });
 
             // // Actualiza la tabla}
             // this.dataSource.data = this.dataSource.data.filter(
@@ -260,12 +268,9 @@ export class LotesComponent implements OnInit, OnDestroy {
             this.tabla.filtro = '';
           },
           error: () => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ocurrió un error al eliminar los lotes.',
-              confirmButtonColor: '#f8a166',
-            });
+            this.error.showErrorSnackBar(
+              'Ocurrió un error al eliminar los lotes.'
+            );
           },
         });
         this.apiLotesService.eliminarLotesLocalmente(ids.TrabajoIDs);
@@ -285,52 +290,26 @@ export class LotesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.subscription))
       .subscribe({
         next: (response) => {
-          if (response !== null) {
-            this.apiDatosService.setContexto(
-              this.proyectoActual._id,
-              lote._id,
-              this.proyectoActual.name,
-              lote.NombreTrabajo
-            );
-            this.router.navigate(['home/datos']);
-          } else {
-            this.error.showErrorSnackBar(
-              'No se encontraron Datos para el lote.'
-            );
-          }
+          // if (response !== null) {
+          this.apiDatosService.setContexto(
+            this.proyectoActual._id,
+            lote._id,
+            this.proyectoActual.name,
+            lote.NombreTrabajo
+          );
+          this.router.navigate(['home/datos']);
+          // } else {
+          //   this.error.showErrorSnackBar(
+          //     'No se encontraron piezas para el lote.'
+          //   );
+          // }
         },
         error: (err) => {
           this.error.showErrorSnackBar(
-            'No se encontraron Datos para el lote'
+            'No se encontraron piezas para el lote.'
           );
+          this.router.navigate(['home/datos']);
         },
       });
-    // this.apiInventarioService
-    //   .list(lote._id)
-    //   .pipe(takeUntil(this.subscription))
-    //   .subscribe({
-    //     next: (response) => {
-    //       if (response !== null) {
-    //         this.apiInventarioService.setContexto(
-    //           this.proyectoActual._id,
-    //           lote._id,
-    //           this.proyectoActual.name,
-    //           lote.NombreTrabajo
-    //         );
-    //         this.router.navigate(['home/inventario']);
-    //       } else {
-    //         this.error.showErrorSnackBar(
-    //           'No se encontraron inventarios para el lote.'
-    //         );
-    //       }
-    //     },
-    //     error: (err) => {
-    //       this.error.showErrorSnackBar(
-    //         'No se encontraron inventarios para el lote'
-    //       );
-    //     },
-    //   });
-
-
   }
 }

@@ -107,3 +107,11 @@
 //   // border-right: 1px solid rgba(255, 255, 255, 0.2);
 
 // }
+
+.navbtn:disabled {
+  // background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+  border: 1px dashed #999;
+}

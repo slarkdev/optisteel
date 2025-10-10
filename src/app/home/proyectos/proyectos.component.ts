@@ -15,6 +15,7 @@ import { Usuario } from '../../models/usuario';
 import { Proyecto } from '../../models/proyecto';
 import Swal from 'sweetalert2';
 import { TablaComponent } from '../../shared/tabla/tabla.component';
+import { Error } from '../../shared/error';
 
 @Component({
   selector: 'app-proyectos',
@@ -70,7 +71,8 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     private apiProyectoService: ApiProyectosService,
     private apiLoteService: ApiLotesService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private error: Error
   ) {}
 
   ngOnInit(): void {
@@ -112,7 +114,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
         };
 
         console.log(proyecto);
-        
+
         return this.apiProyectoService
           .addProyecto(proyecto)
           .pipe(take(1))
@@ -125,13 +127,14 @@ export class ProyectosComponent implements OnInit, OnDestroy {
               return;
             }
 
-            Swal.fire({
-              position: 'top-end',
-              icon: 'success',
-              title: 'Proyecto Creado',
-              showConfirmButton: false,
-              timer: 3000,
-            });
+            this.error.showErrorSnackBar('Proyecto Creado');
+            // Swal.fire({
+            //   position: 'top-end',
+            //   icon: 'success',
+            //   title: 'Proyecto Creado',
+            //   showConfirmButton: false,
+            //   timer: 3000,
+            // });
 
             const proyectoConCamposNumericos = {
               ...response,
@@ -140,7 +143,9 @@ export class ProyectosComponent implements OnInit, OnDestroy {
             };
 
             //this.router.navigate(['home/proyectos']);
-            this.apiProyectoService.actualizarListaProyectos(proyectoConCamposNumericos);
+            this.apiProyectoService.actualizarListaProyectos(
+              proyectoConCamposNumericos
+            );
 
             this.tabla.filtro = '';
           })
@@ -153,12 +158,13 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
   borrarProyecto(): void {
     if (this.seleccionados.length === 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Sin selección',
-        text: 'No se ha seleccionado ningún folder para eliminar.',
-        confirmButtonColor: '#f8a166',
-      });
+      this.error.showErrorSnackBar('No se ha seleccionado ningún folder para eliminar.');
+      // Swal.fire({
+      //   icon: 'warning',
+      //   title: 'Sin selección',
+      //   text: 'No se ha seleccionado ningún folder para eliminar.',
+      //   confirmButtonColor: '#f8a166',
+      // });
       return;
     }
 
@@ -178,14 +184,15 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
         this.apiProyectoService.deleteProyectos(ids).subscribe({
           next: () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Eliminado',
-              text: 'Los proyectos fueron eliminados correctamente.',
-              timer: 3000,
-              showConfirmButton: false,
-              position: 'top-end',
-            });
+            this.error.showErrorSnackBar('Los proyectos fueron eliminados correctamente.');
+            // Swal.fire({
+            //   icon: 'success',
+            //   title: 'Eliminado',
+            //   text: 'Los proyectos fueron eliminados correctamente.',
+            //   timer: 3000,
+            //   showConfirmButton: false,
+            //   position: 'top-end',
+            // });
             // Actualiza la tabla
             this.apiProyectoService.eliminarProyectosLocalmente(ids.FolderIDs);
 
@@ -198,12 +205,14 @@ export class ProyectosComponent implements OnInit, OnDestroy {
             this.tabla.filtro = '';
           },
           error: () => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ocurrió un error al eliminar los proyectos.',
-              confirmButtonColor: '#f8a166',
-            });
+
+            this.error.showErrorSnackBar('Ocurrió un error al eliminar los proyectos.');
+            // Swal.fire({
+            //   icon: 'error',
+            //   title: 'Error',
+            //   text: 'Ocurrió un error al eliminar los proyectos.',
+            //   confirmButtonColor: '#f8a166',
+            // });
           },
         });
       }
@@ -216,7 +225,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
   clickRow(element: any): void {
     this.apiProyectoService.actualizarProyectoSeleccionado(element);
-    this.apiLoteService.cargarLotes(element.userId)
+    this.apiLoteService.cargarLotes(element.userId);
     this.router.navigate(['home/lotes']); // o con parámetro
   }
 }
