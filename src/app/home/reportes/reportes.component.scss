@@ -1,0 +1,299 @@
+// Variables globales
+$bg: #EEEBEA;
+$fg: #1f2937;
+$orange: #EE6622;
+$orange-hover: #a04517;
+$muted: #6b7280;
+$border: #e5e7eb;
+$radius: 6px;
+$shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #EEEBEA;
+  color: #1f2937;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+  background: $bg;
+  color: $fg;
+
+  /* Sidebar */
+  .sidebar {
+    width: 60px;
+    background: white;
+    border-right: 1px solid $border;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+
+    .dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: $orange;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .navbtn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+
+    .spacer {
+      flex-grow: 1;
+    }
+  }
+
+  /* Main */
+  .main {
+    flex: 1;
+    padding: 16px 24px;
+    overflow-y: auto;
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .ctx {
+          display: flex;
+          gap: 8px;
+
+          .pill {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: white;
+            border: 1px solid $border;
+            border-radius: $radius;
+
+            .k {
+              font-weight: 600;
+              color: $muted;
+            }
+
+            select {
+              border: none;
+              background: none;
+              font-size: 14px;
+              outline: none;
+            }
+          }
+        }
+
+        .hint {
+          color: $muted;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .page-title {
+      font-size:clamp(22px,2.6vw,30px);
+      font-weight: 800;
+      margin: 8px auto 40px auto;
+      color:$fg;
+      text-align: center;
+    }
+
+    /* Toolbar */
+    .toolbar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin: 0 auto 16px auto;
+        max-width: 80%;  
+        flex-wrap: wrap; // permite salto solo si es ultra necesario
+        
+
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            input {
+            border: 1px solid $border;
+            border-radius: $radius;
+            padding: 4px 8px;
+            }
+        }
+
+        .select {
+            border: 1px solid $border;
+            border-radius: $radius;
+            padding: 0.45rem 0.8rem;
+            font-size: 0.875rem;
+        }
+
+        .filter {
+            position: relative;
+
+            .panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid $border;
+            border-radius: $radius;
+            padding: 8px;
+            margin-top: 4px;
+            box-shadow: $shadow;
+
+            .frow {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-bottom: 4px;
+            }
+            }
+
+            &[aria-expanded="true"] .panel {
+            display: block;
+            }
+        }
+
+        .btn {
+            flex: 0 0 auto;          // ❗ evita que los botones se estiren
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.75rem; 
+            min-height: 32px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,.05);
+            transition: .15s;
+            white-space: nowrap;     // evita salto de texto
+            max-width: 200px;        // ancho máximo de seguridad
+
+            &.btn-primary {
+            background: $orange;
+            color: white;
+
+            &:hover {
+                background: $orange-hover;
+            }
+            }
+
+            &.btn-muted {
+            background: #F8A166;
+            color: white;
+
+            &:hover {
+                background: darken(#F8A166, 8%);
+            }
+            }
+
+            &.btn-ghost-1 {
+            background: #565b5f;
+            border: 1px solid $border;
+            color: white;
+            }
+        }
+
+        .icon{
+            width:16px;
+            height:16px;
+        }
+    }
+
+
+    /* Tabla */
+    .card {
+      background: white;
+      border: 1px solid $border;
+      border-radius: $radius;
+      box-shadow: $shadow;
+      padding: 12px;
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+          border-bottom: 1px solid $border;
+          padding: 8px;
+          text-align: left;
+          font-size: 14px;
+        }
+
+        th {
+          background: #f3f4f6;
+          font-weight: 600;
+        }
+
+        .cb {
+          cursor: pointer;
+        }
+
+        .sdot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          display: inline-block;
+
+          &.ok {
+            background: green;
+          }
+
+          &.no {
+            background: red;
+          }
+        }
+      }
+    }
+
+    /* Footer de la tabla */
+    .tfoot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      font-size: 14px;
+
+      .pager {
+        display: flex;
+        gap: 6px;
+
+        .iconbtn {
+          border: 1px solid $border;
+          border-radius: $radius;
+          padding: 4px 8px;
+          cursor: pointer;
+          background: white;
+
+          &:hover {
+            background: #f3f4f6;
+          }
+        }
+      }
+    }
+  }
+}

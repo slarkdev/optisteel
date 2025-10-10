@@ -1,0 +1,85 @@
+<div style="display: grid; gap: 12px">
+
+  <!-- toolbar local de la tabla (si prefieres, puedes moverla al padre) -->
+  <div class="toolbar">
+    <div class="search">
+      🔎
+      <input
+        type="search"
+        placeholder="Buscar…"
+        aria-label="Buscar"
+        [(ngModel)]="filtro"
+        (ngModelChange)="filtrarTabla()"
+      />
+    </div>
+
+    <select class="select" aria-label="Filas por página" (change)="onPageSizeChange($event)">
+      <option *ngFor="let opt of pageSizeOptions" [value]="opt">{{ opt }} por página</option>
+    </select>
+
+    <div class="slot">
+      <ng-content select="[tabla-acciones]"></ng-content>
+    </div>
+  </div>
+
+  <!-- tabla -->
+  <section class="card-table">
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <!-- fila grupos -->
+          <tr class="group-row">
+            <ng-container *ngFor="let g of groupCells">
+              <th [attr.colspan]="g.colspan" class="group-header" [ngClass]="g.cssClass">
+                <span *ngIf="g.label">{{ g.label }}</span>
+              </th>
+            </ng-container>
+          </tr>
+
+          <!-- fila headers -->
+          <tr>
+            <th>
+              <input type="checkbox" class="cb" [checked]="isAllSelected()" (change)="toggleAll($event)" />
+            </th>
+
+            <th *ngFor="let col of columnas" (click)="ordenarPor(col.key)" class="ordenable">
+              {{ col.header }}
+              <span *ngIf="columnaOrden === col.key">
+                {{ ordenAscendente ? '▲' : '▼' }}
+              </span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let element of pagedData" class="row" (dblclick)="filaDblClick.emit(element)">
+            <td>
+              <input
+                class="cb"
+                type="checkbox"
+                [(ngModel)]="element.seleccionado"
+                (change)="emitSeleccionados()"
+                (click)="$event.stopPropagation()"
+              />
+            </td>
+
+            <td *ngFor="let col of columnas" [ngClass]="{ numlike: isNumericLike(col) }">
+              <span [ngClass]="col.spanClase">
+                {{ formatearDato(col, element[col.key]) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- paginación -->
+  <div class="tfoot">
+    <span style="color: var(--muted); font-weight: 600">{{ rangoTexto }}</span>
+    <div class="pager">
+      <button class="iconbtn" (click)="prevPage()" [disabled]="pageIndex === 0">◀</button>
+      <button class="iconbtn" (click)="nextPage()" [disabled]="isNextDisabled()">▶</button>
+    </div>
+  </div>
+</div>

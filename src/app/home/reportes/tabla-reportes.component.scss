@@ -1,0 +1,23 @@
+.group-row .group-header {
+  text-align: center;
+  font-weight: 700;
+  border-bottom: 0;
+  padding: 8px 6px;
+  background: #f5f5f5;
+}
+.group-row .group-empty { background: transparent; }
+.group-row .group-sin    { background: #ffe4b5; }
+.group-row .group-con    { background: #d9f6d9; }
+
+/* básica */
+.table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.ordenable { cursor: pointer; user-select: none; }
+.toolbar { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+.search { display: flex; align-items: center; gap: 6px; }
+.select { padding: 6px 10px; }
+.cb { width: 16px; height: 16px; }
+
+.numlike {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

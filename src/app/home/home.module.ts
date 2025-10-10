@@ -17,6 +17,7 @@ import { ConfiguracionComponent } from './configuracion/configuracion.component'
 import { LotesComponent } from './lotes/lotes.component';
 import { ProyectosComponent } from './proyectos/proyectos.component';
 import { ReportesComponent } from './reportes/reportes.component';
+import { TablaReportesComponent } from './reportes/tabla-reportes.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -38,6 +39,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     LotesComponent,
     ProyectosComponent,
     ReportesComponent,
+    TablaReportesComponent,
     UpdateDialogComponent,
     TablaAnalisisComponent
   ],
