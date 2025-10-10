@@ -182,7 +182,7 @@ export class DatosComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription.next();
     this.subscription.complete();
-    console.log('🧹 LotesComponent destruido');
+    console.log('🧹 DatosComponent destruido');
   }
 
   private loadDatos(workId: string): void {
@@ -238,14 +238,14 @@ export class DatosComponent implements OnInit, OnDestroy {
       Swal.fire({
         icon: 'warning',
         title: 'Sin selección',
-        text: 'No se ha seleccionado ningún folder para eliminar.',
+        text: 'No se ha seleccionado ningún dato para eliminar.',
         confirmButtonColor: '#f8a166',
       });
       return;
     }
 
     Swal.fire({
-      title: '¿Eliminar los folders seleccionados?',
+      title: '¿Eliminar los datos seleccionados?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
@@ -267,7 +267,7 @@ export class DatosComponent implements OnInit, OnDestroy {
             Swal.fire({
               icon: 'success',
               title: 'Eliminado',
-              text: 'Los lotes fueron eliminados correctamente.',
+              text: 'Los datos fueron eliminados correctamente.',
               timer: 3000,
               showConfirmButton: false,
               position: 'top-end',
@@ -286,7 +286,7 @@ export class DatosComponent implements OnInit, OnDestroy {
             Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: 'Ocurrió un error al eliminar los lotes.',
+              text: 'Ocurrió un error al eliminar los datos.',
               confirmButtonColor: '#f8a166',
             });
           },
