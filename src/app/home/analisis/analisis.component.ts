@@ -429,4 +429,6 @@ export class AnalisisComponent implements OnInit {
   seleccionarTab(valor: string) {
     this.tabSeleccionado = valor;
   }
+
+  
 }

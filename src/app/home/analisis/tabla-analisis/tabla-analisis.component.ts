@@ -64,6 +64,7 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
 
   columnsExtras: string[] = ['graficoFila', 'expandedDetail'];
 
+  agrupados : any;
   constructor() {}
 
   ngOnInit(): void {
@@ -83,8 +84,7 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
       this.dataSource = new MatTableDataSource(nuevaData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-
-      console.log('Datos actualizados:', nuevaData);
+      this.getResumen();
     }
     if (changes['hide'] && !this.hide) {
       this.expandedElement = null;
@@ -103,23 +103,6 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
 
   toggle(element: any) {
     this.expandedElement = this.isExpanded(element) ? null : element;
-  }
-
-  getSegmentDataFicticio(): { width: number; color: string; label: string }[] {
-    const valores = [
-      { valor: 40, color: '#f44336', label: 'A' },
-      { valor: 25, color: '#2196f3', label: 'B' },
-      { valor: 15, color: '#4caf50', label: 'C' },
-      { valor: 20, color: '#ff9800', label: 'D' },
-    ];
-
-    const total = valores.reduce((acc, seg) => acc + seg.valor, 0);
-
-    return valores.map((seg) => ({
-      width: (seg.valor / total) * 100,
-      color: seg.color,
-      label: seg.label,
-    }));
   }
 
   getSegmentDataFromString(
@@ -173,16 +156,42 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
     return segmentos;
   }
 
-  getSaldoConEmpate(){
-    const saldoTotal =  this.data.at(0).SaldoTotal + this.data.at(0).saldo_Corte_mm + this.data.at(0).saldo_Residuo_mm 
-    // console.log(saldoTotal);    
+  getSaldoConEmpate() {
+    const saldoTotal =
+      this.data.at(0).SaldoTotal +
+      this.data.at(0).saldo_Corte_mm +
+      this.data.at(0).saldo_Residuo_mm;
+    // console.log(saldoTotal);
     return saldoTotal;
   }
 
-  getPiezas(){
-    const piezas = this.data.reduce((acc,actual) => acc + actual.Piezas.split('+').length, 0 );
-    // console.log(piezas);
+  getPiezas() {
+    const piezas = this.data.reduce(
+      (acc, actual) => acc + actual.Piezas.split('+').length,
+      0
+    );
     return piezas;
-    
+  }
+  
+  getResumen() {
+    const agrupados = Array.from(
+      this.data
+        .reduce((acc: any, item: any) => {
+          const clave = `${item.Perfil}|${item['Longitud Stock Total']}`;
+          if (!acc.has(clave)) {
+            acc.set(clave, {
+              perfil: item.Perfil,
+              longitud: item['Longitud Stock Total'],
+              cantidad: 1,
+            });
+          } else {
+            acc.get(clave)!.cantidad += 1;
+          }
+          return acc;
+        }, new Map())
+        .values()
+    );
+    this.agrupados = agrupados;
+    console.log(this.agrupados);
   }
 }
