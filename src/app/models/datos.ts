@@ -1,5 +1,5 @@
 export interface Datos {
-  id: number;           // índice local para la fila (Material Table)
+  id: string;           // índice local para la fila (Material Table)
   _id?: string | null;  // id real del backend (Mongo, etc.)
   TrabajoID: string;
   Archivo: string;
@@ -18,6 +18,9 @@ export interface Datos {
   Formato: string;
   Cubierto: string;
   archivo_usado: boolean;
+  Alto: number;
+  Pieza: string;
+  Agujeros: string;
 }
 
 export interface DatosListResponse {

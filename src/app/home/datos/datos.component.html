@@ -10,13 +10,14 @@
       [pageSizeOptions]="[5, 10, 25, 50]"
       (seleccionadosChange)="actualizarSeleccionados($event)"
       (filaClick)="clickRow($event)"
-      [key]="mostrarTabla"
     >
-      <div tabla-acciones class="toolbar-actions">
-        <button (click)="crearLote()" class="btn btn-primary">
+      <div tabla-acciones class="toolbar-actions">       
+        <input #fileInput type="file" hidden (change)="onFileInputChange($event)" 
+          accept=".nc1,.xlsx,.xlsm" multiple />
+        <button (click)="fileInput.click()" class="btn btn-primary">
           Importar Excel/NC
         </button>
-        <button (click)="borrarLote()" class="btn btn-muted">
+        <button (click)="borrarDatos()" class="btn btn-muted">
           🗑️ Borrar Datos
         </button>
       </div>
