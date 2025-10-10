@@ -1,78 +1,3 @@
-<!-- <div class="card-bd">
-  <div class="section" aria-expanded="true">
-    <div class="row expand">
-      <svg class="chev" width="14" height="14" viewBox="0 0 24 24">
-        <path fill="currentColor" d="m7 10l5 5l5-5H7z" />
-      </svg>
-      <div class="header-grid" style="flex: 1">
-        <div class="h-cell">Proyecto</div>
-        <div class="h-cell">Perfil</div>
-        <div class="h-cell">Patrón de Corte</div>
-        <div class="h-cell">Cantidad</div>
-        <div class="h-cell">Piezas</div>
-        <div class="h-cell">Saldo (mm)</div>
-        <div class="h-cell">Longitud (mm)</div>
-        <div class="h-cell">Saldo (%)</div>
-        <div class="h-cell">Cortes</div>
-
-        <div>Puente Norte</div>
-        <div>W310×39</div>
-        <div>W-90-A01</div>
-        <div>4</div>
-        <div>12</div>
-        <div>35</div>
-        <div>11000</div>
-        <div>2.9%</div>
-        <div>9</div>
-      </div>
-    </div>
-
-    <div class="pattern-bar" style="margin: 6px 0 10px">
-      <span class="seg gray" style="left: 0; width: 32%">P1 · 3200mm</span>
-      <span class="seg gray" style="left: 32%; width: 36%">P2 · 3600mm</span>
-      <span class="seg_hachu gray" style="left: 68%; width: 25%"
-        >P3_1 · 3000mm</span
-      >
-      <span class="seg orange" style="left: 93%; width: 7%"></span>
-      <span class="note-right">Saldo +90mm</span>
-    </div>
-
-    <div class="detail">
-      <div class="detail-head">
-        <div>Ref (res nombre)</div>
-        <div>Cant</div>
-        <div>Cant Total</div>
-        <div>Largo (mm)</div>
-      </div>
-      <div class="detail-row">
-        <div>P1</div>
-        <div>1</div>
-        <div>4</div>
-        <div>3200</div>
-      </div>
-      <div class="detail-row">
-        <div>P2</div>
-        <div>1</div>
-        <div>4</div>
-        <div>3600</div>
-      </div>
-      <div class="detail-row">
-        <div>P3_1</div>
-        <div>1</div>
-        <div>4</div>
-        <div>3000</div>
-      </div>
-      <div class="detail-row">
-        <div>Saldo</div>
-        <div>—</div>
-        <div>—</div>
-        <div>1200</div>
-      </div>
-    </div>
-  </div>
-</div>
- -->
-
 <div class="card-bd">
   <table
     mat-table
@@ -101,7 +26,7 @@
     </ng-container>
 
     <ng-container matColumnDef="patronCorte">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 8rem">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10rem">
         Patron de corte
       </th>
       <td mat-cell *matCellDef="let element">{{ element.Item }}</td>
@@ -123,20 +48,7 @@
       >
         Piezas
       </th>
-      <td
-        mat-cell
-        *matCellDef="let element"
-        [matTooltip]="element.Piezas.length > 30 ? element.Piezas : ''"
-        matTooltipPosition="above"
-        style="
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 200px;
-        "
-      >
-        {{ element.Piezas }}
-      </td>
+      <td mat-cell *matCellDef="let element">{{ element.Piezas }}</td>
     </ng-container>
 
     <ng-container matColumnDef="saldoMM">
@@ -219,7 +131,6 @@
               overflow: hidden;
               text-overflow: ellipsis;
               padding: 0 4px;
-              min-width: 8px;
               pointer-events: auto;
             "
             [matTooltip]="seg.label + ': ' + seg.width.toFixed(1) + '%'"
@@ -231,7 +142,6 @@
       </td>
     </ng-container>
 
-    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
     <ng-container matColumnDef="expandedDetail">
       <td
         mat-cell
@@ -275,7 +185,6 @@
                 <td mat-cell *matCellDef="let row">{{ row.subTotal }}</td>
               </ng-container>
 
-              <!-- Filas -->
               <tr mat-header-row *matHeaderRowDef="subColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: subColumns"></tr>
             </table>
@@ -294,7 +203,6 @@
       (click)="toggle(element)"
     ></tr>
 
-    <!-- Fila secundaria fija debajo -->
     <ng-container *ngIf="!hide">
       <tr mat-row *matRowDef="let row; columns: ['graficoFila']"></tr>
     </ng-container>
@@ -308,27 +216,36 @@
   </mat-paginator>
 </div>
 
-<!-- ojo esta parte no sabemos donde va -->
 <div class="grid3">
   <div class="stat">
     <h4>Saldos</h4>
-    <div class="kline"><span>Saldo total (mm)</span><strong>620</strong></div>
-    <div class="kline"><span>Saldo / series</span><strong>1.9%</strong></div>
+    <div class="kline"><span>Saldo total (mm)</span><strong>{{ getSaldoConEmpate().toFixed(2) || 0}}</strong></div>
+    <div class="kline"><span>Saldo / series</span><strong>{{ data.at(0).saldo_Corte +  data.at(0).saldo_Disponible || 0 }}%</strong></div>
     <div class="kline">
-      <span>Resto utilizable (mm)</span><strong>180</strong>
+      <span>Resto utilizable (mm)</span><strong>{{ data.at(0).SaldoTotal.toFixed(2) || 0 }}</strong>
+    </div>
+    <div class="kline">
+      <span>Resto utilizable (%)</span><strong>{{ data.at(0).MermaMedia || 0 }}</strong>
+      <!-- colocar como porcentaje -->
+    </div>
+    <div class="kline">
+      <span>Desperdicio(mm)</span><strong>{{ (data.at(0).saldo_Corte_mm + data.at(0).saldo_Residuo_mm).toFixed(2)  || 0 }}</strong>
+    </div>
+    <div class="kline">
+      <span>Desperdicio (%)</span><strong>{{ data.at(0).saldo_Corte  || 0 }}</strong> 
+      <!-- +  data.at(0).saldo_Residuo_mm colocar saldo residuo como porcentaje -->
     </div>
   </div>
   <div class="stat">
     <h4>Postprocesado</h4>
-    <div class="kline"><span>Despiece</span><strong>0.6%</strong></div>
-    <div class="kline"><span># Barras utilizadas</span><strong>14</strong></div>
-    <div class="kline"><span># Cortes</span><strong>35</strong></div>
+    <!-- <div class="kline"><span>Despiece</span><strong>--</strong></div> -->
+    <div class="kline"><span># Barras utilizadas</span><strong>{{ data.at(0).Barras || 0 }}</strong></div>
+    <div class="kline"><span># Cortes</span><strong>{{ data.at(0).CortesTotal || 0 }}</strong></div>
+    <div class="kline"><span># Empates</span><strong>{{ data.at(0).EmpatesTotal || 0 }}</strong></div>
+    <div class="kline"><span># Piezas</span><strong>{{ getPiezas() }}</strong></div>
   </div>
   <div class="stat">
     <h4>Resumen</h4>
-    <div class="kline"><span>Empates</span><strong>2</strong></div>
-    <div class="kline"><span>Perfiles W Series</span><strong>16</strong></div>
-    <div class="kline"><span>Patrones</span><strong>10</strong></div>
-    <div class="kline"><span>Piezas</span><strong>48</strong></div>
+    <!-- agrupar por nobmre y longitud -->
   </div>
 </div>

@@ -96,7 +96,7 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
       ? [...this.columnsBase]
       : [...this.columnsBase, ...this.columnsExtras];
   }
-  
+
   isExpanded(element: any) {
     return this.expandedElement === element;
   }
@@ -171,5 +171,18 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
     }
 
     return segmentos;
+  }
+
+  getSaldoConEmpate(){
+    const saldoTotal =  this.data.at(0).SaldoTotal + this.data.at(0).saldo_Corte_mm + this.data.at(0).saldo_Residuo_mm 
+    // console.log(saldoTotal);    
+    return saldoTotal;
+  }
+
+  getPiezas(){
+    const piezas = this.data.reduce((acc,actual) => acc + actual.Piezas.split('+').length, 0 );
+    // console.log(piezas);
+    return piezas;
+    
   }
 }
