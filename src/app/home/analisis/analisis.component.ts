@@ -8,6 +8,16 @@ import { ApiAnalisisService } from '../../services/analisis.service';
 import { ApiConfiguracionService } from '../../services/configuracion.service';
 import { FormControl } from '@angular/forms';
 
+type Pieza = {
+  Usados: string;
+  nUsados: number;
+  NoUsados: string;
+  nNoUsados: number;
+  Total: string;
+  nTotal: number;
+};
+
+
 @Component({
   selector: 'app-analisis',
   templateUrl: './analisis.component.html',
@@ -135,39 +145,7 @@ export class AnalisisComponent implements OnInit {
         nTotal: number;
       }
     >();
-
-    this.piezasConEmpate.forEach(
-      (pieza: {
-        Usados: string;
-        nUsados: number;
-        NoUsados: string;
-        nNoUsados: number;
-        Total: string;
-        nTotal: number;
-      }) => {
-        const clave = pieza.Usados.trim(); // Puedes normalizar más si es necesario
-        if (!piezasUnicasMap.has(clave)) {
-          piezasUnicasMap.set(clave, pieza);
-        }
-      }
-    );
-
-    // Paso 2: Obtener los objetos únicos
-    const piezasUnicas = Array.from(piezasUnicasMap.values());
-
-    // Paso 3: Sumar los nUsados solo de los objetos únicos
-    this.nUsados = piezasUnicas.reduce(
-      (acc: number, pieza) => acc + (pieza.nUsados || 0),
-      0
-    );
-    this.nNoUsados = piezasUnicas.reduce(
-      (acc: number, pieza) => acc + (pieza.nNoUsados || 0),
-      0
-    );
-    this.nTotal = piezasUnicas.reduce(
-      (acc: number, pieza) => acc + (pieza.nTotal || 0),
-      0
-    );
+    this.updateTotalesUnicos(this.dataPiezasConEmpate);
   }
 
   ngOnDestroy(): void {
@@ -176,42 +154,82 @@ export class AnalisisComponent implements OnInit {
     console.log('🧹 analisis destruido');
   }
 
+  updateTotalesUnicos(piezas: Pieza[]): void {
+    const piezasUnicasMap = new Map<string, Pieza>();
+    
+    piezas.forEach((pieza) => {
+      const clave = pieza.Usados.trim();
+      if (!piezasUnicasMap.has(clave)) {
+        piezasUnicasMap.set(clave, pieza);
+      }
+    });
+
+    const piezasUnicas = Array.from(piezasUnicasMap.values());
+    this.nUsados = piezasUnicas.reduce((acc: number, pieza: Pieza) => acc + (pieza.nUsados || 0), 0);
+    this.nNoUsados = piezasUnicas.reduce((acc: number, pieza: Pieza) => acc + (pieza.nNoUsados || 0), 0);
+    this.nTotal = piezasUnicas.reduce((acc: number, pieza: Pieza) => acc + (pieza.nTotal || 0), 0);
+  }
+
   ejecutarNesting() {
     // this.perfilesSeleccionados.
 
-    const datosPost = {
-      trabajoId: this.loteSeleccionado._id,
-      perfil: 'HS430X6X180X15',
-      calidad: 'A572-G50',
-    };
+    // const datosPost = {
+    //   trabajoId: this.loteSeleccionado._id,
+    //   perfil: 'HS430X6X180X15',
+    //   calidad: 'A572-G50',
+    // };
 
-    this.apiAnalisisService
-      .postPiezasConEmpateNesting(datosPost)
-      .pipe(
-        switchMap(() =>
-          this.apiAnalisisService.getPiezasConEmpateNesting(
-            datosPost.trabajoId,
-            datosPost.perfil,
-            datosPost.calidad
+    let seleccionados =
+      this.perfilesSeleccionados.value?.filter(
+        (v: any) => v !== this.selectAllValue
+      ) || [];
+    
+    console.log("seleccionados: ", seleccionados);
+    seleccionados.forEach((sel: any) => {
+      const datosPost = {
+        TrabajoID: sel.TrabajoID, // o de donde venga
+        Perfil: sel.Perfil,
+        Calidad: sel.Calidad,
+        Filas: []
+      };
+    console.log("datosPost: ", datosPost);
+      this.apiAnalisisService
+        .postPiezasConEmpateNesting(datosPost)
+        .pipe(
+          switchMap(() =>
+            this.apiAnalisisService.getPiezasConEmpateNesting(
+              datosPost.TrabajoID,
+              datosPost.Perfil,
+              datosPost.Calidad
+            )
           )
         )
-      )
-      .subscribe({
-        next: (respuestaGet) => {
-          console.log('Datos recibidos:', respuestaGet);
-          // acá podés actualizar tu tabla, mostrar visuales, etc.
-        },
-        error: (err) => {
-          console.error('Error en el flujo Nesting:', err);
-        },
-      });
+        .subscribe({
+          next: (respuestaGet) => {
+            console.log(`Datos recibidos para perfil ${datosPost.Perfil}:`, respuestaGet);            
+            this.actualizarTablaConNesting(respuestaGet);
+
+          },
+          error: (err) => {
+            console.error(`Error en el flujo Nesting para perfil ${sel.perfil}:`, err);
+          },
+        });
+    });
   }
 
-  actualizar() {
-    
+
+  async actualizar() {
+    this.updateTotalesUnicos(this.dataPiezasConEmpate);
+    this.piezasConEmpate = await firstValueFrom(
+      this.apiAnalisisService
+        .getPiezasConEmpate(this.loteSeleccionado._id)
+        .pipe(takeUntil(this.subscription))
+    );
+    console.log('piezasConEmpate', this.piezasConEmpate);
   }
 
-  limpiar() {
+
+  async limpiar() {
     this.usadosParaMostrar = '';
     this.nUsados = 0;
     this.nNoUsados = 0;
@@ -220,7 +238,14 @@ export class AnalisisComponent implements OnInit {
     this.piezasSinEmpate = [];
     this.dataPatronesConEmpate = [];
     this.dataPatronesSinEmpate = [];
-    // this.filtroInventarioPiezas = [];
+    this.dataPiezasConEmpate = [];
+    this.perfilesSeleccionados.setValue([]);
+    await firstValueFrom(
+      this.apiAnalisisService
+        .deletePiezasConEmpate(this.loteSeleccionado._id)
+        .pipe(takeUntil(this.subscription))
+    );
+    console.log('eliminados', this.piezasConEmpate);
   }
 
   exportar() {}
@@ -236,19 +261,26 @@ export class AnalisisComponent implements OnInit {
         (v: any) => v !== this.selectAllValue
       ) || [];
 
+    console.log("seleccionados: ", seleccionados);
+    console.log("1: ", seleccionados.length < this.filtroInventarioPiezas.length);
     if (seleccionados.length < this.filtroInventarioPiezas.length) {
       this.perfilesSeleccionados.setValue([...seleccionados]);
       seleccionados =
         this.perfilesSeleccionados.value?.filter(
           (v: any) => v !== this.selectAllValue
         ) || [];
-
+      
+      console.log("seleccionados: ", seleccionados);
+      console.log("piezasConEmpate: ", this.piezasConEmpate);
       dataPiezasConEmpate = this.piezasConEmpate.filter((r: any) =>
         seleccionados.some(
           (s: any) => r?.Perfil === s?.Perfil && r?.Calidad === s?.Calidad
         )
       );
     }
+    
+    console.log("dataPiezasConEmpate: ", dataPiezasConEmpate);
+    console.log("2: ", seleccionados.length === this.filtroInventarioPiezas.length);
     if (seleccionados.length === this.filtroInventarioPiezas.length) {
       this.perfilesSeleccionados.setValue([
         ...this.filtroInventarioPiezas,
@@ -256,10 +288,12 @@ export class AnalisisComponent implements OnInit {
       ]);
 
       dataPiezasConEmpate = this.piezasConEmpate;
+      console.log("VVVV: ", dataPiezasConEmpate);
     }
 
     // reconfiguramos los datos para tener la estructura de la tabla
     this.transformarPiezasExpandibles(dataPiezasConEmpate);
+    this.updateTotalesUnicos(this.dataPiezasConEmpate);
   }
 
   transformarPiezasExpandibles(data: any[]) {
@@ -342,7 +376,14 @@ export class AnalisisComponent implements OnInit {
     });
 
     this.dataPiezasConEmpate = [...dataTransformada];
-    console.log(this.dataPiezasConEmpate);
+    console.log("OK: ",this.dataPiezasConEmpate);
+  }
+
+  actualizarTablaConNesting(respuesta: any[]) {
+    if (!respuesta || respuesta.length === 0) return;
+    this.dataPiezasConEmpate = [...this.dataPiezasConEmpate, ...respuesta];
+    this.transformarPiezasExpandibles(this.dataPiezasConEmpate);
+    this.updateTotalesUnicos(this.dataPiezasConEmpate);
   }
 
   toggleSelectAll(event: MouseEvent): void {
@@ -371,7 +412,9 @@ export class AnalisisComponent implements OnInit {
   toggleEstado(estado: string) {
     this.estadoSeleccionado =
       this.estadoSeleccionado === estado ? null : estado;
-
+    
+    this.updateTotalesUnicos(this.dataPiezasConEmpate);
+    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXX: ", this.piezasConEmpate);
     const campoPorEstado: Record<
       string,
       keyof (typeof this.piezasConEmpate)[0]
