@@ -26,44 +26,53 @@ export class ApiAnalisisService {
   constructor(private _http: HttpClient) {}
 
   
-    getPiezas(idTrabajo: string): Observable<any> {
-        return this._http.get<any>(
-        `${this.url}/piezas/${idTrabajo}`,
-        httpOption
-        );
-    }
+  getPiezas(idTrabajo: string): Observable<any> {
+      return this._http.get<any>(
+      `${this.url}/piezas/${idTrabajo}`,
+      httpOption
+      );
+  }
 
-    getPiezasSinEmpate(idTrabajo: string): Observable<any> {
-        return this._http.get<any>(
-        `${this.url}/piezas-sin-empates/${idTrabajo}`,
-        httpOption
-        );
-    }
+  getPiezasSinEmpate(idTrabajo: string): Observable<any> {
+      return this._http.get<any>(
+      `${this.url}/piezas-sin-empates/${idTrabajo}`,
+      httpOption
+      );
+  }
 
-    getPiezasConEmpate(idTrabajo: string): Observable<any> {
-        return this._http.get<any>(
-        `${this.url}/piezas-con-empates/${idTrabajo}`,
-        httpOption
-        );
-    }
+  getPiezasConEmpate(idTrabajo: string): Observable<any> {
+      return this._http.get<any>(
+      `${this.url}/piezas-con-empates/${idTrabajo}`,
+      httpOption
+      );
+  }
 
-    getInventarioPiezas(idTrabajo: string): Observable<any> {
-        return this._http.get<any>(
-        `${this.url}/inventario/piezas/${idTrabajo}`,
-        httpOption
-        );
-    }
+  deletePiezasConEmpate(idTrabajo: string): Observable<any> {
+      return this._http.delete<any>(
+      `${this.url}/piezas-con-empates/${idTrabajo}`,
+      httpOption
+      );
+  }
+
+  getInventarioPiezas(idTrabajo: string): Observable<any> {
+      return this._http.get<any>(
+      `${this.url}/inventario/piezas/${idTrabajo}`,
+      httpOption
+      );
+  }
 
   postPiezasConEmpateNesting(body: {}): Observable<any> {
     return this._http.post<any>(
-      `${this.url}/piezas-con-empates/${body}`,
+      `${this.url}/piezas-con-empates`,
+      body,
       httpOption
     );
   }
 
   postPiezasSinEmpateNesting(body: {}): Observable<any> {
     return this._http.post<any>(
-      `${this.url}/piezas-sin-empates/${body}`,
+      `${this.url}/piezas-sin-empates`,
+      body,
       httpOption
     );
   }
