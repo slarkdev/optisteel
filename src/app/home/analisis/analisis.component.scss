@@ -107,7 +107,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1rem;  
+  flex-direction: column;
 }
 .contenedor {
   background: #fff;
@@ -129,7 +130,6 @@
   margin: 0 auto;
   transform: none;
 }
-
 .kpi {
   display: inline-flex;
   align-items: center;
@@ -139,6 +139,18 @@
   border-radius: 999px;
   padding: 0.5rem 0.75rem;
   font-weight: 800;
+}
+
+.kpi.active.success {
+  background-color: #9fb2ee;
+}
+
+.kpi.active.warn {
+  background-color: #f5c6cb;
+}
+
+.kpi.active.total {
+  background-color: #c0edbc;
 }
 
 .kpi .badge {
@@ -156,6 +168,22 @@
   background: #fff7ed;
   color: #9a3412;
 }
+
+.kpi.total .badge {
+  background: #dbf0cf;
+  color: #129a4f;
+}
+
+.usados-panel {
+  margin-top: 12px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #f8a166;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
 .toolbar .btn {
   white-space: nowrap;
 }

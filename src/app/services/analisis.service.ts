@@ -7,16 +7,16 @@ import { connection } from '../security/production';
 import { environment } from '../../environments/environment';
 
 const httpOption = {
-  headers: new HttpHeaders({
-    'Content-Type': 'application/json',
-  }),
+    headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+    }),
 };
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
 export class ApiAnalisisService {
-  private readonly url: string = connection;
+    private readonly url: string = connection;
 
   private analisisSubject = new BehaviorSubject<any | null>(
     null
@@ -25,33 +25,34 @@ export class ApiAnalisisService {
 
   constructor(private _http: HttpClient) {}
 
-  getPiezas(idTrabajo: string): Observable<any> {
-    return this._http.get<any>(
-      `${this.url}/piezas/${idTrabajo}`,
-      httpOption
-    );
-  }
+  
+    getPiezas(idTrabajo: string): Observable<any> {
+        return this._http.get<any>(
+        `${this.url}/piezas/${idTrabajo}`,
+        httpOption
+        );
+    }
 
-  getPiezasSinEmpate(idTrabajo: string): Observable<any> {
-    return this._http.get<any>(
-      `${this.url}/piezas-sin-empates/${idTrabajo}`,
-      httpOption
-    );
-  }
+    getPiezasSinEmpate(idTrabajo: string): Observable<any> {
+        return this._http.get<any>(
+        `${this.url}/piezas-sin-empates/${idTrabajo}`,
+        httpOption
+        );
+    }
 
-  getPiezasConEmpate(idTrabajo: string): Observable<any> {
-    return this._http.get<any>(
-      `${this.url}/piezas-con-empates/${idTrabajo}`,
-      httpOption
-    );
-  }
+    getPiezasConEmpate(idTrabajo: string): Observable<any> {
+        return this._http.get<any>(
+        `${this.url}/piezas-con-empates/${idTrabajo}`,
+        httpOption
+        );
+    }
 
-  getInventarioPiezas(idTrabajo: string): Observable<any> {
-    return this._http.get<any>(
-      `${this.url}/inventario/piezas/${idTrabajo}`,
-      httpOption
-    );
-  }
+    getInventarioPiezas(idTrabajo: string): Observable<any> {
+        return this._http.get<any>(
+        `${this.url}/inventario/piezas/${idTrabajo}`,
+        httpOption
+        );
+    }
 
   postPiezasConEmpateNesting(body: {}): Observable<any> {
     return this._http.post<any>(

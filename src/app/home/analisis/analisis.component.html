@@ -1,5 +1,5 @@
 <main class="main">
-  <h1 class="page-title">Análisis — W_Profiles</h1>
+  <h1 class="page-title">Análisis</h1>
   <p class="subtitle">
     <strong>
       Proyecto: {{ proyectoSeleccionado?.name || "" }} Lote:
@@ -61,19 +61,40 @@
 
   <section class="fila">
     <div class="contenedor">
+      <!-- Botones -->
       <label class="stock-indicator" title="Estado de stock">
-        <span class="pill" data-stock="true">Sí hay stock</span>
+        <span class="pill" data-stock="true">{{ stock }}</span>
       </label>
 
-      <span class="kpi"
-        ><span class="badge">✔</span> Cubiertos <strong>124</strong></span
+      <button
+        class="kpi success"
+        [class.active]="estadoSeleccionado === 'cubiertos'"
+        (click)="toggleEstado('cubiertos')"
       >
-      <span class="kpi warn"
-        ><span class="badge">✖</span> No Cubiertos <strong>18</strong></span
+        <span class="badge">✔</span> Cubiertos <strong>{{ nUsados }}</strong>
+      </button>
+
+      <button
+        class="kpi warn"
+        [class.active]="estadoSeleccionado === 'noCubiertos'"
+        (click)="toggleEstado('noCubiertos')"
       >
-      <span class="kpi"
-        ><span class="badge">Σ</span> Total <strong>142</strong></span
+        <span class="badge">✖</span> No Cubiertos
+        <strong>{{ nNoUsados }}</strong>
+      </button>
+
+      <button
+        class="kpi total"
+        [class.active]="estadoSeleccionado === 'total'"
+        (click)="toggleEstado('total')"
       >
+        <span class="badge">Σ</span> Total <strong>{{ nTotal }}</strong>
+      </button>
+    </div>
+
+    <!-- Panel desplegable debajo -->
+    <div class="usados-panel" *ngIf="estadoSeleccionado">
+      <p>{{ usadosParaMostrar }}</p>
     </div>
   </section>
 
@@ -81,6 +102,8 @@
     <button class="btn btn-ghost" (click)="clickEvent($event)">
       <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon> Preview
     </button>
+  </div>
+  <div class="tabs" role="tablist">
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" aria-selected="true" data-tab="con">
         Patrones con empate
