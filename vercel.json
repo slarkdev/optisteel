@@ -1,0 +1,18 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/login",
+      "destination": "https://xfzt4cg93k.execute-api.us-east-2.amazonaws.com/dev/auth"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/login",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    }
+  ]
+}
