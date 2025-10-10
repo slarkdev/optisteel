@@ -73,8 +73,18 @@
           <span class="label-icon" *ngIf="isExpanded">Análisis</span>
         </button>
 
+           <button
+          class="navbtn"
+          title="Reportes"
+          [routerLink]="['./reportes']"
+          routerLinkActive="active"
+        >
+          <mat-icon class="icon">menu_book</mat-icon>
+          <span class="label-icon" *ngIf="isExpanded">Reportes</span>
+        </button>
+
         <div class="spacer"></div>
-        <button
+        <!-- <button
           class="navbtn"
           title="Ayuda"
           [routerLink]="['./ayuda']"
@@ -82,7 +92,7 @@
         >
           <mat-icon class="icon">help</mat-icon>
           <span class="label-icon" *ngIf="isExpanded">Ayuda</span>
-        </button>
+        </button> -->
         <button class="navbtn" title="Salir" (click)="logout()">
           <mat-icon class="icon">exit_to_app</mat-icon>
           <span class="label-icon" *ngIf="isExpanded">Cerrar Sesión</span>
