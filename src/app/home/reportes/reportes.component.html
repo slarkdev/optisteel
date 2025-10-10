@@ -1,1 +1,18 @@
-<p>reportes works!</p>
+<main class="main">
+  <h1 class="page-title">Reportes</h1>
+  <p class="subtitle"><strong>Proyecto: {{ nombreProyecto }} Lote: {{ nombreLote }}</strong></p>
+
+  <app-tabla-reportes
+    [data]="reportes"
+    [columnas]="columnasTabla"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (seleccionadosChange)="seleccionados = $event"
+    (filaDblClick)="clickRow($event)"
+  >
+    <div tabla-acciones class="toolbar-actions">
+      <button (click)="refrescar()" class="btn btn-muted">⟳ Refrescar</button>
+      <button (click)="exportar()" class="btn btn-primary">⤓ Exportar</button>
+      <button (click)="borrarSeleccion()" class="btn btn-muted" [disabled]="!seleccionados.length">🗑️ Borrar selección</button>
+    </div>
+  </app-tabla-reportes>
+</main>
