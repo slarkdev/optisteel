@@ -396,7 +396,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
 
       for (const row of json) {
         const vm: InventoryVM = {
-          id: this.items().length + 1,
+          id: Date.now(),// this.items().length + 1,
           _id: row['_id'] ?? null,
           perfil: row['Perfil'] ?? '',
           calidad: this.normCalidad(row['Calidad'] ?? ''),

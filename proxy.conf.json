@@ -9,7 +9,7 @@
   },
 
   "/api": {
-    "target": "https://optisteel.ingaria.com",
+    "target": "https://xerxef.xyz/optisteel/",
     "secure": true,
     "changeOrigin": true,
     "logLevel": "debug",

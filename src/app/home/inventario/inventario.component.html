@@ -102,7 +102,7 @@
               <input class="cell-input"
                     [ngModel]="it.perfil"
                     (ngModelChange)="onCellEdit(it, 'perfil', $event)"
-                    (keydown.enter)="commitEdit($event)" />
+                     />
             </td>
 
             <!-- Calidad (editable, normalizada) -->
@@ -110,7 +110,7 @@
               <input class="cell-input"
                     [ngModel]="it.calidad"
                     (ngModelChange)="onCellEdit(it, 'calidad', $event)"
-                    (keydown.enter)="commitEdit($event)" />
+                     />
             </td>
 
             <!-- Longitud (editable, numérico) -->
@@ -118,7 +118,7 @@
               <input class="cell-input cell-num" type="number" min="0" step="1"
                     [ngModel]="it.longitud"
                     (ngModelChange)="onCellEdit(it, 'longitud', $event)"
-                    (keydown.enter)="commitEdit($event)" />
+                     />
             </td>
 
             <!-- Cantidad (editable numérico) -->
@@ -126,7 +126,7 @@
               <input class="cell-input cell-num" type="number" min="0" step="1"
                     [ngModel]="it.cantidad"
                     (ngModelChange)="onCellEdit(it, 'cantidad', $event)"
-                    (keydown.enter)="commitEdit($event)" />
+                     />
             </td>
 
             <!-- Consumido (no editable) -->
@@ -146,7 +146,6 @@
               <input class="cell-input"
                     [ngModel]="newRow().perfil"
                     (ngModelChange)="onDraftEdit('perfil', $event)"
-                    (keydown.enter)="commitEdit($event); saveDraftIfReady()"
                     (blur)="saveDraftIfReady()"
                     placeholder="Nuevo perfil (*)" />
             </td>
@@ -156,7 +155,6 @@
               <input class="cell-input"
                     [ngModel]="newRow().calidad"
                     (ngModelChange)="onDraftEdit('calidad', $event)"
-                    (keydown.enter)="commitEdit($event); saveDraftIfReady()"
                     (blur)="saveDraftIfReady()"
                     placeholder="Calidad (*)" />
             </td>
@@ -166,7 +164,6 @@
               <input class="cell-input cell-num" type="number" min="0" step="1"
                     [ngModel]="newRow().longitud"
                     (ngModelChange)="onDraftEdit('longitud', $event)"
-                    (keydown.enter)="commitEdit($event); saveDraftIfReady()"
                     (blur)="saveDraftIfReady()"
                     placeholder="0" />
             </td>
@@ -176,7 +173,7 @@
               <input class="cell-input cell-num" type="number" min="0" step="1"
                   [ngModel]="newRow().cantidad"
                   (ngModelChange)="onDraftEdit('cantidad', $event)"
-                  (keydown.enter)="commitEdit($event); saveDraftIfReady()"
+                  
                   (blur)="saveDraftIfReady()"
                   placeholder="0" />
             </td>

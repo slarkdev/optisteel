@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Configuracion } from '../models/configuracion';
@@ -18,41 +18,84 @@ const httpOption = {
 export class ApiAnalisisService {
   private readonly url: string = connection;
 
-  private configuracionSubject = new BehaviorSubject<Configuracion | null>(
+  private analisisSubject = new BehaviorSubject<any | null>(
     null
   );
-  configuracion$ = this.configuracionSubject.asObservable();
+  analisis$ = this.analisisSubject.asObservable();
 
   constructor(private _http: HttpClient) {}
 
-  getPiezas(idTrabajo: string): Observable<Configuracion> {
-    return this._http.get<Configuracion>(
+  getPiezas(idTrabajo: string): Observable<any> {
+    return this._http.get<any>(
       `${this.url}/piezas/${idTrabajo}`,
       httpOption
     );
   }
 
-  getPiezasSinEmpate(idTrabajo: string): Observable<Configuracion> {
-    return this._http.get<Configuracion>(
+  getPiezasSinEmpate(idTrabajo: string): Observable<any> {
+    return this._http.get<any>(
       `${this.url}/piezas-sin-empates/${idTrabajo}`,
       httpOption
     );
   }
 
-  getPiezasConEmpate(idTrabajo: string): Observable<Configuracion> {
-    return this._http.get<Configuracion>(
+  getPiezasConEmpate(idTrabajo: string): Observable<any> {
+    return this._http.get<any>(
       `${this.url}/piezas-con-empates/${idTrabajo}`,
       httpOption
     );
   }
 
-  getInventarioPiezas(idTrabajo: string): Observable<Configuracion> {
-    return this._http.get<Configuracion>(
+  getInventarioPiezas(idTrabajo: string): Observable<any> {
+    return this._http.get<any>(
       `${this.url}/inventario/piezas/${idTrabajo}`,
       httpOption
     );
   }
 
+  postPiezasConEmpateNesting(body: {}): Observable<any> {
+    return this._http.post<any>(
+      `${this.url}/piezas-con-empates/${body}`,
+      httpOption
+    );
+  }
+
+  postPiezasSinEmpateNesting(body: {}): Observable<any> {
+    return this._http.post<any>(
+      `${this.url}/piezas-sin-empates/${body}`,
+      httpOption
+    );
+  }
+
+  getPiezasConEmpateNesting(
+    idTrabajo: string,
+    perfil: string,
+    calidad: string
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('TrabajoID', idTrabajo)
+      .set('Perfil', perfil)
+      .set('Calidad', calidad);
+
+    return this._http.get<any>(`${this.url}/piezas-con-empates`, {
+        ...httpOption,
+      params,
+    });
+  }
+
+   getPiezasSinEmpateNesting(
+    idTrabajo: string,
+    perfil: string,
+    calidad: string
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('TrabajoID', idTrabajo)
+      .set('Perfil', perfil)
+      .set('Calidad', calidad);
+
+    return this._http.get<any>(`${this.url}/piezas-sin-empates`, {
+        ...httpOption,
+      params,
+    });
+  }
 }
-
-

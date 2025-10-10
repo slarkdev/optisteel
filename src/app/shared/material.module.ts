@@ -14,7 +14,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
+
+// import { NgChartsModule } from 'ng2-charts';
 
 import { TablaComponent } from './tabla/tabla.component';
 import { CommonModule } from '@angular/common';
@@ -22,7 +25,8 @@ import { FormsModule } from '@angular/forms';
 @NgModule({
   imports:[
     CommonModule,
-    FormsModule
+    FormsModule,
+    // NgChartsModule
   ],  
   declarations:[
     TablaComponent
@@ -43,7 +47,8 @@ import { FormsModule } from '@angular/forms';
     MatChipsModule,
     MatDialogModule,
     TablaComponent,
-    
+    MatTooltipModule,
+    // NgChartsModule
 
   ],
   providers: [],

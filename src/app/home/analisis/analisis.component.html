@@ -1,26 +1,58 @@
 <main class="main">
   <h1 class="page-title">Análisis — W_Profiles</h1>
   <p class="subtitle">
-    <!-- <strong> Proyecto: {{ proyectoSeleccionado?.name || ""}} Lote: {{ loteSeleccionado?.NombreTrabajo || "" }}</strong> -->
+    <strong>
+      Proyecto: {{ proyectoSeleccionado?.name || "" }} Lote:
+      {{ loteSeleccionado?.NombreTrabajo || "" }}</strong
+    >
   </p>
 
   <div class="ctx" style="justify-content: space-between">
-    <div >
+    <div>
       <mat-form-field style="width: 20rem">
         <mat-label>Filtro por Perfil</mat-label>
-        <mat-select>
-          @for (element of filtroInventarioPiezas; track element) {
-          <mat-option [value]="element"
-            >{{ element.Perfil }} - {{ element.Calidad }}</mat-option
+        <mat-select
+          [formControl]="perfilesSeleccionados"
+          (selectionChange)="buscarDatosConPiezasySinPiezas()"
+          multiple
+        >
+          <mat-option
+            (click)="toggleSelectAll($event)"
+            [value]="selectAllValue"
+          >
+            Seleccionar Todo
+          </mat-option>
+
+          <mat-select-trigger>
+            {{ perfilesSeleccionados.value?.[0]?.Perfil || '' }} -
+            {{ perfilesSeleccionados.value?.[0]?.Calidad || '' }}
+
+            @if ((perfilesSeleccionados.value?.length || 0) > 1) {
+            <span class="perfiles">
+              (+{{ (perfilesSeleccionados.value?.length || 0) - 1 }}
+              {{
+                perfilesSeleccionados.value?.length === 2 ? "other" : "others"
+              }})
+            </span>
+            }
+          </mat-select-trigger>
+          @for (perfil of filtroInventarioPiezas; track perfil) {
+          <mat-option [value]="perfil"
+            >{{ perfil.Perfil }} - {{ perfil.Calidad }}</mat-option
           >
           }
         </mat-select>
       </mat-form-field>
-      <button class="btn btn-ghost-1" (click)="ejecutarNesting()">🔄 Ejecutar Nesting</button>
+
+      <button class="btn btn-ghost-1" (click)="ejecutarNesting()">
+        🔄 Ejecutar Nesting
+      </button>
     </div>
 
     <div class="actions">
-      <button class="btn btn-ghost-1" (click)="actualizar()">🔄 Actualizar</button>
+      <button class="btn btn-ghost-1" (click)="actualizar()">
+        🔄 Actualizar
+      </button>
       <button class="btn btn-ghost" (click)="limpiar()">🧹 Limpiar</button>
       <button class="btn btn-ghost-1" (click)="exportar()">⤓ Exportar</button>
       <button class="btn btn-primary" (click)="guardar()">💾 Guardar</button>
@@ -45,26 +77,37 @@
     </div>
   </section>
 
-  <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true" data-tab="con">
-      Patrones con empate
+  <div style="display: flex; flex-direction: row">
+    <button class="btn btn-ghost" (click)="clickEvent($event)">
+      <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon> Preview
     </button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="sin">
-      Patrones sin empate
-    </button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="res">
-      Resultados
-    </button>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="con">
+        Patrones con empate
+      </button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="sin">
+        Patrones sin empate
+      </button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="res">
+        Resultados
+      </button>
+    </div>
   </div>
 
   <section class="card tabpanel" id="panel-sin" role="tabpanel">
     <div class="card-hd">
-      Patrones de corte <span class="muted">· 10 resultados</span>
+      Patrones de corte
+      <span class="muted"
+        >· {{ dataPiezasConEmpate?.length || 0 }} resultados</span
+      >
     </div>
     <div class="card-bd center muted">
       <app-tabla-analisis
-        *ngIf="piezasConEmpate?.length"
-        [data]="piezasConEmpate" [proyecto]="proyectoSeleccionado" [lote]="loteSeleccionado"
+        *ngIf="dataPiezasConEmpate?.length"
+        [data]="dataPiezasConEmpate"
+        [proyecto]="proyectoSeleccionado"
+        [lote]="loteSeleccionado"
+        [hide]="hide"
       ></app-tabla-analisis>
     </div>
   </section>
@@ -73,8 +116,11 @@
     <div class="card-hd">Patrones sin empate</div>
     <div class="card-bd center muted">
       <app-tabla-analisis
-        *ngIf="piezasSinEmpate?.length"
-        [data]="piezasSinEmpate" [proyecto]="proyectoSeleccionado" [lote]="loteSeleccionado"
+        *ngIf="dataPiezasSinEmpate?.length"
+        [data]="dataPiezasSinEmpate"
+        [proyecto]="proyectoSeleccionado"
+        [lote]="loteSeleccionado"
+        [hide]="hide"
       ></app-tabla-analisis>
     </div>
   </section>

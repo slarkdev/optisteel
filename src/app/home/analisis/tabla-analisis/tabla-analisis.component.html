@@ -1,5 +1,3 @@
-<p>tabla-analisis works!</p>
-
 <!-- <div class="card-bd">
   <div class="section" aria-expanded="true">
     <div class="row expand">
@@ -76,55 +74,222 @@
  -->
 
 <div class="card-bd">
-  <table mat-table [dataSource]="data">
+  <table
+    mat-table
+    [dataSource]="dataSource"
+    multiTemplateDataRows
+    matSort
+    style="table-layout: fixed; width: 100%"
+  >
     <ng-container matColumnDef="proyecto">
-      <th mat-header-cell *matHeaderCellDef>Proyecto</th>
-      <td mat-cell *matCellDef="let element">{{ proyecto.name }} / {{ lote.NombreTrabajo}}</td>
+      <th mat-header-cell *matHeaderCellDef style="width: 9rem">Proyecto</th>
+      <td mat-cell *matCellDef="let element">
+        {{ proyecto.name }} / {{ lote.NombreTrabajo }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="perfil">
-      <th mat-header-cell *matHeaderCellDef>Perfil</th>
+      <th mat-header-cell *matHeaderCellDef style="width: 9rem" mat-sort-header>
+        Perfil
+      </th>
       <td mat-cell *matCellDef="let element">{{ element.Perfil }}</td>
     </ng-container>
 
     <ng-container matColumnDef="patronCorte">
-      <th mat-header-cell *matHeaderCellDef>Patron de corte</th>
-      <td mat-cell *matCellDef="let element"> {{ element.Item }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 9rem">
+        Patron de corte
+      </th>
+      <td mat-cell *matCellDef="let element">{{ element.Item }}</td>
     </ng-container>
 
     <ng-container matColumnDef="cantidad">
-      <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 4rem">
+        Cantidad
+      </th>
       <td mat-cell *matCellDef="let element">{{ element.Cantidad }}</td>
     </ng-container>
 
     <ng-container matColumnDef="piezas">
-      <th mat-header-cell *matHeaderCellDef>Piezas</th>
-      <td mat-cell *matCellDef="let element">{{ element.Piezas }}</td>
+      <th
+        mat-header-cell
+        *matHeaderCellDef
+        mat-sort-header
+        style="width: 15rem"
+      >
+        Piezas
+      </th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [matTooltip]="element.Piezas.length > 30 ? element.Piezas : ''"
+        matTooltipPosition="above"
+        style="
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 200px;
+        "
+      >
+        {{ element.Piezas }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="saldoMM">
-      <th mat-header-cell *matHeaderCellDef>Saldo (mm)</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 4rem">
+        Saldo (mm)
+      </th>
       <td mat-cell *matCellDef="let element">{{ element.Merma }}</td>
     </ng-container>
 
     <ng-container matColumnDef="longitud">
-      <th mat-header-cell *matHeaderCellDef>Longitud (mm)</th>
-      <td mat-cell *matCellDef="let element">{{ element._id }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 9rem">
+        Longitud (mm)
+      </th>
+      <td mat-cell *matCellDef="let element">{{ element["Longitud Stock Total"] }}</td>
     </ng-container>
 
     <ng-container matColumnDef="saldo%">
-      <th mat-header-cell *matHeaderCellDef>Saldo (%)</th>
-      <td mat-cell *matCellDef="let element">{{ element._id }}</td> 
+      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 9rem">
+        Saldo (%)
+      </th>
+      <td mat-cell *matCellDef="let element">{{ element["Merma %"] }}</td>
     </ng-container>
 
-     <ng-container matColumnDef="cortes">
-      <th mat-header-cell *matHeaderCellDef>Cortes</th>
+    <ng-container matColumnDef="cortes">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 9rem">
+        Cortes
+      </th>
       <td mat-cell *matCellDef="let element">{{ element.Cortes }}</td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <ng-container matColumnDef="expand">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>&nbsp;</th>
+      <td mat-cell *matCellDef="let element">
+        <button
+          matIconButton
+          (click)="toggle(element); $event.stopPropagation()"
+          class="example-toggle-button"
+          [class.example-toggle-button-expanded]="isExpanded(element)"
+        >
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="graficoFila" *ngIf="!hide">
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [attr.colspan]="columnsToDisplayWithExpand.length"
+      >
+
+        <div
+          *ngIf="getSegmentDataFicticio() as segmentos"
+          style="
+            display: flex;
+            height: 30px;
+            width: 100%;
+            border: 1px solid #ccc;
+            margin-top: 8px;
+          "
+        >
+          <div
+            *ngFor="let seg of segmentos"
+            [style.width.%]="seg.width"
+            [style.backgroundColor]="seg.color"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 12px;
+              color: white;
+            "
+            [matTooltip]="seg.label + ': ' + seg.width.toFixed(1) + '%'"
+          >
+            {{ seg.width > 10 ? seg.label : "" }}
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail" *ngIf="!hide">
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [attr.colspan]="columnsToDisplayWithExpand.length"
+      >
+        <div
+          class="example-element-detail-wrapper"
+          [class.example-element-detail-wrapper-expanded]="isExpanded(element)"
+        >
+          <div class="example-element-detail">
+            <table
+              class="tabla-detalle"
+              style="width: 100%; border-collapse: collapse"
+            >
+              <thead>
+                <tr>
+                  <th>Ref (res nombre)</th>
+                  <th>Cant</th>
+                  <th>Cant Total</th>
+                  <th>Largo (mm)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                </tr>
+                <tr>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                </tr>
+                <tr>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                  <td>{{ element.Cortes }}</td>
+                </tr>
+                <tr>
+                  <td>Saldo</td>
+                  <td>--</td>
+                  <td>--</td>
+                  <td>{{ element.Cortes }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+    <tr
+      mat-row
+      matRipple
+      *matRowDef="let element; columns: columnsToDisplayWithExpand"
+      class="example-element-row"
+      [class.example-expanded-row]="isExpanded(element)"
+      (click)="toggle(element)"
+    ></tr>
+
+    <!-- Fila secundaria fija debajo -->
+    <tr mat-row *matRowDef="let row; columns: ['graficoFila']"></tr>
+
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']"></tr>
   </table>
+
+  <mat-paginator
+    [pageSizeOptions]="[20, 50, 100]"
+    showFirstLastButtons
+    aria-label="Select page of periodic elements"
+  >
+  </mat-paginator>
 </div>
 
 <!-- ojo esta parte no sabemos donde va -->
