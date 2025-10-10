@@ -180,11 +180,11 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
         acc.SaldoTotal += item.SaldoTotal || 0;
         acc.saldo_Corte_mm += item.saldo_Corte_mm || 0;
         acc.saldo_Residuo_mm += item.saldo_Residuo_mm || 0;
-        
+
         acc.saldo_Disponible += item.saldo_Disponible || 0;
         acc.saldo_Corte += item.saldo_Corte || 0;
         acc.MermaMedia += item.MermaMedia || 0;
-        
+
         return acc;
       },
       {
@@ -194,15 +194,26 @@ export class TablaAnalisisComponent implements OnInit, AfterViewInit {
         SaldoTotal: 0,
         saldo_Corte_mm: 0,
         saldo_Residuo_mm: 0,
-        saldo_Disponible:0,
-        saldo_Corte:0,
+        saldo_Disponible: 0,
+        saldo_Corte: 0,
         MermaMedia: 0,
       }
     );
 
+    const base = this.resumenPerfiles.reduce((acc: any, item: any) => {
+      return acc + (item.cantidad || 0) * (item.longitud || 0);
+    }, 0);
+
     // Calculamos el total combinado de saldos
     totales['SaldoConEmpate'] =
       totales.SaldoTotal + totales.saldo_Corte_mm + totales.saldo_Residuo_mm;
+    totales['Saldototal(%)'] = (totales.SaldoConEmpate / base) * 100;
+    
+    totales['RestoUtilizable'] = totales.SaldoTotal;
+    totales['RestoUtilizable(%)'] = (totales.SaldoTotal / base) * 100;
+
+    totales['Desperdicio'] = totales.saldo_Corte_mm + totales.saldo_Residuo_mm;
+    totales['Desperdicio(%)'] = (totales.Desperdicio / base) * 100;
 
     this.resumenSaldosYRestos = totales;
     console.log(totales);

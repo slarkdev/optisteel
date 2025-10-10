@@ -28,9 +28,11 @@ export class ForgetPasswordComponent {
     
   }
   enviarEnlace(){
-    console.log('enviar enlace');
+    console.log('enviar enlace', this.form.value);
     
   }
+
+  
   closeDialog() {
     this.dialogRef.close();
   }

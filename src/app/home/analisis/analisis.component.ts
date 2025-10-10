@@ -114,11 +114,14 @@ export class AnalisisComponent implements OnInit {
 
     this.filtroInventarioPiezas = sinDuplicados;
     const ultimoNesting = this.piezasConEmpate[this.piezasConEmpate.length - 1];
+
+    console.log(ultimoNesting);
+    
     const seleccionado =
       this.filtroInventarioPiezas.filter(
         (r: any) =>
-          r.Perfil === ultimoNesting.Perfil &&
-          r.Calidad === ultimoNesting.Calidad
+          r.Perfil === ultimoNesting?.Perfil &&
+          r.Calidad === ultimoNesting?.Calidad
       ) || [];
 
     this.perfilesSeleccionados.setValue([...seleccionado]);
@@ -208,7 +211,7 @@ export class AnalisisComponent implements OnInit {
   }
 
   actualizar() {
-    
+
   }
 
   limpiar() {
