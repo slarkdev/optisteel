@@ -220,10 +220,6 @@ export class AnalisisComponent implements OnInit {
     });
   }
 
-<<<<<<< HEAD
-  actualizar() {
-
-=======
 
   async actualizar() {
     this.updateTotalesUnicos(this.dataPiezasConEmpate);
@@ -233,7 +229,6 @@ export class AnalisisComponent implements OnInit {
         .pipe(takeUntil(this.subscription))
     );
     console.log('piezasConEmpate', this.piezasConEmpate);
->>>>>>> c1bdd517e4c80ff15c64d6d70a7962ca8683ffce
   }
 
 

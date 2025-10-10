@@ -68,7 +68,7 @@
         Longitud (mm)
       </th>
       <td mat-cell *matCellDef="let element">
-        {{ element["Longitud Stock Total"] | number:'1.2-2'}}
+        {{ element["Longitud Stock Total"] | number:'1.2'}}
       </td>
     </ng-container>
 
@@ -231,7 +231,7 @@
     <div class="kline">
       <span>Saldo total (%)</span
       ><strong
-        > {{ (resumenSaldosYRestos.saldo_Corte + resumenSaldosYRestos.saldo_Disponible).toFixed(2)}}%</strong
+        > {{ resumenSaldosYRestos['Saldototal(%)'].toFixed(2)}}%</strong
       >
     </div>
     <div class="kline">
@@ -279,8 +279,8 @@
       <span class="celda">
         <strong> {{ grupo.perfil }} </strong></span
       >
-      <span class="celda end">{{ grupo.longitud | number:'1.2-2' }}mm</span>
-      <span class="celda end">{{ grupo.cantidad | number:'1.2-2' }}</span>
+      <span class="celda end">{{ grupo.longitud | number:'1.2' }}mm</span>
+      <span class="celda end">{{ grupo.cantidad}}</span>
     </div>
   </div>
 </div>
